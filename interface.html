@@ -1,0 +1,36 @@
+<div>
+  {{#if configured}}
+    <form>
+      <div class="panel panel-primary">
+        <div class="panel-heading"><strong>Send new push notification</strong></div>
+        <div class="panel-body">
+          <div class="form-group">
+            <p>The notification will be sent to all subscribed clients.</p>
+            <textarea class="form-control" placeholder="Notification message"></textarea>
+          </div>
+          <div class="form-group">
+            <input type="submit" value="Send notification" class="form-control btn btn-primary" />
+          </div>
+        </div>
+      </div>
+    </form>
+  {{/if}}
+
+  <form id="configuration">
+    <div class="panel panel-default {{#if gcm}}panel-success{{/if}}">
+      <div class="panel-heading">Android configuration {{#if gcm}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</div>
+      <div class="panel-body">
+        <div class="form-group">
+          <p>A unique numerical value created when you configure your API project. The sender ID is used in the <a target="_blank" href="https://developers.google.com/cloud-messaging/registration">registration process</a> to identify an app server that is permitted to send messages to the client app.</p>
+          <input type="text" class="form-control" name="gcmSenderId" placeholder="Sender ID" value="{{gcmSenderId}}"/>
+          <br />
+          <p>The server key can be created in the Firebase Console using the Cloud Messaging tab of the Settings panel.</p>
+          <input type="text" class="form-control" name="gcmServerKey" placeholder="Server Key" value="{{gcmServerKey}}"/>
+          <br />
+          <p>The package name from the app manifest.</p>
+          <input type="text" class="form-control" name="gcmPackageName" placeholder="Package name" value="{{gcmPackageName}}"/>
+        </div>
+      </div>
+    </form>
+  </form>
+</div>
