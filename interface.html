@@ -1,5 +1,5 @@
 <div>
-  {{#if configured}}
+  <!--{{#if configured}}
     <form>
       <div class="panel panel-primary">
         <div class="panel-heading"><strong>Send new push notification</strong></div>
@@ -14,7 +14,7 @@
         </div>
       </div>
     </form>
-  {{/if}}
+  {{/if}}-->
 
   <form id="configuration">
     <div class="panel panel-default {{#if gcm}}panel-success{{/if}}">
@@ -31,6 +31,21 @@
           <input type="text" class="form-control" name="gcmPackageName" placeholder="Package name" value="{{gcmPackageName}}"/>
         </div>
       </div>
-    </form>
+    </div>
+    <div class="panel panel-default {{#if ios}}panel-success{{/if}}">
+      <div class="panel-heading">iOS configuration {{#if ios}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</div>
+      <div class="panel-body">
+        <div class="form-group">
+          <p>The authentication key, which can be created <a target="_blank" href="https://developer.apple.com/account/ios/certificate/key">here</a>.</p>
+          <textarea class="form-control" name="apnAuthKey" placeholder="Auth Key">{{apnAuthKey}}</textarea>
+          <br />
+          <p>The Key ID of the p8 file (available <a target="_blank" href="https://developer.apple.com/account/ios/certificate/key">here</a>)</p>
+          <input type="text" class="form-control" name="apnKeyId" placeholder="Key Id" value="{{apnKeyId}}"/>
+          <br />
+          <p>The Team ID of your Apple Developer Account (available <a href="https://developer.apple.com/account/#/membership/" target="_blank">here</a>)</p>
+          <input type="text" class="form-control" name="apnTeamId" placeholder="Team ID" value="{{apnTeamId}}"/>
+        </div>
+      </div>
+    </div>
   </form>
 </div>

@@ -4,17 +4,23 @@ $('#configuration').submit(function (event) {
   var data = {
     gcmSenderId: $('[name="gcmSenderId"]').val(),
     gcmServerKey: $('[name="gcmServerKey"]').val(),
-    gcmPackageName: $('[name="gcmPackageName"]').val()
-  }
+    gcmPackageName: $('[name="gcmPackageName"]').val(),
+    apnAuthKey: $('[name="apnAuthKey"]').val(),
+    apnKeyId: $('[name="apnKeyId"]').val(),
+    apnTeamId: $('[name="apnTeamId"]').val()
+  };
 
   data.gcm = !!(data.gcmSenderId && data.gcmServerKey && data.gcmPackageName);
-  data.configured = !!data.gcm;
-
-  console.log(data)
+  data.apn = !!(data.apnAuthKey && data.apnKeyId && data.apnTeamId);
+  data.configured = !! (data.gcm || data.apn);
 
   Fliplet.Widget.save(data).then(function () {
     Fliplet.Widget.complete();
   });
+});
+
+Fliplet.Navigator.onReady().then(function () {
+  Fliplet.Widget.autosize();
 });
 
 // Fired from Fliplet Studio when the external save button is clicked
