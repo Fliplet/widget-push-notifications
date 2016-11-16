@@ -7,11 +7,12 @@ $('#configuration').submit(function (event) {
     gcmPackageName: $('[name="gcmPackageName"]').val(),
     apnAuthKey: $('[name="apnAuthKey"]').val(),
     apnKeyId: $('[name="apnKeyId"]').val(),
-    apnTeamId: $('[name="apnTeamId"]').val()
+    apnTeamId: $('[name="apnTeamId"]').val(),
+    apnTopic: $('[name="apnTopic"]').val()
   };
 
   data.gcm = !!(data.gcmSenderId && data.gcmServerKey && data.gcmPackageName);
-  data.apn = !!(data.apnAuthKey && data.apnKeyId && data.apnTeamId);
+  data.apn = !!(data.apnAuthKey && data.apnKeyId && data.apnTeamId && data.apnTopic);
   data.configured = !! (data.gcm || data.apn);
 
   Fliplet.Widget.save(data).then(function () {
