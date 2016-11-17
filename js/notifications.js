@@ -1,7 +1,17 @@
 (function () {
 
+  var id = $('[data-push-notification-id]').data('push-notification-id');
+  var data = Fliplet.Widget.getData(id);
   var key = 'push-allow-' + Fliplet.Env.get('appId');
   var $popup = $('.popup-screen');
+
+  if (!data || !data.configured) {
+    return removeFromDom();
+  }
+
+  function removeFromDom() {
+    $popup.remove();
+  }
 
   function dismiss() {
     $popup.removeClass('ready');
@@ -15,7 +25,7 @@
     return Fliplet.Storage.get(key);
   }).then(function (value) {
     if (value) {
-      return Promise.resolve();
+      return removeFromDom();
     }
 
     $popup.find('[data-allow]').click(function () {
