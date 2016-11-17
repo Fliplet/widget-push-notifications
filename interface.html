@@ -46,7 +46,19 @@
           <input type="text" class="form-control" name="apnTeamId" placeholder="Team ID" value="{{apnTeamId}}"/>
           <br />
           <p>The Package name, also called "topic" on APN.</p>
-          <input type="text" class="form-control" name="apnTopic" placeholder="Team ID" value="{{apnTopic}}"/>
+          <input type="text" class="form-control" name="apnTopic" placeholder="Topic" value="{{apnTopic}}"/>
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-default {{#if wns}}panel-success{{/if}}">
+      <div class="panel-heading">Windows configuration {{#if wns}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</div>
+      <div class="panel-body">
+        <div class="form-group">
+          <p>Package Security Identifier</p>
+          <textarea class="form-control" name="wnsClientId" placeholder="Client ID">{{wnsClientId}}</textarea>
+          <br />
+          <p>Client Secret</p>
+          <input type="text" class="form-control" name="wnsClientSecret" placeholder="Client Secret" value="{{wnsClientSecret}}"/>
         </div>
       </div>
     </div>
