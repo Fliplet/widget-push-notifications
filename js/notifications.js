@@ -30,7 +30,7 @@
 
     $popup.find('[data-allow]').click(function () {
       dismiss();
-      Fliplet.User.subscribe().then(function () {
+      Fliplet.User.subscribe(data).then(function () {
         markAsSeen();
       }, function (err) {
         alert(err);
