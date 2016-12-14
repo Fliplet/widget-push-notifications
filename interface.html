@@ -17,6 +17,25 @@
   {{/if}}-->
 
   <form id="configuration">
+    <div class="panel panel-info">
+      <div class="panel-heading">Add-on settings</div>
+      <div class="panel-body">
+        <div class="form-group">
+          <p>
+            <input type="checkbox" name="showAutomatically" value="1" {{#if showAutomatically}}checked{{/if}} />
+            Show the popup automatically
+          </p>
+          <p>If the above is not checked, you can trigger the push notifications yourself using the following code:</p>
+          <pre><code>var pushWidget = Fliplet.Widget.get('PushNotifications');
+
+pushWidget.ask().then(function (subscriptionId) {
+  // user pressed allow and has been registered
+}, function (err) {
+  // contains code and message
+})</code></pre>
+        </div>
+      </div>
+    </div>
     <div class="panel panel-default {{#if gcm}}panel-success{{/if}}">
       <div class="panel-heading">Android configuration {{#if gcm}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</div>
       <div class="panel-body">

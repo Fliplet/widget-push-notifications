@@ -1,4 +1,4 @@
-(function () {
+Fliplet.Widget.register('PushNotifications', function () {
 
   var id = $('[data-push-notification-id]').data('push-notification-id');
   var data = Fliplet.Widget.getData(id);
@@ -21,34 +21,65 @@
     return Fliplet.Storage.set(key, Date.now());
   }
 
-  Fliplet.Navigator.onReady().then(function () {
-    return Fliplet.Storage.get(key);
-  }).then(function (value) {
-    if (value) {
-      return removeFromDom();
-    }
+  function ask() {
+    return new Promise(function (resolve, reject) {
+      $popup.find('[data-allow]').one('click', function () {
+        dismiss();
 
-    $popup.find('[data-allow]').click(function () {
-      dismiss();
-      Fliplet.User.subscribe(data).then(function () {
-        markAsSeen();
-      }, function (err) {
-        alert(err);
-        markAsSeen();
+        Fliplet.Navigator.onReady().then(function (){
+          return Fliplet.User.subscribe(data);
+        }).then(function (subscriptionId) {
+          markAsSeen();
+          resolve(subscriptionId);
+        }, function (err) {
+          alert(err);
+          markAsSeen();
+
+          reject({
+            code: 1,
+            message: err
+          });
+        });
       });
+
+      $popup.find('[data-dont-allow]').one('click', function () {
+        dismiss();
+        markAsSeen();
+
+        reject({
+          code: 2,
+          message: 'The user did not allow push notifications.'
+        });
+      });
+
+      $popup.find('[data-remind]').one('click', function () {
+        dismiss();
+        markAsSeen();
+
+        reject({
+          code: 3,
+          message: 'The user pressed the "remind later" button.'
+        });
+      });
+
+      $popup.addClass('ready');
     });
+  }
 
-    $popup.find('[data-dont-allow]').click(function () {
-      dismiss();
-      markAsSeen();
+  if (data.showAutomatically) {
+    Fliplet.Storage.get(key).then(function (alreadyShown) {
+      console.log(alreadyShown)
+      if (!alreadyShown) {
+        ask();
+      }
     });
+  }
 
-    $popup.find('[data-remind]').click(function () {
-      dismiss();
-      markAsSeen();
-    });
+  return {
+    ask: ask,
+    reset: function () {
+      return Fliplet.Storage.remove(key);
+    }
+  };
 
-    $popup.addClass('ready');
-  });
-
-})();
+});
