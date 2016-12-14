@@ -32,7 +32,7 @@ Fliplet.Widget.register('PushNotifications', function () {
           markAsSeen();
           resolve(subscriptionId);
         }, function (err) {
-          alert(err);
+          console.error(err);
           markAsSeen();
 
           reject({
