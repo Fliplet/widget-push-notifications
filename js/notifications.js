@@ -73,20 +73,14 @@ Fliplet.Widget.register('PushNotifications', function () {
         .then(function(token) {
           pushToken = token || "";
           if (pushToken !== "" || typeof pushToken !== "undefined") {
-            resolve(pushToken);
+            resolve(true);
           } else {
-            reject({
-              code: "notAllowed",
-              message: err
-            });
+            reject(false);
           }
         }, function (err) {
           console.error(err);
 
-          reject({
-            code: "notAllowed",
-            message: err
-          });
+          reject(false);
         });
     });
   }
