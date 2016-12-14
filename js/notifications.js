@@ -66,6 +66,25 @@ Fliplet.Widget.register('PushNotifications', function () {
     });
   }
 
+  function pushAllowed() {
+    return new Promise(function (resolve, reject) {
+      var pushToken;
+      Fliplet.Storage.get('push-token-' + Fliplet.Env.get('appId'))
+        .then(function(token) {
+          pushToken = token || "";
+          if (pushToken !== "" || typeof pushToken !== "undefined") {
+            resolve(true);
+          } else {
+            reject(false);
+          }
+        }, function (err) {
+          console.error(err);
+
+          reject(false);
+        });
+    });
+  }
+
   if (data.showAutomatically) {
     Fliplet.Storage.get(key).then(function (alreadyShown) {
       console.log(alreadyShown)
@@ -77,6 +96,7 @@ Fliplet.Widget.register('PushNotifications', function () {
 
   return {
     ask: ask,
+    pushAllowed: pushAllowed,
     reset: function () {
       return Fliplet.Storage.remove(key);
     }
