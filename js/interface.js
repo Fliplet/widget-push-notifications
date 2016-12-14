@@ -10,7 +10,8 @@ $('#configuration').submit(function (event) {
     apnTeamId: $('[name="apnTeamId"]').val(),
     apnTopic: $('[name="apnTopic"]').val(),
     wnsClientId: $('[name="wnsClientId"]').val(),
-    wnsClientSecret: $('[name="wnsClientSecret"]').val()
+    wnsClientSecret: $('[name="wnsClientSecret"]').val(),
+    showAutomatically: $('[name="showAutomatically"]').is(':checked')
   };
 
   data.gcm = !!(data.gcmSenderId && data.gcmServerKey && data.gcmPackageName);
