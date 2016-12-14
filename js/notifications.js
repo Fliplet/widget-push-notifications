@@ -18,7 +18,6 @@ Fliplet.Widget.register('PushNotifications', function () {
   }
 
   function markAsSeen() {
-    console.log('marking as seen')
     return Fliplet.Storage.set(key, Date.now());
   }
 
