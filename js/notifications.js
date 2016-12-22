@@ -68,7 +68,6 @@ Fliplet.Widget.register('PushNotifications', function () {
 
   if (data.showAutomatically) {
     Fliplet.Storage.get(key).then(function (alreadyShown) {
-      console.log(alreadyShown)
       if (!alreadyShown) {
         ask();
       }
