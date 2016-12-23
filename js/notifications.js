@@ -17,23 +17,26 @@ Fliplet.Widget.register('PushNotifications', function () {
     $popup.removeClass('ready');
   }
 
-  function markAsSeen() {
-    return Fliplet.Storage.set(key, Date.now());
+  function markAsSeen(val) {
+    return Fliplet.Storage.set(key, val + '-' + Date.now());
+  }
+
+  function subscribeUser() {
+    return Fliplet.User.subscribe(data);
   }
 
   function ask() {
     return new Promise(function (resolve, reject) {
       $popup.find('[data-allow]').one('click', function () {
         dismiss();
+        markAsSeen('allow');
 
-        Fliplet.Navigator.onReady().then(function (){
-          return Fliplet.User.subscribe(data);
+        Fliplet.Navigator.onReady().then(function () {
+          return subscribeUser();
         }).then(function (subscriptionId) {
-          markAsSeen();
           resolve(subscriptionId);
         }, function (err) {
           console.error(err);
-          markAsSeen();
 
           reject({
             code: 1,
@@ -44,7 +47,7 @@ Fliplet.Widget.register('PushNotifications', function () {
 
       $popup.find('[data-dont-allow]').one('click', function () {
         dismiss();
-        markAsSeen();
+        markAsSeen('disallow');
 
         reject({
           code: 2,
@@ -54,7 +57,7 @@ Fliplet.Widget.register('PushNotifications', function () {
 
       $popup.find('[data-remind]').one('click', function () {
         dismiss();
-        markAsSeen();
+        markAsSeen('remind');
 
         reject({
           code: 3,
@@ -66,13 +69,20 @@ Fliplet.Widget.register('PushNotifications', function () {
     });
   }
 
-  if (data.showAutomatically) {
-    Fliplet.Storage.get(key).then(function (alreadyShown) {
-      if (!alreadyShown) {
-        ask();
-      }
-    });
-  }
+  Fliplet.Navigator.onReady().then(function () {
+    return Fliplet.Storage.get(key);
+  }).then(function (alreadyShown) {
+    // Show the popup if hasn't been shown yet to the user
+    // and the component is set for automatic display
+    if (!alreadyShown && data.showAutomatically) {
+      return ask();
+    }
+
+    // Check if user has pressed allow but for some reason isn't subscribed yet
+    if (alreadyShown.indexOf('allow') === 0) {
+      return subscribeUser();
+    }
+  });
 
   return {
     ask: ask,
