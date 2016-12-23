@@ -35,6 +35,12 @@ pushWidget.ask().then(function (subscriptionId) {
 })</code></pre>
         </div>
       </div>
+      <div class="form-group">
+        <p>
+          <input type="checkbox" name="showOnceOnPortal" value="1" {{#if showOnceOnPortal}}checked{{/if}} />
+          Only show once on portal apps
+        </p>
+      </div>
     </div>
     <div class="panel panel-default {{#if gcm}}panel-success{{/if}}">
       <div class="panel-heading">Android configuration {{#if gcm}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</div>

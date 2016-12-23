@@ -11,7 +11,8 @@ $('#configuration').submit(function (event) {
     apnTopic: $('[name="apnTopic"]').val(),
     wnsClientId: $('[name="wnsClientId"]').val(),
     wnsClientSecret: $('[name="wnsClientSecret"]').val(),
-    showAutomatically: $('[name="showAutomatically"]').is(':checked')
+    showAutomatically: $('[name="showAutomatically"]').is(':checked'),
+    showOnceOnPortal: $('[name="showOnceOnPortal"]').is(':checked'),
   };
 
   data.gcm = !!(data.gcmSenderId && data.gcmServerKey && data.gcmPackageName);

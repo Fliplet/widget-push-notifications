@@ -2,8 +2,12 @@ Fliplet.Widget.register('PushNotifications', function () {
 
   var id = $('[data-push-notification-id]').data('push-notification-id');
   var data = Fliplet.Widget.getData(id);
-  var key = 'push-allow-' + Fliplet.Env.get('appId');
+  var key = 'push-allow';
   var $popup = $('.popup-screen');
+
+  if (!data || !data.showOnceOnPortal) {
+    key += '-' + Fliplet.Env.get('appId');
+  }
 
   if (!data || !data.configured) {
     return removeFromDom();
@@ -78,7 +82,9 @@ Fliplet.Widget.register('PushNotifications', function () {
       return ask();
     }
 
-    // Check if user has pressed allow but for some reason isn't subscribed yet
+    // Check if user has pressed allow but for some reason isn't subscribed yet.
+    // This also happens when the user pressed allow from a parent app (portal)
+    // and "showOnceOnPortal" is checked
     if (alreadyShown.indexOf('allow') === 0) {
       return subscribeUser();
     }
