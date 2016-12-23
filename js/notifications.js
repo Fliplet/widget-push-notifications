@@ -2,8 +2,12 @@ Fliplet.Widget.register('PushNotifications', function () {
 
   var id = $('[data-push-notification-id]').data('push-notification-id');
   var data = Fliplet.Widget.getData(id);
-  var key = 'push-allow-' + Fliplet.Env.get('appId');
+  var key = 'push-allow';
   var $popup = $('.popup-screen');
+
+  if (!data || !data.showOnceOnPortal) {
+    key += '-' + Fliplet.Env.get('appId');
+  }
 
   if (!data || !data.configured) {
     return removeFromDom();
