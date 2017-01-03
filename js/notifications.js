@@ -85,7 +85,7 @@ Fliplet.Widget.register('PushNotifications', function () {
     // Check if user has pressed allow but for some reason isn't subscribed yet.
     // This also happens when the user pressed allow from a parent app (portal)
     // and "showOnceOnPortal" is checked
-    if (alreadyShown.indexOf('allow') === 0) {
+    if (typeof alreadyShown === 'string' && alreadyShown.indexOf('allow') === 0) {
       return subscribeUser();
     }
   });
