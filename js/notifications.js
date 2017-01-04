@@ -76,6 +76,13 @@ Fliplet.Widget.register('PushNotifications', function () {
   Fliplet.Navigator.onReady().then(function () {
     return Fliplet.Storage.get(key);
   }).then(function (alreadyShown) {
+    var push = Fliplet.User.getPushNotificationInstance(data);
+    
+    if (push) {
+      //Clear any notifications
+      push.clearAllNotifications(function() {}, function() {});
+    }
+    
     // Show the popup if hasn't been shown yet to the user
     // and the component is set for automatic display
     if (!alreadyShown && data.showAutomatically) {
