@@ -79,9 +79,9 @@ Fliplet.Widget.register('PushNotifications', function () {
     var push = Fliplet.User.getPushNotificationInstance(data);
     
     if (push) {
-      // TODO: clear badges 
+      //Clear any notifications
+      push.clearAllNotifications(function() {}, function() {});
     }
-    
     
     // Show the popup if hasn't been shown yet to the user
     // and the component is set for automatic display
