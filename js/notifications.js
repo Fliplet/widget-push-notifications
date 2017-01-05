@@ -31,6 +31,10 @@ Fliplet.Widget.register('PushNotifications', function () {
 
   function ask() {
     return new Promise(function (resolve, reject) {
+      if (Fliplet.Env.get('platform') === 'web') {
+        return resolve();
+      }
+      
       $popup.find('[data-allow]').one('click', function () {
         dismiss();
         markAsSeen('allow');
@@ -77,12 +81,12 @@ Fliplet.Widget.register('PushNotifications', function () {
     return Fliplet.Storage.get(key);
   }).then(function (alreadyShown) {
     var push = Fliplet.User.getPushNotificationInstance(data);
-    
+
     if (push) {
       //Clear any notifications
       push.clearAllNotifications(function() {}, function() {});
     }
-    
+
     // Show the popup if hasn't been shown yet to the user
     // and the component is set for automatic display
     if (!alreadyShown && data.showAutomatically) {
