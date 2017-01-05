@@ -73,29 +73,31 @@ Fliplet.Widget.register('PushNotifications', function () {
     });
   }
 
-  Fliplet.Navigator.onReady().then(function () {
-    return Fliplet.Storage.get(key);
-  }).then(function (alreadyShown) {
-    var push = Fliplet.User.getPushNotificationInstance(data);
-    
-    if (push) {
-      //Clear any notifications
-      push.clearAllNotifications(function() {}, function() {});
-    }
-    
-    // Show the popup if hasn't been shown yet to the user
-    // and the component is set for automatic display
-    if (!alreadyShown && data.showAutomatically) {
-      return ask();
-    }
+  if (Fliplet.Env.get('platform') !== 'web') {
+    Fliplet.Navigator.onReady().then(function () {
+      return Fliplet.Storage.get(key);
+    }).then(function (alreadyShown) {
+      var push = Fliplet.User.getPushNotificationInstance(data);
 
-    // Check if user has pressed allow but for some reason isn't subscribed yet.
-    // This also happens when the user pressed allow from a parent app (portal)
-    // and "showOnceOnPortal" is checked
-    if (typeof alreadyShown === 'string' && alreadyShown.indexOf('allow') === 0) {
-      return subscribeUser();
-    }
-  });
+      if (push) {
+        //Clear any notifications
+        push.clearAllNotifications(function() {}, function() {});
+      }
+
+      // Show the popup if hasn't been shown yet to the user
+      // and the component is set for automatic display
+      if (!alreadyShown && data.showAutomatically) {
+        return ask();
+      }
+
+      // Check if user has pressed allow but for some reason isn't subscribed yet.
+      // This also happens when the user pressed allow from a parent app (portal)
+      // and "showOnceOnPortal" is checked
+      if (typeof alreadyShown === 'string' && alreadyShown.indexOf('allow') === 0) {
+        return subscribeUser();
+      }
+    });
+  }
 
   return {
     ask: ask,
