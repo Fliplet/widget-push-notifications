@@ -10,10 +10,20 @@
   "interface": {
     "dependencies": [
       "fliplet-core",
-      "fliplet-studio-ui"
+      "fliplet-studio-ui",
+      "moment",
+      "bootstrap-js"
     ],
     "assets": [
-      "js/interface.js"
+      "css/interface.css",
+      "css/bootstrap-switch.min.css",
+      "css/bootstrap-datetimepicker.min.css",
+      "js/bootstrap-switch.min.js",
+      "js/bootstrap-datetimepicker.min.js",
+      "js/interface.js",
+      "img/app-icon.png",
+      "img/notifications_device_preview_empty.jpg",
+      "img/notifications_device_preview_mock.jpg"
     ]
   },
   "build": {
@@ -22,7 +32,9 @@
     ],
     "assets": [
       "css/notifications.css",
-      "js/notifications.js"
+      "js/notifications.js",
+      "img/notifications_device_preview_empty.jpg",
+      "img/notifications_device_preview_mock.jpg"
     ]
   }
 }
