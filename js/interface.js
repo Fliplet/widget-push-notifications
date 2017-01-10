@@ -64,7 +64,8 @@ var UINotification = (function() {
 
 	UINotification.prototype = {
 		constructor : UINotification,
-		messageCharLimit : 235,
+    titleCharLimit : 50,
+    messageCharLimit : 235,
 		notificationConfig : {},
 		sendErrorMessage : '',
 		mockedRequest : Fliplet.Env.get('development') // Use a mocked request under development environment
@@ -93,7 +94,7 @@ var UINotification = (function() {
 
 	UINotification.prototype.attachObservers = function() {
 		// Notification message character limit countdown
-		$(document).on( 'keyup paste input blur change', '#notification-send-tab textarea', _this.onNotificationMessageUpdated );
+		$(document).on( 'keyup paste input blur change', '#notification_title, #notification_message', _this.onNotificationMessageUpdated );
 
 		// Sets up callback for activating notification send modal
 		// $(document).on( 'click', '#notification-confirm', _this.initialiseNotificationConfirmationModal );
@@ -107,25 +108,35 @@ var UINotification = (function() {
 	};
 
 	UINotification.prototype.onNotificationMessageUpdated = function() {
-		var $field = $('#notification-send-tab textarea');
-		$('#notification-message-preview .notification-message').html($field.val());
-		if ( !$field.val().length ) {
+    var $titleField = $('#notification_title');
+    var $messageField = $('#notification_message');
+
+    var previewHtml = '';
+    if ($titleField.val().length) {
+      previewHtml += `<strong>${$titleField.val()}</strong>`;
+    }
+    previewHtml += $messageField.val();
+
+		$('#notification-message-preview .notification-message').html(previewHtml);
+		if ( !$titleField.val().length && !$messageField.val().length ) {
 			$('#notification-message-preview').addClass('message-empty');
 		} else {
 			$('#notification-message-preview').removeClass('message-empty');
 		}
-		_this.refreshMessageCharCount($field);
+    _this.refreshCharCount($titleField, _this.titleCharLimit);
+    _this.refreshCharCount($messageField, _this.messageCharLimit);
 	};
 
-	UINotification.prototype.refreshMessageCharCount = function($field) {
-		var charLimit = _this.messageCharLimit;
+  UINotification.prototype.refreshCharCount = function($field, charLimit) {
 		var count = $field.val().length;
-		$('#count').html(charLimit - count);
+    var $countContainer = $($field.data('countSelector'));
+    var $countLabel = $countContainer.parents('countlabel');
+		$countContainer.html(charLimit - count);
 		if (count > charLimit) {
-			$('#countlabel').addClass('text-danger').removeClass('text-success');
+			$countLabel.addClass('text-danger').removeClass('text-success');
 			$field.parents('.form-group').addClass('has-error');
 		} else {
-			$('#countlabel').removeClass('text-danger').addClass('text-success');
+			$countLabel.removeClass('text-danger').addClass('text-success');
 			$field.parents('.form-group').removeClass('has-error');
 		}
 	};
@@ -263,8 +274,9 @@ var UINotification = (function() {
 
 	UINotification.prototype.sendNotification = function(){
 		_this.sendErrorMessage = "";
+    var title = $('#notification_title').val();
     var body = $('#notification_message').val();
-    if (!body) {
+    if (!title || !body) {
       _this.sendErrorMessage = 'Please enter your notification message';
       return Promise.reject({ message: _this.sendErrorMessage });
     }
@@ -291,8 +303,8 @@ var UINotification = (function() {
       url: `v1/apps/${Fliplet.Env.get('appId')}/subscriptions/send`,
       method: 'POST',
       data: {
-        title: '',
-        body: $('#notification_message').val()
+        title: title,
+        body: body
       }
     });
 	};
@@ -301,7 +313,7 @@ var UINotification = (function() {
 		$('#notification-send-tab').attr('data-mode','sent');
     $('.notification-summary-sending .progress-bar').width('100%');
     alert('Your notification has been sent');
-    $('#notification_message').val('');
+    $('#notification_title, #notification_message').val('');
     $('#notification-send-tab').attr('data-mode','');
 	};
 
@@ -316,9 +328,10 @@ var UINotification = (function() {
 	};
 
 	UINotification.prototype.resetNotificationForm = function() {
-		$('#notification_message').val('');
+		$('#notification_title, #notification_message').val('');
 		$('#notification-send-tab').attr('data-mode','confirm');
 		$('#notification-message-preview').addClass('message-empty');
+    setTimeout(_this.onNotificationMessageUpdated, 0);
 		return false;
 	};
 
