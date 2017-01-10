@@ -263,6 +263,11 @@ var UINotification = (function() {
 
 	UINotification.prototype.sendNotification = function(){
 		_this.sendErrorMessage = "";
+    var body = $('#notification_message').val();
+    if (!body) {
+      _this.sendErrorMessage = 'Please enter your notification message';
+      return Promise.reject({ message: _this.sendErrorMessage });
+    }
 
     // Reset progress bar
     $('.notification-summary-sending .progress-bar').width('0%');
@@ -286,8 +291,8 @@ var UINotification = (function() {
       url: `v1/apps/${Fliplet.Env.get('appId')}/subscriptions/send`,
       method: 'POST',
       data: {
-        title: 'foo',
-        body: 'bar'
+        title: '',
+        body: $('#notification_message').val()
       }
     });
 	};
@@ -296,6 +301,7 @@ var UINotification = (function() {
 		$('#notification-send-tab').attr('data-mode','sent');
     $('.notification-summary-sending .progress-bar').width('100%');
     alert('Your notification has been sent');
+    $('#notification_message').val('');
     $('#notification-send-tab').attr('data-mode','');
 	};
 
@@ -311,9 +317,7 @@ var UINotification = (function() {
 
 	UINotification.prototype.resetNotificationForm = function() {
 		$('#notification_message').val('');
-		$("body").data("modalmanager").getOpenModals().pop().hide();
 		$('#notification-send-tab').attr('data-mode','confirm');
-		$('#notification-send-tab .modal-body').scrollTop(0);
 		$('#notification-message-preview').addClass('message-empty');
 		return false;
 	};
