@@ -304,7 +304,8 @@ var UINotification = (function() {
       method: 'POST',
       data: {
         title: title,
-        body: body
+        body: body,
+        badge: 1
       }
     });
 	};
