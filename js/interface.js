@@ -1,3 +1,5 @@
+$('.app-name').html(Fliplet.Env.get('appName'));
+
 $('.nav-tabs').on('click', 'a[data-toggle="tab"]', function (e) {
   e.preventDefault();
   $('#configuration').attr('disabled', ($(this).attr('href') === '#send'));
@@ -63,15 +65,14 @@ var UINotification = (function() {
 		constructor : UINotification,
 		messageCharLimit : 235,
 		notificationConfig : {},
-		sendComplete : false,
-		sendSuccess : false,
-		sendErrorMessage : "",
-		sendStatusInterval : null,
-		sendToParse : true, // Use this to toggle on/off sending requests to Parse vs. a mocked transition
-		debugMode : false // Use this to toggle on/off debug mode
+		sendErrorMessage : '',
+		mockedRequest : Fliplet.Env.get('development') // Use a mocked request under development environment
 	};
 
 	UINotification.prototype.initUI = function() {
+    // Initialise message preview
+		_this.onNotificationMessageUpdated();
+
 		// Initialise Bootstrap Switch
 		$('#notification_badge').bootstrapSwitch().on( 'switchChange.bootstrapSwitch', function(){
 			if ( $(this).is(':checked') ) {
@@ -87,39 +88,24 @@ var UINotification = (function() {
 			sideBySide: true,
 			defaultDate: moment(new Date()).add(1, 'hours')
 		});
-
-		// Initialise message preview
-		_this.onNotificationMessageUpdated();
-
-		// _this.initialiseParse();
-	};
-
-	UINotification.prototype.initialiseParse = function() {
-		try {
-			var parseApplicationID = $('#parse_application_id').val();
-			var parseJavaScriptKey = $('#parse_javascript_key').val();
-			Parse.initialize(parseApplicationID, parseJavaScriptKey);
-		} catch (err) {
-			throw( "Unable to initialise Parse" );
-		}
 	};
 
 	UINotification.prototype.attachObservers = function() {
 		// Notification message character limit countdown
-		$(document).on( 'keyup paste input blur change', '#notification-send textarea', _this.onNotificationMessageUpdated );
+		$(document).on( 'keyup paste input blur change', '#notification-send-tab textarea', _this.onNotificationMessageUpdated );
 
 		// Sets up callback for activating notification send modal
-		$(document).on( 'click', '#notification-confirm', _this.initialiseNotificationConfirmationModal );
+		// $(document).on( 'click', '#notification-confirm', _this.initialiseNotificationConfirmationModal );
 
 		// Sets up callback for sending notification to Parse
 		$(document).on( 'click', '.notification-send', _this.startNotificationSend );
 
 		// Sets up callback for sending another notification
-		$(document).on( 'click', '#notification-send-another', _this.resetNotificationForm )
+		// $(document).on( 'click', '#notification-send-tab-another', _this.resetNotificationForm )
 	};
 
 	UINotification.prototype.onNotificationMessageUpdated = function() {
-		var $field = $('#notification-send textarea');
+		var $field = $('#notification-send-tab textarea');
 		$('#notification-message-preview .notification-message').html($field.val());
 		if ( !$field.val().length ) {
 			$('#notification-message-preview').addClass('message-empty');
@@ -181,6 +167,8 @@ var UINotification = (function() {
 	};
 
 	UINotification.prototype.initialiseNotificationConfirmationModal = function(e) {
+    // @NOTE: Currently not used (copied from legacy UI)
+
 		if ( !_this.notificationConfigurationIsValid() ) {
 			return;
 		}
@@ -216,12 +204,8 @@ var UINotification = (function() {
 				break;
 		}
 
-		if ( window.notificationEnabled ) {
-			$('#notification-confirm-modal').modal('show').attr('data-mode','confirm');
-			$("body").data("modalmanager").getOpenModals().pop().layout();
-		} else {
-			$('#notification-contact-modal').modal('show');
-		}
+		$('#notification-send-tab').attr('data-mode','confirm');
+		$("body").data("modalmanager").getOpenModals().pop().layout();
 	};
 
 	UINotification.prototype.initialiseNotificationConfiguration = function() {
@@ -247,90 +231,80 @@ var UINotification = (function() {
 				_this.notificationConfig.push_time += '+00:00';
 			}
 		}
-
-		if ( _this.debugMode ) {
-			console.log(_this.notificationConfig);
-		}
 	};
 
-	UINotification.prototype.startNotificationSend = function() {
-		// Prepare variables
-		_this.initialiseNotificationConfiguration();
-		// Send request to Parse
-		_this.sendNotification();
+	UINotification.prototype.startNotificationSend = function(e) {
+    e.preventDefault();
+		// Prepare Parse variables (legacy)
+		// _this.initialiseNotificationConfiguration();
+
+    $('#notification-send-tab').attr('data-mode','confirm');
+		// Send request
+		_this.sendNotification()
+      .then(function () {
+        // Push was successful
+        _this.notificationIsSent();
+      })
+      .catch(function (error) {
+        // Handle error
+        _this.sendErrorMessage = "Error: " + error.message;
+        _this.notificationIsNotSent();
+      });
 	};
 
 	UINotification.prototype.sendNotification = function(){
-		_this.sendComplete = false;
 		_this.sendErrorMessage = "";
-		if ( _this.sendToParse ) {
-			Parse.Push.send(_this.notificationConfig, {
-				success: function() {
-					// Push was successful
-					_this.sendSuccess = true;
-					_this.sendComplete = true;
-				},
-				error: function(error) {
-					// Handle error
-					_this.sendSuccess = false;
-					_this.sendComplete = true;
-					_this.sendErrorMessage = "Error: " + error.message;
-				}
-			});
-		} else {
-			var success = true;
-			if (success) {
-				_this.sendSuccess = true;
-				_this.sendComplete = true;
-			} else {
-				_this.sendSuccess = false;
-				_this.sendComplete = true;
-				_this.sendErrorMessage = "Error: Debug Mode";
-			}
+
+    // Reset progress bar
+    $('.notification-summary-sending .progress-bar').width('0%');
+    $('#notification-send-tab').attr('data-mode','sending');
+    // Set progress bar to UI to provide visual user feedback
+    $('.notification-summary-sending .progress-bar').width('90%');
+
+    if ( _this.mockedRequest ) {
+      return new Promise(function (resolve, reject) {
+        var mockSuccessResponse = false;
+        if (mockSuccessResponse) {
+          return resolve();
+        }
+        return reject({
+          message: 'Mocked error response'
+        });
+      });
 		}
-		$('#notification-confirm-modal .notification-summary-sending .progress-bar').width('0%');
-		$('#notification-confirm-modal').attr('data-mode','sending');
-		$("body").data("modalmanager").getOpenModals().pop().layout();
-		$('#notification-confirm-modal .notification-summary-sending .progress-bar').width('90%');
-		setTimeout(function(){
-			_this.sendStatusInterval = setInterval(function(){
-				if ( _this.sendComplete ) {
-					clearInterval(_this.sendStatusInterval);
-					$('#notification-confirm-modal .notification-summary-sending .progress-bar').width('100%');
-					setTimeout(function(){
-						if ( _this.sendSuccess ) {
-							_this.notificationIsSent();
-						} else {
-							_this.notificationIsNotSent();
-						}
-					}, 650);
-				}
-			}, 100);
-		}, 1000);
+
+    return Fliplet.API.request({
+      url: `v1/apps/${Fliplet.Env.get('appId')}/subscriptions/send`,
+      method: 'POST',
+      data: {
+        title: 'foo',
+        body: 'bar'
+      }
+    });
 	};
 
 	UINotification.prototype.notificationIsSent = function() {
-		$('#notification-confirm-modal').attr('data-mode','sent');
-		$("body").data("modalmanager").getOpenModals().pop().layout();
+		$('#notification-send-tab').attr('data-mode','sent');
+    $('.notification-summary-sending .progress-bar').width('100%');
+    alert('Your notification has been sent');
+    $('#notification-send-tab').attr('data-mode','');
 	};
 
 	UINotification.prototype.notificationIsNotSent = function() {
-		if ( _this.sendErrorMessage.length ) {
-			$('#notification-error-message').html(_this.sendErrorMessage);
-			$('#notification-error-container').show();
-		} else {
-			$('#notification-error-container').hide();
-		}
-
-		$('#notification-confirm-modal').attr('data-mode','error');
-		$("body").data("modalmanager").getOpenModals().pop().layout();
+    $('#notification-send-tab').attr('data-mode','error');
+    $('.notification-summary-sending .progress-bar').width('100%');
+		if ( !_this.sendErrorMessage.length ) {
+      _this.sendErrorMessage = 'There was an error sending your notification';
+    }
+    alert(_this.sendErrorMessage);
+    $('#notification-send-tab').attr('data-mode','');
 	};
 
 	UINotification.prototype.resetNotificationForm = function() {
 		$('#notification_message').val('');
 		$("body").data("modalmanager").getOpenModals().pop().hide();
-		$('#notification-confirm-modal').attr('data-mode','confirm');
-		$('#notification-send .modal-body').scrollTop(0);
+		$('#notification-send-tab').attr('data-mode','confirm');
+		$('#notification-send-tab .modal-body').scrollTop(0);
 		$('#notification-message-preview').addClass('message-empty');
 		return false;
 	};

@@ -8,6 +8,10 @@ body {
   background-color: transparent;
 }
 
+img {
+  max-width: 100%;
+}
+
 .nav-tabs > li > a {
   color: #00abd1;
 }
@@ -49,7 +53,7 @@ body {
 /** ------ Notification send UI ------ **/
 /****************************************/
 
-#notification-send-intro h1 {
+#notification-send-tab-intro h1 {
   color: #00abd1;
   font-weight: 200;
 }
@@ -65,13 +69,13 @@ body {
 	background-color: #00abd1;
 }
 
-#notification-send .label {
+#notification-send-tab .label {
 	font-weight: 300;
 	position: relative;
 	top: -2px;
 }
 
-#notification-send textarea {
+#notification-send-tab textarea {
 	resize: none;
 }
 
@@ -119,21 +123,21 @@ body {
 	background: #f31705;
 }
 
-#notification-send .bootstrap-datetimepicker-widget .datepicker table tr:first-child th {
+#notification-send-tab .bootstrap-datetimepicker-widget .datepicker table tr:first-child th {
 	color: #00abd1;
 }
 
-#notification-send .bootstrap-datetimepicker-widget .timepicker table {
+#notification-send-tab .bootstrap-datetimepicker-widget .timepicker table {
 	width: auto;
 	margin: 0 auto;
 }
 
-#notification-send .bootstrap-datetimepicker-widget .timepicker table {
+#notification-send-tab .bootstrap-datetimepicker-widget .timepicker table {
 	margin-top: 40px;
 }
 
-#notification-send .bootstrap-datetimepicker-widget .timepicker table td,
-#notification-send .bootstrap-datetimepicker-widget .timepicker table td span {
+#notification-send-tab .bootstrap-datetimepicker-widget .timepicker table td,
+#notification-send-tab .bootstrap-datetimepicker-widget .timepicker table td span {
 	width:       24px;
 	height:      24px;
 	line-height: 24px;
@@ -170,36 +174,41 @@ body {
 	display: none;
 }
 
-#notification-confirm-modal[data-mode="confirm"] .notification-summary-confirm,
-#notification-confirm-modal[data-mode="sending"] .notification-summary-sending,
-#notification-confirm-modal[data-mode="sent"] .notification-summary-sent,
-#notification-confirm-modal[data-mode="error"] .notification-summary-error {
+#notification-send-tab[data-mode="confirm"] .notification-summary-confirm,
+#notification-send-tab[data-mode="sending"] .notification-summary-sending,
+#notification-send-tab[data-mode="sent"] .notification-summary-sending,
+#notification-send-tab[data-mode="error"] .notification-summary-sending {
 	display: block;
 }
 
-#notification-confirm-modal[data-mode="sending"] .modal-footer {
+#notification-send-tab[data-mode="sending"] .modal-footer {
 	display: none;
 }
 
-#notification-confirm-modal .notification-summary-items > .notification-summary-item {
+#notification-send-tab .notification-summary-items > .notification-summary-item {
 	margin-left: 40px;
 	border-top: 1px solid #efefef;
 	padding: 8px 0;
 }
 
-#notification-confirm-modal .notification-summary-items > .notification-summary-item:first-child {
+#notification-send-tab .notification-summary-items > .notification-summary-item:first-child {
 	border-top: none;
 }
 
-#notification-confirm-modal .notification-summary-items > .notification-summary-item > .glyphicon {
+#notification-send-tab .notification-summary-items > .notification-summary-item > .glyphicon {
 	font-size: 18px;
 	float: left;
 	margin-left: -35px;
 	color: #999;
 }
 
-#notification-confirm-modal .notification-summary-items > .notification-summary-item > blockquote {
+#notification-send-tab .notification-summary-items > .notification-summary-item > blockquote {
 	margin-bottom: 12px;
+}
+
+#notification-send-tab[data-mode="confirm"] .notification-summary-sending .progress-bar {
+  -webkit-transition: none;
+  transition: none;
 }
 
 /* Notification preview */
@@ -216,6 +225,10 @@ body {
 	#notification-message-preview {
 		font-size: 9px;
 	}
+}
+
+#notification-message-preview > img {
+  width: 100%;
 }
 
 #notification-message-preview.message-empty #notification-preview-home,
