@@ -89,6 +89,7 @@ Fliplet.Widget.register('PushNotifications', function () {
 
         if (push) {
           //Clear any notifications
+          push.setApplicationIconBadgeNumber(function() {}, function() {}, 1);
           push.clearAllNotifications(function() {}, function() {});
         }
       }
