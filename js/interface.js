@@ -4,6 +4,7 @@ $('.nav-tabs').on('click', 'a[data-toggle="tab"]', function (e) {
   e.preventDefault();
   $('#configuration').attr('disabled', ($(this).attr('href') === '#send'));
   $(this).tab('show');
+  Fliplet.Widget.autosize();
 });
 
 $('#configuration').submit(function (event) {
@@ -97,8 +98,9 @@ var UINotification = (function() {
 		// Sets up callback for activating notification send modal
 		// $(document).on( 'click', '#notification-confirm', _this.initialiseNotificationConfirmationModal );
 
-		// Sets up callback for sending notification to Parse
+		// Sets up callback for sending/cancelling notification sending
 		$(document).on( 'click', '.notification-send', _this.startNotificationSend );
+    $(document).on( 'click', '.notification-cancel', _this.cancelNotificationSend );
 
 		// Sets up callback for sending another notification
 		// $(document).on( 'click', '#notification-send-tab-another', _this.resetNotificationForm )
@@ -251,6 +253,13 @@ var UINotification = (function() {
         _this.notificationIsNotSent();
       });
 	};
+
+  UINotification.prototype.cancelNotificationSend = function() {
+    $('[href="#settings"]').tab('show');
+    $('#notification-send-tab textarea').val('');
+    _this.onNotificationMessageUpdated();
+    $('#notification-send-tab').attr('data-mode','');
+  };
 
 	UINotification.prototype.sendNotification = function(){
 		_this.sendErrorMessage = "";
