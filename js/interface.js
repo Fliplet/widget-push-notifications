@@ -260,7 +260,8 @@ var UINotification = (function() {
       })
       .catch(function (error) {
         // Handle error
-        _this.sendErrorMessage = "Error: " + error.message;
+        var msg = error.responseJSON && error.responseJSON.message || error.message || error;
+        _this.sendErrorMessage = "Error: " + msg;
         _this.notificationIsNotSent();
       });
 	};
@@ -299,14 +300,10 @@ var UINotification = (function() {
       });
 		}
 
-    return Fliplet.API.request({
-      url: `v1/apps/${Fliplet.Env.get('appId')}/subscriptions/send`,
-      method: 'POST',
-      data: {
-        title: title,
-        body: body,
-        badge: 1
-      }
+    return Fliplet.App.PushNotifications.send({
+      title: title,
+      body: body,
+      badge: 1
     });
 	};
 
