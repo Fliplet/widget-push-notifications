@@ -1,5 +1,14 @@
+$('.nav-tabs').on('click', 'a[data-toggle="tab"]', function (e) {
+  e.preventDefault();
+  $('#configuration').attr('disabled', ($(this).attr('href') === '#send'));
+  $(this).tab('show');
+});
+
 $('#configuration').submit(function (event) {
   event.preventDefault();
+  if ($(this).attr('disabled')) {
+    return;
+  }
 
   var data = {
     gcmSenderId: $('[name="gcmSenderId"]').val(),

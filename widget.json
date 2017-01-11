@@ -10,9 +10,11 @@
   "interface": {
     "dependencies": [
       "fliplet-core",
-      "fliplet-studio-ui"
+      "fliplet-studio-ui",
+      "bootstrap-js"
     ],
     "assets": [
+      "css/interface.css",
       "js/interface.js"
     ]
   },

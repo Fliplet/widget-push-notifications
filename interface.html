@@ -17,15 +17,24 @@
   {{/if}}-->
 
   <form id="configuration">
-    <div class="panel panel-info">
-      <div class="panel-heading">Add-on settings</div>
-      <div class="panel-body">
-        <div class="form-group">
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="active"><a href="#settings" data-toggle="tab">Notification settings</a></li>
+      <li><a href="#ios" data-toggle="tab">iOS {{#if apn}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</a></li>
+      <li><a href="#android" data-toggle="tab">Android {{#if gcm}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</a></li>
+      <li><a href="#windows" data-toggle="tab">Windows {{#if wns}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane active" id="settings">
+        <div class="form-group checkbox">
           <p>
-            <input type="checkbox" name="showAutomatically" value="1" {{#if showAutomatically}}checked{{/if}} />
-            Show the popup automatically
+            <label><input type="checkbox" name="showAutomatically" value="1" {{#if showAutomatically}}checked{{/if}} />
+            Show the popup automatically</label>
           </p>
-          <p>If the above is not checked, you can trigger the push notifications yourself using the following code:</p>
+          <p class="help-block">If the above is not checked, you can trigger the push notifications yourself using the following code:</p>
           <pre><code>var pushWidget = Fliplet.Widget.get('PushNotifications');
 
 pushWidget.ask().then(function (subscriptionId) {
@@ -34,32 +43,14 @@ pushWidget.ask().then(function (subscriptionId) {
   // contains code and message
 })</code></pre>
         </div>
-      </div>
-      <div class="form-group">
-        <p>
-          <input type="checkbox" name="showOnceOnPortal" value="1" {{#if showOnceOnPortal}}checked{{/if}} />
-          Only show once on portal apps
-        </p>
-      </div>
-    </div>
-    <div class="panel panel-default {{#if gcm}}panel-success{{/if}}">
-      <div class="panel-heading">Android configuration {{#if gcm}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</div>
-      <div class="panel-body">
-        <div class="form-group">
-          <p>A unique numerical value created when you configure your API project. The sender ID is used in the <a target="_blank" href="https://developers.google.com/cloud-messaging/registration">registration process</a> to identify an app server that is permitted to send messages to the client app.</p>
-          <input type="text" class="form-control" name="gcmSenderId" placeholder="Sender ID" value="{{gcmSenderId}}"/>
-          <br />
-          <p>The server key can be created in the Firebase Console using the Cloud Messaging tab of the Settings panel.</p>
-          <input type="text" class="form-control" name="gcmServerKey" placeholder="Server Key" value="{{gcmServerKey}}"/>
-          <br />
-          <p>The package name from the app manifest.</p>
-          <input type="text" class="form-control" name="gcmPackageName" placeholder="Package name" value="{{gcmPackageName}}"/>
+        <div class="form-group checkbox">
+          <p>
+            <label><input type="checkbox" name="showOnceOnPortal" value="1" {{#if showOnceOnPortal}}checked{{/if}} />
+            Only show once on portal apps</label>
+          </p>
         </div>
       </div>
-    </div>
-    <div class="panel panel-default {{#if apn}}panel-success{{/if}}">
-      <div class="panel-heading">iOS configuration {{#if apn}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</div>
-      <div class="panel-body">
+      <div role="tabpanel" class="tab-pane" id="ios">
         <div class="form-group">
           <p>The authentication key, which can be created <a target="_blank" href="https://developer.apple.com/account/ios/certificate/key">here</a>.</p>
           <textarea class="form-control" name="apnAuthKey" placeholder="Auth Key">{{apnAuthKey}}</textarea>
@@ -74,10 +65,19 @@ pushWidget.ask().then(function (subscriptionId) {
           <input type="text" class="form-control" name="apnTopic" placeholder="Topic" value="{{apnTopic}}"/>
         </div>
       </div>
-    </div>
-    <div class="panel panel-default {{#if wns}}panel-success{{/if}}">
-      <div class="panel-heading">Windows configuration {{#if wns}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</div>
-      <div class="panel-body">
+      <div role="tabpanel" class="tab-pane" id="android">
+        <div class="form-group">
+          <p>A unique numerical value created when you configure your API project. The sender ID is used in the <a target="_blank" href="https://developers.google.com/cloud-messaging/registration">registration process</a> to identify an app server that is permitted to send messages to the client app.</p>
+          <input type="text" class="form-control" name="gcmSenderId" placeholder="Sender ID" value="{{gcmSenderId}}"/>
+          <br />
+          <p>The server key can be created in the Firebase Console using the Cloud Messaging tab of the Settings panel.</p>
+          <input type="text" class="form-control" name="gcmServerKey" placeholder="Server Key" value="{{gcmServerKey}}"/>
+          <br />
+          <p>The package name from the app manifest.</p>
+          <input type="text" class="form-control" name="gcmPackageName" placeholder="Package name" value="{{gcmPackageName}}"/>
+        </div>
+      </div>
+      <div role="tabpanel" class="tab-pane" id="windows">
         <div class="form-group">
           <p>Package Security Identifier</p>
           <textarea class="form-control" name="wnsClientId" placeholder="Client ID">{{wnsClientId}}</textarea>
