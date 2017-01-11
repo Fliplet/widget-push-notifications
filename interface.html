@@ -16,19 +16,29 @@
     </form>
   {{/if}}-->
 
+  <div id="notification-send-intro">
+    <div class="row">
+      <div class="col-md-10  col-md-offset-1">
+        <h1 class="text-center">Push Notifications</h1>
+        <p class="lead text-center">Notifications let you send messages and alerts to your app. They are great for keeping users informed with timely and relevant content, whether your app is running in the background or inactive. Notifications can display a message or update a badge on your app icon.</p>
+      </div>
+    </div>
+  </div>
+
   <form id="configuration">
 
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
-      <li class="active"><a href="#settings" data-toggle="tab">Notification settings</a></li>
+      <li><a href="#settings" data-toggle="tab">Notification settings</a></li>
       <li><a href="#ios" data-toggle="tab">iOS {{#if apn}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</a></li>
       <li><a href="#android" data-toggle="tab">Android {{#if gcm}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</a></li>
       <li><a href="#windows" data-toggle="tab">Windows {{#if wns}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</a></li>
+      <li class="active pull-right"><a href="#notification-send" data-toggle="tab" class="btn-primary">Send notifications <span class="glyphicon glyphicon-send"></span></a></li>
     </ul>
 
     <!-- Tab panes -->
     <div class="tab-content">
-      <div role="tabpanel" class="tab-pane active" id="settings">
+      <div role="tabpanel" class="tab-pane" id="settings">
         <div class="form-group checkbox">
           <p>
             <label><input type="checkbox" name="showAutomatically" value="1" {{#if showAutomatically}}checked{{/if}} />
@@ -85,6 +95,90 @@ pushWidget.ask().then(function (subscriptionId) {
           <p>Client Secret</p>
           <input type="text" class="form-control" name="wnsClientSecret" placeholder="Client Secret" value="{{wnsClientSecret}}"/>
         </div>
+      </div>
+      <div role="tabpanel" class="tab-pane active" id="notification-send">
+      	<div id="notification-send-step-1">
+      		<p class="lead text-center" style="margin-bottom: 1em;margin-top: 1em;"><strong class="text-primary hidden">Step 1: </strong>Configure your message</p>
+      		<div class="row">
+      			<div class="col-sm-5">
+      				<div class="form-group clearfix">
+      					<label for="notification_message">Compose message (optional) <small class="text-muted" style="font-weight:normal;">10 words recommended</small></label>
+      					<textarea class="form-control" rows="4" name="notification_message" id="notification_message" placeholder="(Optional) You can send a notification without a message if you simple want to update the icon badge on iOS devices"></textarea>
+      					<div class="pull-right text-muted text-success" id="countlabel"><span id="count">235</span> character(s) left</div>
+      				</div>
+      				<div id="notification-badge-increment">
+      					<span id="notification-badge-icon" class="checked"><img src="{{application_icon_url}}" /><label for="notification_badge">+1</label></span>
+      					<div id="notification-badge-label"><label for="notification_badge">Increase app icon badge by 1<br>(available for iOS devices only)</label></div>
+      					<input type="checkbox" name="notification_badge" id="notification_badge" checked class="bootstrap-switch" data-on-text="Yes" data-on-color="primary" data-off-text="No" data-off-color="default" data-size="small" class="pull-right">
+      				</div>
+      				<div class="hidden">
+      					<br /><br /><br />
+      					<small class="text-info"><span class="glyphicon glyphicon-chevron-down"></span> Scroll down for Step 2</small>
+      				</div>
+      			</div>
+      			<div class="col-sm-7 text-center">
+      				<p><br class="visible-xs-block"><label>Message preview</label><br><small class="text-info">Appearance of the notification is subject to users' device, preference and accepting to receive notifications.</small></p>
+      				<div class="visible-md-block visible-lg-block" id="notification-message-preview">
+      					<img src="img/notifications_device_preview_empty.jpg" />
+      					<div id="notification-preview-home" style="">
+      						<img src="{{application_icon_url}}" />
+      						<strong>{{application_name}}</strong>
+      						<span class="notification-message"></span>
+      					</div>
+      					<div id="notification-preview-icon-home">
+      						<img src="{{application_icon_url}}" />
+      						<strong>{{application_name}}</strong>
+      					</div>
+      					<div id="notification-preview-lockscreen">
+      						<img src="{{application_icon_url}}" />
+      						<strong>{{application_name}}</strong>
+      						<span class="notification-message"></span>
+      					</div>
+      					<div id="notification-preview-notification-center">
+      						<img src="{{application_icon_url}}" />
+      						<strong>{{application_name}}</strong>
+      						<span class="notification-message"></span>
+      					</div>
+      				</div>
+      				<div class="visible-xs-block visible-sm-block"><img src="img/notifications_device_preview_mock.jpg" /></div>
+      			</div>
+      		</div>
+      		<hr class="hidden">
+      	</div>
+      	<div id="notification-send-step-2" class="hidden">
+      		<p class="lead text-center" style="margin-bottom: 1em;"><strong class="text-primary">Step 2:</strong> When do you want your users to see the notification?</p>
+      		<div>
+      			<ul class="nav nav-pills text-center" id="schedule-options" role="tablist">
+      				<li role="presentation" data-option="asap" class="active"><a href="#notification-asap" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-ok-sign"></span> ASAP</a></li>
+      				<li role="presentation" data-option="scheduled"><a href="#notification-scheduled" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-ok-sign"></span> Schedule for later</a></li>
+      			</ul>
+
+      			<!-- Tab panes -->
+      			<div class="tab-content">
+      				<div role="tabpanel" class="tab-pane active" id="notification-asap"></div>
+      				<div role="tabpanel" class="tab-pane" id="notification-scheduled">
+      					<div class="form-group">
+      						<div class="row">
+      							<div class="col-xs-12">
+      								<p class="lead text-center" style="margin-top:20px;margin-bottom:10px;">Pick a date and time below</p>
+      							</div>
+      							<div class="col-sm-8">
+      								<div id="datetimepicker"><input type="datetime" class="hidden" name="notification_datetime" id="notification_datetime" /></div>
+      							</div>
+      							<div class="col-sm-4 text-center" style="padding-top: 80px;">
+      								<div class="btn-group-vertical" role="group" aria-label="...">
+      									<input type="radio" class="hidden" name="notification_timezone" id="notification_timezone_local" value="local" checked />
+      									<input type="radio" class="hidden" name="notification_timezone" id="notification_timezone_gmt" value="gmt" />
+      									<label class="btn btn-default" for="notification_timezone_local" id="notification_timezone_local_label"><span class="glyphicon glyphicon-ok-sign"></span> Local to user's timezone</label>
+      									<label class="btn btn-default" for="notification_timezone_gmt" id="notification_timezone_gmt_label"><span class="glyphicon glyphicon-ok-sign"></span> GMT</label>
+      								</div>
+      							</div>
+      						</div>
+      					</div>
+      				</div>
+      			</div>
+      		</div>
+      	</div>
       </div>
     </div>
   </form>
