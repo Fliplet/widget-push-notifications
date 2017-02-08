@@ -4,6 +4,7 @@ Fliplet.Widget.register('PushNotifications', function () {
   var data = Fliplet.Widget.getData(id);
   var key = 'push-allow';
   var $popup = $('.popup-screen');
+  var askPromise;
 
   if (!data || !data.showOnceOnPortal) {
     key += '-' + Fliplet.Env.get('appId');
@@ -30,7 +31,11 @@ Fliplet.Widget.register('PushNotifications', function () {
   }
 
   function ask() {
-    return new Promise(function (resolve, reject) {
+    if (askPromise) {
+      return askPromise;
+    }
+
+    askPromise = new Promise(function (resolve, reject) {
       if (Fliplet.Env.get('platform') === 'web') {
         return resolve();
       }
@@ -75,6 +80,8 @@ Fliplet.Widget.register('PushNotifications', function () {
 
       $popup.addClass('ready');
     });
+
+    return askPromise;
   }
 
   Fliplet.Navigator.onReady().then(function () {
