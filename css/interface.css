@@ -29,13 +29,14 @@ img {
 
 .nav-tabs > li > a.btn-primary {
   background-color: #00abd1;
-  color: #fff;
+  color: #fff !important;
 }
 
 .nav-tabs > li > a.btn-primary:hover,
 .nav-tabs > li > a.btn-primary:focus {
   background-color: #00819f;
   border-color: #00819f;
+  color: #fff !important;
 }
 
 .nav-tabs > li.active > a.btn-primary,
