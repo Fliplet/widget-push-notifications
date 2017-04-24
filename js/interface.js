@@ -116,7 +116,9 @@ $('#configuration').submit(function(event) {
     wnsClientId: $('[name="wnsClientId"]').val(),
     wnsClientSecret: $('[name="wnsClientSecret"]').val(),
     showAutomatically: $('[name="showAutomatically"]').is(':checked'),
-    showOnceOnPortal: $('[name="showOnceOnPortal"]').is(':checked')
+    showOnceOnPortal: $('[name="showOnceOnPortal"]').is(':checked'),
+    popupTitle: $('[name="popup_title"]').val(),
+    popupMessage: $('[name="popup_message"]').val()
   };
 
   data.gcm = !!(data.gcmSenderId && data.gcmServerKey && data.gcmPackageName);
@@ -166,7 +168,7 @@ var UINotification = (function() {
   UINotification.prototype.initUI = function() {
     Fliplet.App.Subscriptions.get().then(function(subscriptions) {
       if (subscriptions.length === 0) {
-        $('#subscription-note').html('There are no registered devices to receive this notification.');
+        $('#subscription-note').html('There are no devices registered to receive this notification.');
         $('#subscription-note').addClass('text-danger');
       } else {
         $('#subscriptions').html(subscriptions.length);

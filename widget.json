@@ -29,7 +29,9 @@
   },
   "build": {
     "dependencies": [
-      "fliplet-core"
+      "fliplet-core",
+      "bootstrap",
+      "handlebars"
     ],
     "assets": [
       "css/notifications.css",

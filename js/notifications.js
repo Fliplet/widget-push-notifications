@@ -1,4 +1,4 @@
-Fliplet.Widget.register('PushNotifications', function () {
+Fliplet.Widget.register('PushNotifications', function() {
 
   var id = $('[data-push-notification-id]').data('push-notification-id');
   var data = Fliplet.Widget.getData(id);
@@ -11,7 +11,8 @@ Fliplet.Widget.register('PushNotifications', function () {
   }
 
   if (!data || !data.configured) {
-    return removeFromDom();
+    //return removeFromDom();
+    $popup.addClass('ready');
   }
 
   function removeFromDom() {
@@ -35,20 +36,20 @@ Fliplet.Widget.register('PushNotifications', function () {
       return askPromise;
     }
 
-    askPromise = new Promise(function (resolve, reject) {
+    askPromise = new Promise(function(resolve, reject) {
       if (Fliplet.Env.get('platform') === 'web') {
         return resolve();
       }
 
-      $popup.find('[data-allow]').one('click', function () {
+      $popup.find('[data-allow]').one('click', function() {
         dismiss();
         markAsSeen('allow');
 
-        Fliplet.Navigator.onReady().then(function () {
+        Fliplet.Navigator.onReady().then(function() {
           return subscribeUser();
-        }).then(function (subscriptionId) {
+        }).then(function(subscriptionId) {
           resolve(subscriptionId);
-        }, function (err) {
+        }, function(err) {
           console.error(err);
 
           reject({
@@ -58,7 +59,7 @@ Fliplet.Widget.register('PushNotifications', function () {
         });
       });
 
-      $popup.find('[data-dont-allow]').one('click', function () {
+      $popup.find('[data-dont-allow]').one('click', function() {
         dismiss();
         markAsSeen('disallow');
 
@@ -68,7 +69,7 @@ Fliplet.Widget.register('PushNotifications', function () {
         });
       });
 
-      $popup.find('[data-remind]').one('click', function () {
+      $popup.find('[data-remind]').one('click', function() {
         dismiss();
         markAsSeen('remind');
 
@@ -84,11 +85,11 @@ Fliplet.Widget.register('PushNotifications', function () {
     return askPromise;
   }
 
-  Fliplet.Navigator.onReady().then(function () {
+  Fliplet.Navigator.onReady().then(function() {
     return Fliplet.Storage.get(key);
-  }).then(function (alreadyShown) {
+  }).then(function(alreadyShown) {
     // If the user is subscribed, clear all notifications
-    Fliplet.User.getSubscriptionId().then(function (isSubscribed) {
+    Fliplet.User.getSubscriptionId().then(function(isSubscribed) {
       var push;
 
       if (isSubscribed) {
@@ -118,7 +119,7 @@ Fliplet.Widget.register('PushNotifications', function () {
 
   return {
     ask: ask,
-    reset: function () {
+    reset: function() {
       return Fliplet.Storage.remove(key);
     }
   };
