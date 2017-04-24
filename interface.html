@@ -89,8 +89,12 @@ pushWidget.ask().then(function (subscriptionId) {
           <div class="spinner-overlay">Loading...</div>
           <p>Loading...</p>
         </div>
+        <div class="no-data">
+          <p><strong>No notifications sent yet.</strong><p>
+          <p><a class="btn btn-link refresh" href="#">Refresh reports</a></p>
+        </div>
         <div class="table-holder hidden">
-          <a class="btn btn-link pull-right" href="#">Refresh reports</a>
+          <a class="btn btn-link pull-right refresh" href="#">Refresh reports</a>
           <table class="table report-table">
             <thead>
               <th>Sent at</th>

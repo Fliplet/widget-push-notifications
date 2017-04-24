@@ -17,6 +17,7 @@ var tempJob = {
 function refreshReports() {
   $('#report .spinner-holder').addClass('animated');
   $('.table-holder').addClass('hidden');
+  $('.no-data').removeClass('show');
   $tbody.html('');
 
   var reportData = {
@@ -65,10 +66,17 @@ function refreshReports() {
 
       reportData.jobs.push(tempJob);
     });
-    var html = template(reportData);
-    $tbody.html(html);
-    $('#report .spinner-holder').removeClass('animated');
-    $('.table-holder').removeClass('hidden');
+
+    if (reportData.jobs.length) {
+      var html = template(reportData);
+      $tbody.html(html);
+      $('#report .spinner-holder').removeClass('animated');
+      $('.table-holder').removeClass('hidden');
+    } else {
+      $('#report .spinner-holder').removeClass('animated');
+      $('.no-data').addClass('show');
+    }
+
     Fliplet.Widget.autosize();
   });
 }
@@ -86,7 +94,7 @@ $('a#note-reports').on('shown.bs.tab', function(e) {
   refreshReports();
 });
 
-$('.table-holder a').on('click', function() {
+$('.tab-pane#report .refresh').on('click', function() {
   refreshReports();
 });
 
