@@ -11,8 +11,7 @@ Fliplet.Widget.register('PushNotifications', function() {
   }
 
   if (!data || !data.configured) {
-    //return removeFromDom();
-    $popup.addClass('ready');
+    return removeFromDom();
   }
 
   function removeFromDom() {
