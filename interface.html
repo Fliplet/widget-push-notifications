@@ -16,6 +16,7 @@
       <li><a href="#ios" data-toggle="tab">iOS {{#if apn}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</a></li>
       <li><a href="#android" data-toggle="tab">Android {{#if gcm}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</a></li>
       <li><a href="#windows" data-toggle="tab">Windows {{#if wns}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</a></li>
+      <li><a href="#report" data-toggle="tab" id="note-reports">Reports</a></li>
       <li class="pull-right"><a href="#notification-send-tab" data-toggle="tab" class="btn-primary">Send notifications <span class="glyphicon glyphicon-send"></span></a></li>
     </ul>
 
@@ -23,10 +24,12 @@
     <div class="tab-content">
       <div role="tabpanel" class="tab-pane active" id="settings">
         <div class="form-group checkbox">
-          <p>
-            <label><input type="checkbox" name="showAutomatically" value="1" {{#if showAutomatically}}checked{{/if}} />
-            Show the popup automatically</label>
-          </p>
+          <div class="checkbox checkbox-icon">
+            <input type="checkbox" id="auto-popup" name="showAutomatically" value="1" {{#if showAutomatically}}checked{{/if}} />
+            <label for="auto-popup">
+              <span class="check"><i class="fa fa-check"></i></span> Show the popup automatically
+            </label>
+          </div>
           <p class="help-block">If the above is not checked, you can trigger the push notifications yourself using the following code:</p>
           <pre><code>var pushWidget = Fliplet.Widget.get('PushNotifications');
 
@@ -37,10 +40,12 @@ pushWidget.ask().then(function (subscriptionId) {
 })</code></pre>
         </div>
         <div class="form-group checkbox">
-          <p>
-            <label><input type="checkbox" name="showOnceOnPortal" value="1" {{#if showOnceOnPortal}}checked{{/if}} />
-            Only show once on portal apps</label>
-          </p>
+          <div class="checkbox checkbox-icon">
+            <input type="checkbox" id="portal-popup" name="showOnceOnPortal" value="1" {{#if showOnceOnPortal}}checked{{/if}} />
+            <label for="portal-popup">
+              <span class="check"><i class="fa fa-check"></i></span> Only show once on portal apps
+            </label>
+          </div>
         </div>
       </div>
       <div role="tabpanel" class="tab-pane" id="ios">
@@ -79,6 +84,28 @@ pushWidget.ask().then(function (subscriptionId) {
           <input type="text" class="form-control" name="wnsClientSecret" placeholder="Client Secret" value="{{wnsClientSecret}}"/>
         </div>
       </div>
+      <div role="tabpanel" class="tab-pane" id="report">
+        <div class="spinner-holder animated">
+          <div class="spinner-overlay">Loading...</div>
+          <p>Loading...</p>
+        </div>
+        <div class="table-holder hidden">
+          <a class="btn btn-link pull-right" href="#">Refresh reports</a>
+          <table class="table report-table">
+            <thead>
+              <th>Sent at</th>
+              <th>No. Recipients<br>
+              (iOS/Android/Win10)</th>
+              <th>Successful deliveries</th>
+              <th>Message</th>
+              <th>Related data source</th>
+            </thead>
+            <tbody id="jobs-entries">
+
+            </tbody>
+          </table>
+        </div>
+      </div>
       <div role="tabpanel" class="tab-pane" id="notification-send-tab">
       	<div id="notification-send-step-1">
       		<p class="lead text-center" style="margin-bottom: 1em;margin-top: 1em;"><strong class="text-primary hidden">Step 1: </strong>Configure your message</p>
@@ -108,6 +135,7 @@ pushWidget.ask().then(function (subscriptionId) {
           </div>
           <div class="row">
             <div class="col-xs-8 col-xs-offset-2 text-center">
+              <p id="subscription-note">Up to <strong><span id="subscriptions">x</span></strong> registered devices will recieve this notification.</p>
               <p>
                 <a class="btn btn-primary btn-lg notification-send" href="#">Send notification</a>
                 <a class="btn btn-default btn-lg notification-cancel" href="#">Cancel</a>
@@ -185,3 +213,16 @@ pushWidget.ask().then(function (subscriptionId) {
     </div>
   </form>
 </div>
+
+<script type="text/html" id="template-table-entries">
+  \{{#each jobs}}
+  <tr>
+    <td>\{{createdAt}}</td>
+    <td>\{{totalDeliveries}} (\{{sentApple}}/\{{sentGoogle}}/\{{sentWindows}})</td>
+    <td>\{{totalSuccess}} (\{{deliveryPerct}}%)</td>
+    <td><i>\{{title}}</i><br>
+      \{{message}}</td>
+    <td>\{{dataSourceName}}</td>
+  </tr>
+  \{{/each}}
+</script>

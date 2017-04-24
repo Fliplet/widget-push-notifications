@@ -1,13 +1,96 @@
+var $tbody = $('#jobs-entries');
+var source = $('#template-table-entries').html();
+var template = Handlebars.compile(source);
+
+var tempJob = {
+  createdAt: '',
+  title: '',
+  message: '',
+  totalDeliveries: '',
+  totalSuccess: '',
+  sentGoogle: '',
+  sentApple: '',
+  sentWindows: '',
+  dataSourceName: ''
+}
+
+function refreshReports() {
+  $('#report .spinner-holder').addClass('animated');
+  $('.table-holder').addClass('hidden');
+  $tbody.html('');
+
+  var reportData = {
+    jobs: []
+  };
+
+  Fliplet.App.Logs.get({
+    where: {
+      type: 'job'
+    }
+  }).then(function(jobs) {
+    jobs.forEach(function(job) {
+      var apnSuccess = 0;
+      var gcmSuccess = 0;
+      var wnsSuccess = 0;
+      var apn = 0;
+      var gcm = 0;
+      var wns = 0;
+
+      tempJob.createdAt = moment(job.createdAt).format('YYYY/MM/DD, hh:mm:ss');
+      tempJob.title = job.data.job.data.payload.title;
+      tempJob.message = job.data.job.data.payload.body;
+
+      job.data.result.forEach(function(result) {
+        if (result.method === 'apn') {
+          apnSuccess = result.success + apnSuccess;
+          apn = result.success + result.failure + apn;
+        }
+        if (result.method === 'gcm') {
+          gcmSuccess = result.success + gcmSuccess;
+          gcm = result.success + result.failure + gcm;
+        }
+        if (result.method === 'wns') {
+          wnsSuccess = result.success + wnsSuccess;
+          wns = result.success + result.failure + wns;
+        }
+      })
+
+      tempJob.totalDeliveries = job.data.job.data.tokens.length;
+      tempJob.totalSuccess = apnSuccess + gcmSuccess + wnsSuccess;
+      tempJob.deliveryPerct = Math.round(((tempJob.totalSuccess / tempJob.totalDeliveries) * 100) * 10) / 10;
+      tempJob.sentGoogle = gcm;
+      tempJob.sentApple = apn;
+      tempJob.sentWindows = wns;
+      tempJob.dataSourceName = job.dataSourceEntry.dataSource ? job.dataSourceEntry.dataSource.name : "Data source was deleted";
+
+      reportData.jobs.push(tempJob);
+    });
+    var html = template(reportData);
+    $tbody.html(html);
+    $('#report .spinner-holder').removeClass('animated');
+    $('.table-holder').removeClass('hidden');
+    Fliplet.Widget.autosize();
+  });
+}
+
 $('.app-name').html(Fliplet.Env.get('appName'));
 
-$('.nav-tabs').on('click', 'a[data-toggle="tab"]', function (e) {
+$('.nav-tabs').on('click', 'a[data-toggle="tab"]', function(e) {
   e.preventDefault();
   $('#configuration').attr('disabled', ($(this).attr('href') === '#send'));
   $(this).tab('show');
   Fliplet.Widget.autosize();
 });
 
-$('#configuration').submit(function (event) {
+$('a#note-reports').on('shown.bs.tab', function(e) {
+  refreshReports();
+});
+
+$('.table-holder a').on('click', function() {
+  refreshReports();
+});
+
+$('#configuration').submit(function(event) {
   event.preventDefault();
   if ($(this).attr('disabled')) {
     return;
@@ -24,26 +107,26 @@ $('#configuration').submit(function (event) {
     wnsClientId: $('[name="wnsClientId"]').val(),
     wnsClientSecret: $('[name="wnsClientSecret"]').val(),
     showAutomatically: $('[name="showAutomatically"]').is(':checked'),
-    showOnceOnPortal: $('[name="showOnceOnPortal"]').is(':checked'),
+    showOnceOnPortal: $('[name="showOnceOnPortal"]').is(':checked')
   };
 
   data.gcm = !!(data.gcmSenderId && data.gcmServerKey && data.gcmPackageName);
   data.apn = !!(data.apnAuthKey && data.apnKeyId && data.apnTeamId && data.apnTopic);
   data.wns = !!(data.wnsClientId && data.wnsClientSecret);
 
-  data.configured = !! (data.gcm || data.apn || data.wns);
+  data.configured = !!(data.gcm || data.apn || data.wns);
 
-  Fliplet.Widget.save(data).then(function () {
+  Fliplet.Widget.save(data).then(function() {
     Fliplet.Widget.complete();
   });
 });
 
-Fliplet.Navigator.onReady().then(function () {
+Fliplet.Navigator.onReady().then(function() {
   Fliplet.Widget.autosize();
 });
 
 // Fired from Fliplet Studio when the external save button is clicked
-Fliplet.Widget.onSaveRequest(function () {
+Fliplet.Widget.onSaveRequest(function() {
   $('form').submit();
 });
 
@@ -63,26 +146,35 @@ var UINotification = (function() {
   }
 
   UINotification.prototype = {
-    constructor : UINotification,
-    titleCharLimit : 50,
-    messageCharLimit : 235,
-    notificationConfig : {},
-    sendErrorMessage : '',
-    mockedRequest : Fliplet.Env.get('development') // Use a mocked request under development environment
+    constructor: UINotification,
+    titleCharLimit: 50,
+    messageCharLimit: 235,
+    notificationConfig: {},
+    sendErrorMessage: '',
+    mockedRequest: Fliplet.Env.get('development') // Use a mocked request under development environment
   };
 
   UINotification.prototype.initUI = function() {
+    Fliplet.App.Subscriptions.get().then(function(subscriptions) {
+      if (subscriptions.length === 0) {
+        $('#subscription-note').html('There are no registered devices to receive this notification.');
+        $('#subscription-note').addClass('text-danger');
+      } else {
+        $('#subscriptions').html(subscriptions.length);
+      }
+    });
+
     // Initialise message preview
     _this.onNotificationMessageUpdated();
 
     // Initialise Bootstrap Switch
-    $('#notification_badge').bootstrapSwitch().on( 'switchChange.bootstrapSwitch', function(){
-      if ( $(this).is(':checked') ) {
+    $('#notification_badge').bootstrapSwitch().on('switchChange.bootstrapSwitch', function() {
+      if ($(this).is(':checked')) {
         $('#notification-badge-icon').addClass('checked');
       } else {
         $('#notification-badge-icon').removeClass('checked');
       }
-    } );
+    });
 
     // Initialise Bootstrap Datetime Picker
     $('#datetimepicker').datetimepicker({
@@ -94,14 +186,14 @@ var UINotification = (function() {
 
   UINotification.prototype.attachObservers = function() {
     // Notification message character limit countdown
-    $(document).on( 'keyup paste input blur change', '#notification_title, #notification_message', _this.onNotificationMessageUpdated );
+    $(document).on('keyup paste input blur change', '#notification_title, #notification_message', _this.onNotificationMessageUpdated);
 
     // Sets up callback for activating notification send modal
     // $(document).on( 'click', '#notification-confirm', _this.initialiseNotificationConfirmationModal );
 
     // Sets up callback for sending/cancelling notification sending
-    $(document).on( 'click', '.notification-send', _this.startNotificationSend );
-    $(document).on( 'click', '.notification-cancel', _this.cancelNotificationSend );
+    $(document).on('click', '.notification-send', _this.startNotificationSend);
+    $(document).on('click', '.notification-cancel', _this.cancelNotificationSend);
 
     // Sets up callback for sending another notification
     // $(document).on( 'click', '#notification-send-tab-another', _this.resetNotificationForm )
@@ -118,7 +210,7 @@ var UINotification = (function() {
     previewHtml += $messageField.val();
 
     $('#notification-message-preview .notification-message').html(previewHtml);
-    if ( !$titleField.val().length && !$messageField.val().length ) {
+    if (!$titleField.val().length && !$messageField.val().length) {
       $('#notification-message-preview').addClass('message-empty');
     } else {
       $('#notification-message-preview').removeClass('message-empty');
@@ -155,23 +247,23 @@ var UINotification = (function() {
     var configurationIsValid = true;
 
     var notificationMessage = $('#notification_message').val();
-    if ( notificationMessage.length > _this.messageCharLimit ) {
+    if (notificationMessage.length > _this.messageCharLimit) {
       configurationIsValid = false;
     }
 
-    if ( notificationMessage.length === 0 && !$('#notification_badge').is(':checked') ) {
+    if (notificationMessage.length === 0 && !$('#notification_badge').is(':checked')) {
       configurationIsValid = false;
     }
 
     var notificationScheduleOption = $('#schedule-options > li.active:eq(0)').data('option');
-    if ( notificationScheduleOption !== 'asap' && notificationScheduleOption !== 'scheduled' ) {
+    if (notificationScheduleOption !== 'asap' && notificationScheduleOption !== 'scheduled') {
       configurationIsValid = false;
     }
 
-    if ( notificationScheduleOption === 'scheduled' ) {
-      var scheduleDate = moment( new Date( $('#datetimepicker').find('input').val() ) );
+    if (notificationScheduleOption === 'scheduled') {
+      var scheduleDate = moment(new Date($('#datetimepicker').find('input').val()));
       var now = moment();
-      if ( scheduleDate.diff(now, 'days') < -1 ) {
+      if (scheduleDate.diff(now, 'days') < -1) {
         configurationIsValid = false;
       }
     }
@@ -182,12 +274,12 @@ var UINotification = (function() {
   UINotification.prototype.initialiseNotificationConfirmationModal = function(e) {
     // @NOTE: Currently not used (copied from legacy UI)
 
-    if ( !_this.notificationConfigurationIsValid() ) {
+    if (!_this.notificationConfigurationIsValid()) {
       return;
     }
     // Populate notification message
     var notificationMessage = $('#notification_message').val();
-    if ( notificationMessage === '' ) {
+    if (notificationMessage === '') {
       $('#notification-summary-not-receive-message').show();
       $('#notification-summary-receive-message').hide();
     } else {
@@ -197,27 +289,27 @@ var UINotification = (function() {
     }
 
     // Populate notification badge increment
-    if ( $('#notification_badge').is(':checked') ) {
+    if ($('#notification_badge').is(':checked')) {
       $('#notification-summary-badge-not').hide();
     } else {
       $('#notification-summary-badge-not').show();
     }
 
     // Populate notification schedule
-    switch ( $('#schedule-options > li.active:eq(0)').data('option') ) {
+    switch ($('#schedule-options > li.active:eq(0)').data('option')) {
       case 'asap':
         $('#notification-summary-schedule').html('ASAP');
         break;
       case 'scheduled':
-        var scheduleDate = moment( new Date( $('#datetimepicker').find('input').val() ) );
+        var scheduleDate = moment(new Date($('#datetimepicker').find('input').val()));
         var dateString = scheduleDate.format('Do MMM YYYY');
         var timeString = scheduleDate.format('hh:mm A');
-        var timezoneString = $.trim( $( 'label[for=' + $(':input[name=notification_timezone]:checked').attr('id') + ']' ).text() );
+        var timezoneString = $.trim($('label[for=' + $(':input[name=notification_timezone]:checked').attr('id') + ']').text());
         $('#notification-summary-schedule').html('<br/>on ' + dateString + ' at ' + timeString + ' (' + timezoneString + ')');
         break;
     }
 
-    $('#notification-send-tab').attr('data-mode','confirm');
+    $('#notification-send-tab').attr('data-mode', 'confirm');
     $("body").data("modalmanager").getOpenModals().pop().layout();
   };
 
@@ -231,16 +323,19 @@ var UINotification = (function() {
      *
      **/
     var everyoneQuery = new Parse.Query(Parse.Installation);
-    _this.notificationConfig = { where: everyoneQuery, data: {} };
-    if ( $('#notification_message').val() !== '' ) {
+    _this.notificationConfig = {
+      where: everyoneQuery,
+      data: {}
+    };
+    if ($('#notification_message').val() !== '') {
       _this.notificationConfig.data.alert = $('#notification_message').val();
     }
-    if ( $('#notification_badge').is(':checked') === true ) {
+    if ($('#notification_badge').is(':checked') === true) {
       _this.notificationConfig.data.badge = 'Increment';
     }
-    if ( $('#schedule-options > li.active:eq(0)').data('option') === 'scheduled' ) {
-      _this.notificationConfig.push_time = moment( new Date( $('#datetimepicker').find('input').val() ) ).format('YYYY-MM-DDTHH:mm:ss');
-      if ( $( 'label[for=' + $(':input[name=notification_timezone]:checked').attr('id') + ']' ).index('#notification-scheduled .btn-group-vertical label') === 1 ) {
+    if ($('#schedule-options > li.active:eq(0)').data('option') === 'scheduled') {
+      _this.notificationConfig.push_time = moment(new Date($('#datetimepicker').find('input').val())).format('YYYY-MM-DDTHH:mm:ss');
+      if ($('label[for=' + $(':input[name=notification_timezone]:checked').attr('id') + ']').index('#notification-scheduled .btn-group-vertical label') === 1) {
         _this.notificationConfig.push_time += '+00:00';
       }
     }
@@ -251,14 +346,14 @@ var UINotification = (function() {
     // Prepare Parse variables (legacy)
     // _this.initialiseNotificationConfiguration();
 
-    $('#notification-send-tab').attr('data-mode','confirm');
+    $('#notification-send-tab').attr('data-mode', 'confirm');
     // Send request
     _this.sendNotification()
-      .then(function () {
+      .then(function() {
         // Push was successful
         _this.notificationIsSent();
       })
-      .catch(function (error) {
+      .catch(function(error) {
         // Handle error
         var msg = error.responseJSON && error.responseJSON.message || error.message || error;
         _this.sendErrorMessage = "Error: " + msg;
@@ -270,26 +365,28 @@ var UINotification = (function() {
     $('[href="#settings"]').tab('show');
     $('#notification-send-tab textarea').val('');
     _this.onNotificationMessageUpdated();
-    $('#notification-send-tab').attr('data-mode','');
+    $('#notification-send-tab').attr('data-mode', '');
   };
 
-  UINotification.prototype.sendNotification = function(){
+  UINotification.prototype.sendNotification = function() {
     _this.sendErrorMessage = "";
     var title = $('#notification_title').val();
     var body = $('#notification_message').val();
     if (!title || !body) {
       _this.sendErrorMessage = 'Please enter your notification message';
-      return Promise.reject({ message: _this.sendErrorMessage });
+      return Promise.reject({
+        message: _this.sendErrorMessage
+      });
     }
 
     // Reset progress bar
     $('.notification-summary-sending .progress-bar').width('0%');
-    $('#notification-send-tab').attr('data-mode','sending');
+    $('#notification-send-tab').attr('data-mode', 'sending');
     // Set progress bar to UI to provide visual user feedback
     $('.notification-summary-sending .progress-bar').width('90%');
 
-    if ( _this.mockedRequest ) {
-      return new Promise(function (resolve, reject) {
+    if (_this.mockedRequest) {
+      return new Promise(function(resolve, reject) {
         var mockSuccessResponse = false;
         if (mockSuccessResponse) {
           return resolve();
@@ -308,26 +405,26 @@ var UINotification = (function() {
   };
 
   UINotification.prototype.notificationIsSent = function() {
-    $('#notification-send-tab').attr('data-mode','sent');
+    $('#notification-send-tab').attr('data-mode', 'sent');
     $('.notification-summary-sending .progress-bar').width('100%');
     alert('Your notification has been sent');
     $('#notification_title, #notification_message').val('');
-    $('#notification-send-tab').attr('data-mode','');
+    $('#notification-send-tab').attr('data-mode', '');
   };
 
   UINotification.prototype.notificationIsNotSent = function() {
-    $('#notification-send-tab').attr('data-mode','error');
+    $('#notification-send-tab').attr('data-mode', 'error');
     $('.notification-summary-sending .progress-bar').width('100%');
-    if ( !_this.sendErrorMessage.length ) {
+    if (!_this.sendErrorMessage.length) {
       _this.sendErrorMessage = 'There was an error sending your notification';
     }
     alert(_this.sendErrorMessage);
-    $('#notification-send-tab').attr('data-mode','');
+    $('#notification-send-tab').attr('data-mode', '');
   };
 
   UINotification.prototype.resetNotificationForm = function() {
     $('#notification_title, #notification_message').val('');
-    $('#notification-send-tab').attr('data-mode','confirm');
+    $('#notification-send-tab').attr('data-mode', 'confirm');
     $('#notification-message-preview').addClass('message-empty');
     setTimeout(_this.onNotificationMessageUpdated, 0);
     return false;

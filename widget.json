@@ -12,7 +12,8 @@
       "fliplet-core",
       "fliplet-studio-ui",
       "moment",
-      "bootstrap-js"
+      "bootstrap-js",
+      "handlebars"
     ],
     "assets": [
       "css/interface.css",
