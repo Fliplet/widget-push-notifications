@@ -3,7 +3,8 @@
     <div class="row">
       <div class="col-md-10  col-md-offset-1">
         <h1 class="text-center">Push Notifications</h1>
-        <p class="lead text-center">Notifications let you send messages and alerts to your app. They are great for keeping users informed with timely and relevant content, whether your app is running in the background or inactive. Notifications can display a message or update a badge on your app icon.</p>
+        <p class="lead text-center">Notifications let you send messages and alerts to your app. They are great for keeping users informed with timely and relevant content, whether your app is running in the background or inactive. Notifications can display a message or update a
+          badge on your app icon.</p>
       </div>
     </div>
   </div>
@@ -16,98 +17,164 @@
       <li><a href="#ios" data-toggle="tab">iOS {{#if apn}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</a></li>
       <li><a href="#android" data-toggle="tab">Android {{#if gcm}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</a></li>
       <li><a href="#windows" data-toggle="tab">Windows {{#if wns}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</a></li>
+      <li><a href="#report" data-toggle="tab" id="note-reports">Reports</a></li>
       <li class="pull-right"><a href="#notification-send-tab" data-toggle="tab" class="btn-primary">Send notifications <span class="glyphicon glyphicon-send"></span></a></li>
     </ul>
 
     <!-- Tab panes -->
     <div class="tab-content">
       <div role="tabpanel" class="tab-pane active" id="settings">
-        <div class="form-group checkbox">
-          <p>
-            <label><input type="checkbox" name="showAutomatically" value="1" {{#if showAutomatically}}checked{{/if}} />
-            Show the popup automatically</label>
-          </p>
-          <p class="help-block">If the above is not checked, you can trigger the push notifications yourself using the following code:</p>
-          <pre><code>var pushWidget = Fliplet.Widget.get('PushNotifications');
-
-pushWidget.ask().then(function (subscriptionId) {
-  // user pressed allow and has been registered
-}, function (err) {
-  // contains code and message
-})</code></pre>
+        <div class="form-group clearfix">
+          <div class="col-sm-12 control-label">
+            <label for="popup_title">Notification popup title</label>
+          </div>
+          <div class="col-sm-12">
+            <input type="text" name="popup_title" class="form-control" id="popup_title" placeholder="Enter a title" value="{{#if popupTitle}}{{popupTitle}}{{else}}App updates and notifications{{/if}}" />
+            <p class="help-block">The popup will only appear once for users that allow or reject notifications.</p>
+          </div>
         </div>
-        <div class="form-group checkbox">
-          <p>
-            <label><input type="checkbox" name="showOnceOnPortal" value="1" {{#if showOnceOnPortal}}checked{{/if}} />
-            Only show once on portal apps</label>
-          </p>
+        <div class="form-group clearfix">
+          <div class="col-sm-12 control-label">
+            <label for="popup_message">Notification popup message</label>
+          </div>
+          <div class="col-sm-12">
+            <textarea class="form-control" name="popup_message" id="popup_message" rows="4" placeholder="Enter a message">{{#if popupMessage}}{{popupMessage}}{{else}}You will receive notifications when app updates are available.
+Please tap on Allow Notifications below to receive notifications on the updates.{{/if}}</textarea>
+          </div>
+        </div>
+        <div class="form-group clearfix checkbox">
+          <div class="col-sm-12 control-label">
+            <label for="auto-popup">Do you want to show the push notification popup automatically on the first screen of the app?</label>
+          </div>
+          <div class="col-sm-12">
+            <div class="checkbox checkbox-icon">
+              <input type="checkbox" id="auto-popup" name="showAutomatically" value="1" {{#if showAutomatically}}checked{{/if}} />
+              <label for="auto-popup">
+                <span class="check"><i class="fa fa-check"></i></span> Show notification popup automatically
+              </label>
+              <p class="help-block">If you want to manually show the popup on a specific screen, please disable this option and use the snippet of code below.</p>
+            </div>
+            <p class="help-block">If the above is not checked, you can trigger the push notifications yourself using the following code:</p>
+            <pre><code>var pushWidget = Fliplet.Widget.get('PushNotifications');
+
+  pushWidget.ask().then(function (subscriptionId) {
+    // user pressed allow and has been registered
+  }, function (err) {
+    // contains code and message
+  })</code></pre>
+          </div>
+        </div>
+        <div class="form-group clearfix checkbox">
+          <div class="col-sm-12">
+            <div class="checkbox checkbox-icon">
+              <input type="checkbox" id="portal-popup" name="showOnceOnPortal" value="1" {{#if showOnceOnPortal}}checked{{/if}} />
+              <label for="portal-popup">
+                <span class="check"><i class="fa fa-check"></i></span> Only show once on portal apps
+              </label>
+            </div>
+          </div>
         </div>
       </div>
       <div role="tabpanel" class="tab-pane" id="ios">
-        <div class="form-group">
-          <p>The authentication key, which can be created <a target="_blank" href="https://developer.apple.com/account/ios/certificate/key">here</a>.</p>
-          <textarea class="form-control" name="apnAuthKey" placeholder="Auth Key">{{apnAuthKey}}</textarea>
-          <br />
-          <p>The Key ID of the p8 file (available <a target="_blank" href="https://developer.apple.com/account/ios/certificate/key">here</a>)</p>
-          <input type="text" class="form-control" name="apnKeyId" placeholder="Key Id" value="{{apnKeyId}}"/>
-          <br />
-          <p>The Team ID of your Apple Developer Account (available <a href="https://developer.apple.com/account/#/membership/" target="_blank">here</a>)</p>
-          <input type="text" class="form-control" name="apnTeamId" placeholder="Team ID" value="{{apnTeamId}}"/>
-          <br />
-          <p>The Package name, also called "topic" on APN.</p>
-          <input type="text" class="form-control" name="apnTopic" placeholder="Topic" value="{{apnTopic}}"/>
+        <div class="form-group clearfix">
+          <div class="col-sm-12">
+            <p>The authentication key, which can be created <a target="_blank" href="https://developer.apple.com/account/ios/certificate/key">here</a>.</p>
+            <textarea class="form-control" name="apnAuthKey" placeholder="Auth Key">{{apnAuthKey}}</textarea>
+            <br />
+            <p>The Key ID of the p8 file (available <a target="_blank" href="https://developer.apple.com/account/ios/certificate/key">here</a>)</p>
+            <input type="text" class="form-control" name="apnKeyId" placeholder="Key Id" value="{{apnKeyId}}" />
+            <br />
+            <p>The Team ID of your Apple Developer Account (available <a href="https://developer.apple.com/account/#/membership/" target="_blank">here</a>)</p>
+            <input type="text" class="form-control" name="apnTeamId" placeholder="Team ID" value="{{apnTeamId}}" />
+            <br />
+            <p>The Package name, also called "topic" on APN.</p>
+            <input type="text" class="form-control" name="apnTopic" placeholder="Topic" value="{{apnTopic}}" />
+          </div>
         </div>
       </div>
       <div role="tabpanel" class="tab-pane" id="android">
-        <div class="form-group">
-          <p>A unique numerical value created when you configure your API project. The sender ID is used in the <a target="_blank" href="https://developers.google.com/cloud-messaging/registration">registration process</a> to identify an app server that is permitted to send messages to the client app.</p>
-          <input type="text" class="form-control" name="gcmSenderId" placeholder="Sender ID" value="{{gcmSenderId}}"/>
-          <br />
-          <p>The server key can be created in the Firebase Console using the Cloud Messaging tab of the Settings panel.</p>
-          <input type="text" class="form-control" name="gcmServerKey" placeholder="Server Key" value="{{gcmServerKey}}"/>
-          <br />
-          <p>The package name from the app manifest.</p>
-          <input type="text" class="form-control" name="gcmPackageName" placeholder="Package name" value="{{gcmPackageName}}"/>
+        <div class="form-group clearfix">
+          <div class="col-sm-12">
+            <p>A unique numerical value created when you configure your API project. The sender ID is used in the <a target="_blank" href="https://developers.google.com/cloud-messaging/registration">registration process</a> to identify an app server that
+              is permitted to send messages to the client app.</p>
+            <input type="text" class="form-control" name="gcmSenderId" placeholder="Sender ID" value="{{gcmSenderId}}" />
+            <br />
+            <p>The server key can be created in the Firebase Console using the Cloud Messaging tab of the Settings panel.</p>
+            <input type="text" class="form-control" name="gcmServerKey" placeholder="Server Key" value="{{gcmServerKey}}" />
+            <br />
+            <p>The package name from the app manifest.</p>
+            <input type="text" class="form-control" name="gcmPackageName" placeholder="Package name" value="{{gcmPackageName}}" />
+          </div>
         </div>
       </div>
       <div role="tabpanel" class="tab-pane" id="windows">
-        <div class="form-group">
-          <p>Package Security Identifier</p>
-          <textarea class="form-control" name="wnsClientId" placeholder="Client ID">{{wnsClientId}}</textarea>
-          <br />
-          <p>Client Secret</p>
-          <input type="text" class="form-control" name="wnsClientSecret" placeholder="Client Secret" value="{{wnsClientSecret}}"/>
+        <div class="form-group clearfix">
+          <div class="col-sm-12">
+            <p>Package Security Identifier</p>
+            <textarea class="form-control" name="wnsClientId" placeholder="Client ID">{{wnsClientId}}</textarea>
+            <br />
+            <p>Client Secret</p>
+            <input type="text" class="form-control" name="wnsClientSecret" placeholder="Client Secret" value="{{wnsClientSecret}}" />
+          </div>
+        </div>
+      </div>
+      <div role="tabpanel" class="tab-pane" id="report">
+        <div class="spinner-holder animated">
+          <div class="spinner-overlay">Loading...</div>
+          <p>Loading...</p>
+        </div>
+        <div class="no-data">
+          <p><strong>No notifications sent yet.</strong>
+            <p>
+              <p><a class="btn btn-link refresh" href="#">Refresh reports</a></p>
+        </div>
+        <div class="table-holder hidden">
+          <a class="btn btn-link pull-right refresh" href="#">Refresh reports</a>
+          <table class="table report-table">
+            <thead>
+              <th>Sent at</th>
+              <th>No. Recipients<br> (iOS/Android/Win10)
+              </th>
+              <th>Successful deliveries</th>
+              <th>Message</th>
+              <th>Related data source</th>
+            </thead>
+            <tbody id="jobs-entries">
+
+            </tbody>
+          </table>
         </div>
       </div>
       <div role="tabpanel" class="tab-pane" id="notification-send-tab">
-      	<div id="notification-send-step-1">
-      		<p class="lead text-center" style="margin-bottom: 1em;margin-top: 1em;"><strong class="text-primary hidden">Step 1: </strong>Configure your message</p>
-      		<div class="row">
-      			<div class="col-sm-8 col-sm-offset-2">
-      				<div class="form-group clearfix">
-      					<div class="text-center">
+        <div id="notification-send-step-1">
+          <p class="lead text-center" style="margin-bottom: 1em;margin-top: 1em;"><strong class="text-primary hidden">Step 1: </strong>Configure your message</p>
+          <div class="row">
+            <div class="col-sm-8 col-sm-offset-2">
+              <div class="form-group clearfix">
+                <div class="text-center">
                   <label>Compose message <small class="text-muted" style="font-weight:normal;"></small></label>
                 </div>
                 <input type="text" class="form-control" name="notification_title" placeholder="Enter notification title" id="notification_title" data-count-selector="#title-count" />
                 <div class="pull-right text-muted text-success countlabel"><span id="title-count"></span> character(s) left</div>
               </div>
               <div class="form-group clearfix">
-      					<textarea class="form-control" rows="4" name="notification_message" id="notification_message" placeholder="Enter notification message (10 words recommended)" data-count-selector="#message-count"></textarea>
-      					<div class="pull-right text-muted text-success countlabel"><span id="message-count"></span> character(s) left</div>
+                <textarea class="form-control" rows="4" name="notification_message" id="notification_message" placeholder="Enter notification message (10 words recommended)" data-count-selector="#message-count"></textarea>
+                <div class="pull-right text-muted text-success countlabel"><span id="message-count"></span> character(s) left</div>
               </div>
-      				<div id="notification-badge-increment" class="hidden">
-      					<span id="notification-badge-icon" class="checked"><img src="img/app-icon.png" /><label for="notification_badge">+1</label></span>
-      					<div id="notification-badge-label"><label for="notification_badge">Increase app icon badge by 1<br>(available for iOS devices only)</label></div>
-      					<input type="checkbox" name="notification_badge" id="notification_badge" checked class="bootstrap-switch" data-on-text="Yes" data-on-color="primary" data-off-text="No" data-off-color="default" data-size="small" class="pull-right">
-      				</div>
-      				<div class="hidden">
-      					<br /><br /><br />
-      					<small class="text-info"><span class="glyphicon glyphicon-chevron-down"></span> Scroll down for Step 2</small>
-      				</div>
-      			</div>
+              <div id="notification-badge-increment" class="hidden">
+                <span id="notification-badge-icon" class="checked"><img src="img/app-icon.png" /><label for="notification_badge">+1</label></span>
+                <div id="notification-badge-label"><label for="notification_badge">Increase app icon badge by 1<br>(available for iOS devices only)</label></div>
+                <input type="checkbox" name="notification_badge" id="notification_badge" checked class="bootstrap-switch" data-on-text="Yes" data-on-color="primary" data-off-text="No" data-off-color="default" data-size="small" class="pull-right">
+              </div>
+              <div class="hidden">
+                <br /><br /><br />
+                <small class="text-info"><span class="glyphicon glyphicon-chevron-down"></span> Scroll down for Step 2</small>
+              </div>
+            </div>
           </div>
           <div class="row">
             <div class="col-xs-8 col-xs-offset-2 text-center">
+              <p id="subscription-note">Up to <strong><span id="subscriptions">x</span></strong> registered devices will recieve this notification.</p>
               <p>
                 <a class="btn btn-primary btn-lg notification-send" href="#">Send notification</a>
                 <a class="btn btn-default btn-lg notification-cancel" href="#">Cancel</a>
@@ -118,70 +185,83 @@ pushWidget.ask().then(function (subscriptionId) {
             </div>
           </div>
           <div class="row">
-      			<div class="col-sm-8 col-sm-offset-2 text-center">
-      				<p><br class="visible-xs-block"><label>Message preview</label><br><small class="text-info">Appearance of the notification is subject to users' device, preference and accepting to receive notifications.</small></p>
-      				<div class="visible-sm-block visible-md-block visible-lg-block message-empty" id="notification-message-preview">
-      					<img src="{{ asset 'img/notifications_device_preview_empty.jpg' }}" />
-      					<div id="notification-preview-home">
-      						<img src="{{ asset 'img/app-icon.png' }}" />
-      						<strong class="app-name"></strong>
-      						<span class="notification-message"></span>
-      					</div>
-      					<div id="notification-preview-icon-home">
-      						<img src="{{ asset 'img/app-icon.png' }}" />
-      						<strong class="app-name"></strong>
-      					</div>
-      					<div id="notification-preview-lockscreen">
-      						<img src="{{ asset 'img/app-icon.png' }}" />
-      						<strong class="app-name"></strong>
-      						<span class="notification-message"></span>
-      					</div>
-      					<div id="notification-preview-notification-center">
-      						<img src="{{ asset 'img/app-icon.png' }}" />
-      						<strong class="app-name"></strong>
-      						<span class="notification-message"></span>
-      					</div>
-      				</div>
-      				<div class="visible-xs-block"><img src="{{ asset 'img/notifications_device_preview_mock.jpg' }}" /></div>
-      			</div>
-      		</div>
-      		<hr class="hidden">
-      	</div>
-      	<div id="notification-send-step-2" class="hidden">
-      		<p class="lead text-center" style="margin-bottom: 1em;"><strong class="text-primary">Step 2:</strong> When do you want your users to see the notification?</p>
-      		<div>
-      			<ul class="nav nav-pills text-center" id="schedule-options" role="tablist">
-      				<li role="presentation" data-option="asap" class="active"><a href="#notification-asap" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-ok-sign"></span> ASAP</a></li>
-      				<li role="presentation" data-option="scheduled"><a href="#notification-scheduled" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-ok-sign"></span> Schedule for later</a></li>
-      			</ul>
+            <div class="col-sm-8 col-sm-offset-2 text-center">
+              <p><br class="visible-xs-block"><label>Message preview</label><br><small class="text-info">Appearance of the notification is subject to users' device, preference and accepting to receive notifications.</small></p>
+              <div class="visible-sm-block visible-md-block visible-lg-block message-empty" id="notification-message-preview">
+                <img src="{{ asset 'img/notifications_device_preview_empty.jpg' }}" />
+                <div id="notification-preview-home">
+                  <img src="{{ asset 'img/app-icon.png' }}" />
+                  <strong class="app-name"></strong>
+                  <span class="notification-message"></span>
+                </div>
+                <div id="notification-preview-icon-home">
+                  <img src="{{ asset 'img/app-icon.png' }}" />
+                  <strong class="app-name"></strong>
+                </div>
+                <div id="notification-preview-lockscreen">
+                  <img src="{{ asset 'img/app-icon.png' }}" />
+                  <strong class="app-name"></strong>
+                  <span class="notification-message"></span>
+                </div>
+                <div id="notification-preview-notification-center">
+                  <img src="{{ asset 'img/app-icon.png' }}" />
+                  <strong class="app-name"></strong>
+                  <span class="notification-message"></span>
+                </div>
+              </div>
+              <div class="visible-xs-block"><img src="{{ asset 'img/notifications_device_preview_mock.jpg' }}" /></div>
+            </div>
+          </div>
+          <hr class="hidden">
+        </div>
+        <div id="notification-send-step-2" class="hidden">
+          <p class="lead text-center" style="margin-bottom: 1em;"><strong class="text-primary">Step 2:</strong> When do you want your users to see the notification?</p>
+          <div>
+            <ul class="nav nav-pills text-center" id="schedule-options" role="tablist">
+              <li role="presentation" data-option="asap" class="active"><a href="#notification-asap" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-ok-sign"></span> ASAP</a></li>
+              <li role="presentation" data-option="scheduled"><a href="#notification-scheduled" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-ok-sign"></span> Schedule for later</a></li>
+            </ul>
 
-      			<!-- Tab panes -->
-      			<div class="tab-content">
-      				<div role="tabpanel" class="tab-pane active" id="notification-asap"></div>
-      				<div role="tabpanel" class="tab-pane" id="notification-scheduled">
-      					<div class="form-group">
-      						<div class="row">
-      							<div class="col-xs-12">
-      								<p class="lead text-center" style="margin-top:20px;margin-bottom:10px;">Pick a date and time below</p>
-      							</div>
-      							<div class="col-sm-8">
-      								<div id="datetimepicker"><input type="datetime" class="hidden" name="notification_datetime" id="notification_datetime" /></div>
-      							</div>
-      							<div class="col-sm-4 text-center" style="padding-top: 80px;">
-      								<div class="btn-group-vertical" role="group" aria-label="...">
-      									<input type="radio" class="hidden" name="notification_timezone" id="notification_timezone_local" value="local" checked />
-      									<input type="radio" class="hidden" name="notification_timezone" id="notification_timezone_gmt" value="gmt" />
-      									<label class="btn btn-default" for="notification_timezone_local" id="notification_timezone_local_label"><span class="glyphicon glyphicon-ok-sign"></span> Local to user's timezone</label>
-      									<label class="btn btn-default" for="notification_timezone_gmt" id="notification_timezone_gmt_label"><span class="glyphicon glyphicon-ok-sign"></span> GMT</label>
-      								</div>
-      							</div>
-      						</div>
-      					</div>
-      				</div>
-      			</div>
-      		</div>
-      	</div>
+            <!-- Tab panes -->
+            <div class="tab-content">
+              <div role="tabpanel" class="tab-pane active" id="notification-asap"></div>
+              <div role="tabpanel" class="tab-pane" id="notification-scheduled">
+                <div class="form-group">
+                  <div class="row">
+                    <div class="col-xs-12">
+                      <p class="lead text-center" style="margin-top:20px;margin-bottom:10px;">Pick a date and time below</p>
+                    </div>
+                    <div class="col-sm-8">
+                      <div id="datetimepicker"><input type="datetime" class="hidden" name="notification_datetime" id="notification_datetime" /></div>
+                    </div>
+                    <div class="col-sm-4 text-center" style="padding-top: 80px;">
+                      <div class="btn-group-vertical" role="group" aria-label="...">
+                        <input type="radio" class="hidden" name="notification_timezone" id="notification_timezone_local" value="local" checked />
+                        <input type="radio" class="hidden" name="notification_timezone" id="notification_timezone_gmt" value="gmt" />
+                        <label class="btn btn-default" for="notification_timezone_local" id="notification_timezone_local_label"><span class="glyphicon glyphicon-ok-sign"></span> Local to user's timezone</label>
+                        <label class="btn btn-default" for="notification_timezone_gmt" id="notification_timezone_gmt_label"><span class="glyphicon glyphicon-ok-sign"></span> GMT</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </form>
 </div>
+
+<script type="text/html" id="template-table-entries">
+  \{{#each jobs}}
+  <tr>
+    <td>\{{createdAt}}</td>
+    <td>\{{totalDeliveries}} (\{{sentApple}}/\{{sentGoogle}}/\{{sentWindows}})</td>
+    <td>\{{totalSuccess}} (\{{deliveryPerct}}%)</td>
+    <td><i>\{{title}}</i><br> \{{message}}
+    </td>
+    <td>\{{dataSourceName}}</td>
+  </tr>
+  \{{/each}}
+</script>

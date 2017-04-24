@@ -2,9 +2,21 @@
 <div class="popup-screen" data-push-notification-id="{{id}}">
   <div class="popup-wrapper">
     <div class="popup-content">
-      <p class="popup-title">App updates and notifications</p>
-      <p>You will receive notifications when app updates are available.</p>
-    <p>Please tap on <strong>Allow Notifications</strong> below to receive notifications on the updates.</p>
+      <p class="popup-title">
+        {{#if popupMessage}}
+          {{popupTitle}}
+        {{else}}
+          App updates and notifications
+        {{/if}}
+      </p>
+      <div class="popup-body">
+        {{#if popupMessage}}
+          {{ nl2br popupMessage }}
+        {{else}}
+          You will receive notifications when app updates are available.</br>
+          Please tap on Allow Notifications below to receive notifications on the updates.
+        {{/if}}
+      </div>
     </div>
     <div class="popup-bottom">
       <button type="button" data-allow>Allow Notifications</button>
