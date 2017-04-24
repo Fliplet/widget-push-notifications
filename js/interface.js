@@ -1,8 +1,8 @@
 var $tbody = $('#jobs-entries');
 var source = $('#template-table-entries').html();
-var template = Handlebars.compile(source);
+var jobEntriesTemplate = Handlebars.compile(source);
 
-var tempJob = {
+var customJob = {
   createdAt: '',
   title: '',
   message: '',
@@ -37,9 +37,9 @@ function refreshReports() {
       var gcm = 0;
       var wns = 0;
 
-      tempJob.createdAt = moment(job.createdAt).format('YYYY/MM/DD, hh:mm:ss');
-      tempJob.title = job.data.job.data.payload.title;
-      tempJob.message = job.data.job.data.payload.body;
+      customJob.createdAt = moment(job.createdAt).format('YYYY/MM/DD, hh:mm:ss');
+      customJob.title = job.data.job.data.payload.title;
+      customJob.message = job.data.job.data.payload.body;
 
       job.data.result.forEach(function(result) {
         if (result.method === 'apn') {
@@ -56,20 +56,21 @@ function refreshReports() {
         }
       })
 
-      tempJob.totalDeliveries = job.data.job.data.tokens.length;
-      tempJob.totalSuccess = apnSuccess + gcmSuccess + wnsSuccess;
-      tempJob.deliveryPerct = Math.round(((tempJob.totalSuccess / tempJob.totalDeliveries) * 100) * 10) / 10;
-      tempJob.sentGoogle = gcm;
-      tempJob.sentApple = apn;
-      tempJob.sentWindows = wns;
-      tempJob.dataSourceName = job.dataSourceEntry.dataSource ? job.dataSourceEntry.dataSource.name : "Data source was deleted";
+      customJob.totalDeliveries = job.data.job.data.tokens.length;
+      customJob.totalSuccess = apnSuccess + gcmSuccess + wnsSuccess;
+      customJob.deliveryPerct = Math.round(((customJob.totalSuccess / customJob.totalDeliveries) * 100) * 10) / 10;
+      customJob.sentGoogle = gcm;
+      customJob.sentApple = apn;
+      customJob.sentWindows = wns;
+      customJob.dataSourceName = job.dataSourceEntry.dataSource ? job.dataSourceEntry.dataSource.name : "Data source was deleted";
 
-      reportData.jobs.push(tempJob);
+      reportData.jobs.push(customJob);
     });
+    var compiledEntries;
 
     if (reportData.jobs.length) {
-      var html = template(reportData);
-      $tbody.html(html);
+      compiledEntries = jobEntriesTemplate(reportData);
+      $tbody.html(compiledEntries);
       $('#report .spinner-holder').removeClass('animated');
       $('.table-holder').removeClass('hidden');
     } else {
