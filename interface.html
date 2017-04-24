@@ -43,12 +43,16 @@ Please tap on Allow Notifications below to receive notifications on the updates.
           </div>
         </div>
         <div class="form-group clearfix checkbox">
+          <div class="col-sm-12 control-label">
+            <label for="auto-popup">Do you want to show the push notification popup automatically on the first screen of the app?</label>
+          </div>
           <div class="col-sm-12">
             <div class="checkbox checkbox-icon">
               <input type="checkbox" id="auto-popup" name="showAutomatically" value="1" {{#if showAutomatically}}checked{{/if}} />
               <label for="auto-popup">
                 <span class="check"><i class="fa fa-check"></i></span> Show notification popup automatically
               </label>
+              <p class="help-block">If you want to manually add the code to a specific screen, please disable this option and use the snippet of code below.</p>
             </div>
             <p class="help-block">If the above is not checked, you can trigger the push notifications yourself using the following code:</p>
             <pre><code>var pushWidget = Fliplet.Widget.get('PushNotifications');
