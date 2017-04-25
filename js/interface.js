@@ -26,8 +26,7 @@ function refreshReports() {
         totalSuccess: '',
         sentGoogle: '',
         sentApple: '',
-        sentWindows: '',
-        dataSourceName: ''
+        sentWindows: ''
       }
 
       var apnSuccess = 0;
@@ -62,7 +61,6 @@ function refreshReports() {
       customJob.sentGoogle = gcm;
       customJob.sentApple = apn;
       customJob.sentWindows = wns;
-      customJob.dataSourceName = job.dataSourceEntry && job.dataSourceEntry.dataSource ? job.dataSourceEntry.dataSource.name : "Data source was deleted";
 
       reportData.jobs.push(customJob);
     });

@@ -136,7 +136,6 @@ Please tap on Allow Notifications below to receive notifications on the updates.
               </th>
               <th>Successful deliveries</th>
               <th>Message</th>
-              <th>Related data source</th>
             </thead>
             <tbody id="jobs-entries">
 
@@ -258,9 +257,7 @@ Please tap on Allow Notifications below to receive notifications on the updates.
     <td>\{{createdAt}}</td>
     <td>\{{totalDeliveries}} (\{{sentApple}}/\{{sentGoogle}}/\{{sentWindows}})</td>
     <td>\{{totalSuccess}} (\{{deliveryPerct}}%)</td>
-    <td><i>\{{title}}</i><br> \{{message}}
-    </td>
-    <td>\{{dataSourceName}}</td>
+    <td><strong>\{{title}}</strong><br> \{{message}}</td>
   </tr>
   \{{/each}}
 </script>
