@@ -62,7 +62,7 @@ function refreshReports() {
       customJob.sentGoogle = gcm;
       customJob.sentApple = apn;
       customJob.sentWindows = wns;
-      customJob.dataSourceName = job.dataSourceEntry.dataSource ? job.dataSourceEntry.dataSource.name : "Data source was deleted";
+      customJob.dataSourceName = job.dataSourceEntry && job.dataSourceEntry.dataSource ? job.dataSourceEntry.dataSource.name : "Data source was deleted";
 
       reportData.jobs.push(customJob);
     });
