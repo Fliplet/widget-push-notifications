@@ -2,18 +2,6 @@ var $tbody = $('#jobs-entries');
 var source = $('#template-table-entries').html();
 var jobEntriesTemplate = Handlebars.compile(source);
 
-var customJob = {
-  createdAt: '',
-  title: '',
-  message: '',
-  totalDeliveries: '',
-  totalSuccess: '',
-  sentGoogle: '',
-  sentApple: '',
-  sentWindows: '',
-  dataSourceName: ''
-}
-
 function refreshReports() {
   $('#report .spinner-holder').addClass('animated');
   $('.table-holder').addClass('hidden');
@@ -30,6 +18,18 @@ function refreshReports() {
     }
   }).then(function(jobs) {
     jobs.forEach(function(job) {
+      var customJob = {
+        createdAt: '',
+        title: '',
+        message: '',
+        totalDeliveries: '',
+        totalSuccess: '',
+        sentGoogle: '',
+        sentApple: '',
+        sentWindows: '',
+        dataSourceName: ''
+      }
+
       var apnSuccess = 0;
       var gcmSuccess = 0;
       var wnsSuccess = 0;
