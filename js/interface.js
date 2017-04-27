@@ -36,7 +36,7 @@ function refreshReports() {
       var gcm = 0;
       var wns = 0;
 
-      customJob.createdAt = moment(job.createdAt).format('MMM Do YYYY - hh:mm:ss');
+      customJob.createdAt = moment(job.createdAt).format('MMM Do YYYY - HH:mm:ss');
       customJob.title = job.data.job.data.payload.title;
       customJob.message = job.data.job.data.payload.body;
 
