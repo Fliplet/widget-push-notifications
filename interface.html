@@ -15,7 +15,7 @@
     <ul class="nav nav-tabs" role="tablist">
       <li class="active"><a href="#notification-send-tab" data-toggle="tab" class="btn-primary">Send notifications <span class="glyphicon glyphicon-send"></span></a></li>
       <li><a href="#report" data-toggle="tab" id="note-reports">Reports</a></li>
-      <li><a href="#settings" data-toggle="tab">App interface</a></li>
+      <li><a href="#settings" data-toggle="tab">Push interface</a></li>
       <li><a href="#ios" data-toggle="tab">iOS {{#if apn}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</a></li>
       <li><a href="#android" data-toggle="tab">Android {{#if gcm}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</a></li>
       <li><a href="#windows" data-toggle="tab">Windows {{#if wns}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</a></li>
@@ -23,127 +23,7 @@
 
     <!-- Tab panes -->
     <div class="tab-content">
-      <div role="tabpanel" class="tab-pane active" id="settings">
-        <div class="form-group clearfix">
-          <div class="col-sm-12 control-label">
-            <label for="popup_title">Notification popup title</label>
-          </div>
-          <div class="col-sm-12">
-            <input type="text" name="popup_title" class="form-control" id="popup_title" placeholder="Enter a title" value="{{#if popupTitle}}{{popupTitle}}{{else}}App updates and notifications{{/if}}" />
-            <p class="help-block">The popup will only appear once for users that allow or reject notifications.</p>
-          </div>
-        </div>
-        <div class="form-group clearfix">
-          <div class="col-sm-12 control-label">
-            <label for="popup_message">Notification popup message</label>
-          </div>
-          <div class="col-sm-12">
-            <textarea class="form-control" name="popup_message" id="popup_message" rows="4" placeholder="Enter a message">{{#if popupMessage}}{{popupMessage}}{{else}}You will receive notifications when app updates are available.
-Please tap on Allow Notifications below to receive notifications on the updates.{{/if}}</textarea>
-          </div>
-        </div>
-        <div class="form-group clearfix">
-          <div class="col-sm-12 control-label">
-            <label for="auto-popup">Do you want to show the push notification popup automatically on the first screen of the app?</label>
-          </div>
-          <div class="col-sm-12">
-            <div class="checkbox checkbox-icon">
-              <input type="checkbox" id="auto-popup" name="showAutomatically" value="1" {{#if showAutomatically}}checked{{/if}} />
-              <label for="auto-popup">
-                <span class="check"><i class="fa fa-check"></i></span> Show notification popup automatically
-              </label>
-              <p class="help-block">If you want to manually show the popup on a specific screen, please disable this option and use the snippet of code below.</p>
-            </div>
-            <pre><code>var pushWidget = Fliplet.Widget.get('PushNotifications');
-
-  pushWidget.ask().then(function (subscriptionId) {
-    // user pressed allow and has been registered
-  }, function (err) {
-    // contains code and message
-  })</code></pre>
-          </div>
-        </div>
-        <div class="form-group clearfix">
-          <div class="col-sm-12">
-            <div class="checkbox checkbox-icon">
-              <input type="checkbox" id="portal-popup" name="showOnceOnPortal" value="1" {{#if showOnceOnPortal}}checked{{/if}} />
-              <label for="portal-popup">
-                <span class="check"><i class="fa fa-check"></i></span> Only show once on portal apps
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div role="tabpanel" class="tab-pane" id="ios">
-        <div class="form-group clearfix">
-          <div class="col-sm-12">
-            <p>The authentication key, which can be created <a target="_blank" href="https://developer.apple.com/account/ios/certificate/key">here</a>.</p>
-            <textarea class="form-control" name="apnAuthKey" placeholder="Auth Key">{{apnAuthKey}}</textarea>
-            <br />
-            <p>The Key ID of the p8 file (available <a target="_blank" href="https://developer.apple.com/account/ios/certificate/key">here</a>)</p>
-            <input type="text" class="form-control" name="apnKeyId" placeholder="Key Id" value="{{apnKeyId}}" />
-            <br />
-            <p>The Team ID of your Apple Developer Account (available <a href="https://developer.apple.com/account/#/membership/" target="_blank">here</a>)</p>
-            <input type="text" class="form-control" name="apnTeamId" placeholder="Team ID" value="{{apnTeamId}}" />
-            <br />
-            <p>The Package name, also called "topic" on APN.</p>
-            <input type="text" class="form-control" name="apnTopic" placeholder="Topic" value="{{apnTopic}}" />
-          </div>
-        </div>
-      </div>
-      <div role="tabpanel" class="tab-pane" id="android">
-        <div class="form-group clearfix">
-          <div class="col-sm-12">
-            <p>A unique numerical value created when you configure your API project. The sender ID is used in the <a target="_blank" href="https://developers.google.com/cloud-messaging/registration">registration process</a> to identify an app server that
-              is permitted to send messages to the client app.</p>
-            <input type="text" class="form-control" name="gcmSenderId" placeholder="Sender ID" value="{{gcmSenderId}}" />
-            <br />
-            <p>The server key can be created in the Firebase Console using the Cloud Messaging tab of the Settings panel.</p>
-            <input type="text" class="form-control" name="gcmServerKey" placeholder="Server Key" value="{{gcmServerKey}}" />
-            <br />
-            <p>The package name from the app manifest.</p>
-            <input type="text" class="form-control" name="gcmPackageName" placeholder="Package name" value="{{gcmPackageName}}" />
-          </div>
-        </div>
-      </div>
-      <div role="tabpanel" class="tab-pane" id="windows">
-        <div class="form-group clearfix">
-          <div class="col-sm-12">
-            <p>Package Security Identifier</p>
-            <textarea class="form-control" name="wnsClientId" placeholder="Client ID">{{wnsClientId}}</textarea>
-            <br />
-            <p>Client Secret</p>
-            <input type="text" class="form-control" name="wnsClientSecret" placeholder="Client Secret" value="{{wnsClientSecret}}" />
-          </div>
-        </div>
-      </div>
-      <div role="tabpanel" class="tab-pane" id="report">
-        <div class="spinner-holder animated">
-          <div class="spinner-overlay">Loading...</div>
-          <p>Loading...</p>
-        </div>
-        <div class="no-data">
-          <p><strong>No notifications sent yet.</strong>
-            <p>
-              <p><a class="btn btn-link refresh" href="#">Refresh reports</a></p>
-        </div>
-        <div class="table-holder hidden">
-          <a class="btn btn-link pull-right refresh" href="#">Refresh reports</a>
-          <table class="table report-table">
-            <thead>
-              <th>Sent at</th>
-              <th>No. Recipients<br> (iOS/Android/Win10)
-              </th>
-              <th>Accepted for delivery</th>
-              <th>Message</th>
-            </thead>
-            <tbody id="jobs-entries">
-
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div role="tabpanel" class="tab-pane" id="notification-send-tab">
+      <div role="tabpanel" class="tab-pane active" id="notification-send-tab">
         <div id="notification-send-step-1">
           <p class="lead text-center" style="margin-bottom: 1em;margin-top: 1em;"><strong class="text-primary hidden">Step 1: </strong>Configure your message</p>
           <div class="row">
@@ -244,6 +124,126 @@ Please tap on Allow Notifications below to receive notifications on the updates.
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+      <div role="tabpanel" class="tab-pane" id="report">
+        <div class="spinner-holder animated">
+          <div class="spinner-overlay">Loading...</div>
+          <p>Loading...</p>
+        </div>
+        <div class="no-data">
+          <p><strong>No notifications sent yet.</strong>
+            <p>
+              <p><a class="btn btn-link refresh" href="#">Refresh reports</a></p>
+        </div>
+        <div class="table-holder hidden">
+          <a class="btn btn-link pull-right refresh" href="#">Refresh reports</a>
+          <table class="table report-table">
+            <thead>
+              <th>Sent at</th>
+              <th>No. Recipients<br> (iOS/Android/Win10)
+              </th>
+              <th>Accepted for delivery</th>
+              <th>Message</th>
+            </thead>
+            <tbody id="jobs-entries">
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div role="tabpanel" class="tab-pane" id="settings">
+        <div class="form-group clearfix">
+          <div class="col-sm-12 control-label">
+            <label for="popup_title">Notification popup title</label>
+          </div>
+          <div class="col-sm-12">
+            <input type="text" name="popup_title" class="form-control" id="popup_title" placeholder="Enter a title" value="{{#if popupTitle}}{{popupTitle}}{{else}}App updates and notifications{{/if}}" />
+            <p class="help-block">The popup will only appear once for users that allow or reject notifications.</p>
+          </div>
+        </div>
+        <div class="form-group clearfix">
+          <div class="col-sm-12 control-label">
+            <label for="popup_message">Notification popup message</label>
+          </div>
+          <div class="col-sm-12">
+            <textarea class="form-control" name="popup_message" id="popup_message" rows="4" placeholder="Enter a message">{{#if popupMessage}}{{popupMessage}}{{else}}You will receive notifications when app updates are available.
+Please tap on Allow Notifications below to receive notifications on the updates.{{/if}}</textarea>
+          </div>
+        </div>
+        <div class="form-group clearfix">
+          <div class="col-sm-12 control-label">
+            <label for="auto-popup">Do you want to show the push notification popup automatically on the first screen of the app?</label>
+          </div>
+          <div class="col-sm-12">
+            <div class="checkbox checkbox-icon">
+              <input type="checkbox" id="auto-popup" name="showAutomatically" value="1" {{#if showAutomatically}}checked{{/if}} />
+              <label for="auto-popup">
+                <span class="check"><i class="fa fa-check"></i></span> Show notification popup automatically
+              </label>
+              <p class="help-block">If you want to manually show the popup on a specific screen, please disable this option and use the snippet of code below.</p>
+            </div>
+            <pre><code>var pushWidget = Fliplet.Widget.get('PushNotifications');
+
+  pushWidget.ask().then(function (subscriptionId) {
+    // user pressed allow and has been registered
+  }, function (err) {
+    // contains code and message
+  })</code></pre>
+          </div>
+        </div>
+        <div class="form-group clearfix">
+          <div class="col-sm-12">
+            <div class="checkbox checkbox-icon">
+              <input type="checkbox" id="portal-popup" name="showOnceOnPortal" value="1" {{#if showOnceOnPortal}}checked{{/if}} />
+              <label for="portal-popup">
+                <span class="check"><i class="fa fa-check"></i></span> Only show once on portal apps
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div role="tabpanel" class="tab-pane" id="ios">
+        <div class="form-group clearfix">
+          <div class="col-sm-12">
+            <p>The authentication key, which can be created <a target="_blank" href="https://developer.apple.com/account/ios/certificate/key">here</a>.</p>
+            <textarea class="form-control" name="apnAuthKey" placeholder="Auth Key">{{apnAuthKey}}</textarea>
+            <br />
+            <p>The Key ID of the p8 file (available <a target="_blank" href="https://developer.apple.com/account/ios/certificate/key">here</a>)</p>
+            <input type="text" class="form-control" name="apnKeyId" placeholder="Key Id" value="{{apnKeyId}}" />
+            <br />
+            <p>The Team ID of your Apple Developer Account (available <a href="https://developer.apple.com/account/#/membership/" target="_blank">here</a>)</p>
+            <input type="text" class="form-control" name="apnTeamId" placeholder="Team ID" value="{{apnTeamId}}" />
+            <br />
+            <p>The Package name, also called "topic" on APN.</p>
+            <input type="text" class="form-control" name="apnTopic" placeholder="Topic" value="{{apnTopic}}" />
+          </div>
+        </div>
+      </div>
+      <div role="tabpanel" class="tab-pane" id="android">
+        <div class="form-group clearfix">
+          <div class="col-sm-12">
+            <p>A unique numerical value created when you configure your API project. The sender ID is used in the <a target="_blank" href="https://developers.google.com/cloud-messaging/registration">registration process</a> to identify an app server that
+              is permitted to send messages to the client app.</p>
+            <input type="text" class="form-control" name="gcmSenderId" placeholder="Sender ID" value="{{gcmSenderId}}" />
+            <br />
+            <p>The server key can be created in the Firebase Console using the Cloud Messaging tab of the Settings panel.</p>
+            <input type="text" class="form-control" name="gcmServerKey" placeholder="Server Key" value="{{gcmServerKey}}" />
+            <br />
+            <p>The package name from the app manifest.</p>
+            <input type="text" class="form-control" name="gcmPackageName" placeholder="Package name" value="{{gcmPackageName}}" />
+          </div>
+        </div>
+      </div>
+      <div role="tabpanel" class="tab-pane" id="windows">
+        <div class="form-group clearfix">
+          <div class="col-sm-12">
+            <p>Package Security Identifier</p>
+            <textarea class="form-control" name="wnsClientId" placeholder="Client ID">{{wnsClientId}}</textarea>
+            <br />
+            <p>Client Secret</p>
+            <input type="text" class="form-control" name="wnsClientSecret" placeholder="Client Secret" value="{{wnsClientSecret}}" />
           </div>
         </div>
       </div>
