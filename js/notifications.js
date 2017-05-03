@@ -1,4 +1,4 @@
-Fliplet.Widget.register('PushNotifications', function() {
+Fliplet.Widget.register('PushNotifications', function () {
 
   var id = $('[data-push-notification-id]').data('push-notification-id');
   var data = Fliplet.Widget.getData(id);
@@ -35,60 +35,73 @@ Fliplet.Widget.register('PushNotifications', function() {
       return askPromise;
     }
 
-    askPromise = new Promise(function(resolve, reject) {
-      if (Fliplet.Env.get('platform') === 'web') {
-        return resolve();
+    askPromise = Fliplet.Storage.get(key);
+
+    askPromise.then(function (value) {
+      if (!value || value.indexOf('disallow') === -1) {
+        return Promise.resolve();
       }
 
-      $popup.find('[data-allow]').one('click', function() {
-        dismiss();
-        markAsSeen('allow');
+      return Promise.reject({
+        code: 4,
+        message: 'User has disallowed push notifications'
+      });
+    }).then(function () {
+      if (Fliplet.Env.get('platform') === 'web') {
+        return Promise.resolve();
+      }
 
-        Fliplet.Navigator.onReady().then(function() {
-          return subscribeUser();
-        }).then(function(subscriptionId) {
-          resolve(subscriptionId);
-        }, function(err) {
-          console.error(err);
+      return new Promise(function (resolve, reject) {
+        $popup.find('[data-allow]').one('click', function () {
+          dismiss();
+          markAsSeen('allow');
 
-          reject({
-            code: 1,
-            message: err
+          Fliplet.Navigator.onReady().then(function () {
+            return subscribeUser();
+          }).then(function (subscriptionId) {
+            resolve(subscriptionId);
+          }, function (err) {
+            console.error(err);
+
+            reject({
+              code: 1,
+              message: err
+            });
           });
         });
-      });
 
-      $popup.find('[data-dont-allow]').one('click', function() {
-        dismiss();
-        markAsSeen('disallow');
+        $popup.find('[data-dont-allow]').one('click', function () {
+          dismiss();
+          markAsSeen('disallow');
 
-        reject({
-          code: 2,
-          message: 'The user did not allow push notifications.'
+          reject({
+            code: 2,
+            message: 'The user did not allow push notifications.'
+          });
         });
-      });
 
-      $popup.find('[data-remind]').one('click', function() {
-        dismiss();
-        markAsSeen('remind');
+        $popup.find('[data-remind]').one('click', function () {
+          dismiss();
+          markAsSeen('remind');
 
-        reject({
-          code: 3,
-          message: 'The user pressed the "remind later" button.'
+          reject({
+            code: 3,
+            message: 'The user pressed the "remind later" button.'
+          });
         });
-      });
 
-      $popup.addClass('ready');
+        $popup.addClass('ready');
+      });
     });
 
     return askPromise;
   }
 
-  Fliplet.Navigator.onReady().then(function() {
+  Fliplet.Navigator.onReady().then(function () {
     return Fliplet.Storage.get(key);
-  }).then(function(alreadyShown) {
+  }).then(function (alreadyShown) {
     // If the user is subscribed, clear all notifications
-    Fliplet.User.getSubscriptionId().then(function(isSubscribed) {
+    Fliplet.User.getSubscriptionId().then(function (isSubscribed) {
       var push;
 
       if (isSubscribed) {
@@ -118,7 +131,7 @@ Fliplet.Widget.register('PushNotifications', function() {
 
   return {
     ask: ask,
-    reset: function() {
+    reset: function () {
       return Fliplet.Storage.remove(key);
     }
   };
