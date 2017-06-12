@@ -19,16 +19,18 @@ var UINotification = (function() {
     messageCharLimit: 235,
     notificationConfig: {},
     sendErrorMessage: '',
+    subscriptionsCount: ,
     mockedRequest: Fliplet.Env.get('development') // Use a mocked request under development environment
   };
 
   UINotification.prototype.initUI = function() {
     Fliplet.App.Subscriptions.get().then(function(subscriptions) {
-      if (subscriptions.length === 0) {
+      _this.subscriptionsCount = subscriptions.length;
+      if (_this.subscriptionsCount === 0) {
         $('#subscription-note').html('There are no devices registered to receive this notification.');
         $('#subscription-note').addClass('text-danger');
       } else {
-        $('#subscriptions').html(subscriptions.length);
+        $('#subscriptions').html(_this.subscriptionsCount);
       }
     });
 
@@ -60,7 +62,12 @@ var UINotification = (function() {
     // $(document).on( 'click', '#notification-confirm', _this.initialiseNotificationConfirmationModal );
 
     // Sets up callback for sending/cancelling notification sending
-    $(document).on('click', '.notification-send', _this.startNotificationSend);
+    $(document).on('click', '.notification-send', function(event){
+      event.preventDefault();
+      if (confirm('Your are about to send notifications to '+_this.subscriptionsCount+' users. Are you sure?')) {
+        _this.startNotificationSend();
+      }
+    });
     $(document).on('click', '.notification-cancel', _this.cancelNotificationSend);
 
     // Sets up callback for sending another notification
@@ -209,11 +216,7 @@ var UINotification = (function() {
     }
   };
 
-  UINotification.prototype.startNotificationSend = function(e) {
-    e.preventDefault();
-    // Prepare Parse variables (legacy)
-    // _this.initialiseNotificationConfiguration();
-
+  UINotification.prototype.startNotificationSend = function() {
     $('#notification-send-tab').attr('data-mode', 'confirm');
     // Send request
     _this.sendNotification()
