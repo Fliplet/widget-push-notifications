@@ -27,7 +27,7 @@ var UINotification = (function() {
     Fliplet.App.Subscriptions.get().then(function(subscriptions) {
       _this.subscriptionsCount = subscriptions.length;
       if (_this.subscriptionsCount === 0) {
-        $('#subscription-note').html('There are no devices registered to receive this notification.');
+        $('#subscription-note').html('No devices are registered to receive this notification.');
         $('#subscription-note').addClass('text-danger');
       } else {
         $('#subscriptions').html(_this.subscriptionsCount);
