@@ -19,7 +19,7 @@ var UINotification = (function() {
     messageCharLimit: 235,
     notificationConfig: {},
     sendErrorMessage: '',
-    subscriptionsCount: ,
+    subscriptionsCount: 0,
     mockedRequest: Fliplet.Env.get('development') // Use a mocked request under development environment
   };
 
