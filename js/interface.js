@@ -39,7 +39,7 @@ function refreshReports() {
       logData.title = log.data.payload && log.data.payload.title;
       logData.message = log.data.payload && log.data.payload.body;
 
-      function processResult(result) {
+      function processJobResult(result) {
         switch (result.method) {
           case 'apn':
             apnSuccess += result.success;
@@ -57,9 +57,9 @@ function refreshReports() {
       }
 
       if (Array.isArray(log.data.result)) {
-        log.data.result.forEach(function(logResult) {
-          if (Array.isArray(logResult.result)) {
-            logResult.result.forEach(processResult);
+        log.data.result.forEach(function(job) {
+          if (Array.isArray(job.result)) {
+            job.result.forEach(processJobResult);
           }
         });
       }
