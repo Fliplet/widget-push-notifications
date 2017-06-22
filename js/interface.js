@@ -28,7 +28,9 @@ function refreshReports() {
         deliveredCount: 0,
         sentGoogle: 0,
         sentApple: 0,
-        sentWindows: 0
+        sentWindows: 0,
+        batchesCount: log.data.jobs && log.data.jobs.length,
+        batchesSent: log.data.jobs && log.data.jobs.length // this get updated further down
       }
 
       var apnSuccess = 0;
@@ -57,6 +59,8 @@ function refreshReports() {
       }
 
       if (Array.isArray(log.data.result)) {
+        logData.batchesSent = log.data.result.length;
+
         log.data.result.forEach(function(job) {
           if (Array.isArray(job.result)) {
             job.result.forEach(processJobResult);

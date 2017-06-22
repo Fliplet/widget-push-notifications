@@ -135,6 +135,7 @@
               <th>No. Recipients<br> (iOS/Android/Win10)
               </th>
               <th>Accepted for delivery</th>
+              <th>Batches (Sent/Total)</th>
               <th>Message</th>
             </thead>
             <tbody id="jobs-entries">
@@ -247,6 +248,7 @@ Please tap on Allow Notifications below to receive notifications on the updates.
     <td>\{{createdAt}}</td>
     <td>\{{recipientsCount}} (\{{sentApple}}/\{{sentGoogle}}/\{{sentWindows}})</td>
     <td>\{{deliveredCount}} (\{{deliveryPerct}}%)</td>
+    <td>\{{batchesSent}}/\{{batchesCount}}</td>
     <td><strong>\{{title}}</strong><br> \{{message}}</td>
   </tr>
   \{{/each}}
