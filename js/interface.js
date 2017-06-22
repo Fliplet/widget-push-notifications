@@ -16,54 +16,59 @@ function refreshReports() {
   Fliplet.App.Logs.get({
     where: {
       type: 'job'
-    }
-  }).then(function(jobs) {
-    jobs.forEach(function(job) {
-      var customJob = {
+    },
+    order: [['createdAt', 'DESC']]
+  }).then(function(logs) {
+    logs.forEach(function(log) {
+      var logData = {
         createdAt: '',
         title: '',
         message: '',
-        totalDeliveries: '',
-        totalSuccess: '',
-        sentGoogle: '',
-        sentApple: '',
-        sentWindows: ''
+        recipientsCount: 0,
+        deliveredCount: 0,
+        sentGoogle: 0,
+        sentApple: 0,
+        sentWindows: 0
       }
 
       var apnSuccess = 0;
       var gcmSuccess = 0;
       var wnsSuccess = 0;
-      var apn = 0;
-      var gcm = 0;
-      var wns = 0;
 
-      customJob.createdAt = moment(job.createdAt).format('MMM Do YYYY - HH:mm:ss');
-      customJob.title = job.data.job.data.payload.title;
-      customJob.message = job.data.job.data.payload.body;
+      logData.createdAt = moment(log.createdAt).format('MMM Do YYYY - HH:mm:ss');
+      logData.title = log.data.payload && log.data.payload.title;
+      logData.message = log.data.payload && log.data.payload.body;
 
-      job.data.result.forEach(function(result) {
-        if (result.method === 'apn') {
-          apnSuccess = result.success + apnSuccess;
-          apn = result.success + result.failure + apn;
+      function processResult(result) {
+        switch (result.method) {
+          case 'apn':
+            apnSuccess += result.success;
+            logData.sentApple += result.success + result.failure;
+            break;
+          case 'gcm':
+            gcmSuccess += result.success;
+            logData.sentGoogle += result.success + result.failure;
+            break;
+          case 'wns':
+            wnsSuccess += result.success;
+            logData.sentWindows += result.success + result.failure;
+            break;
         }
-        if (result.method === 'gcm') {
-          gcmSuccess = result.success + gcmSuccess;
-          gcm = result.success + result.failure + gcm;
-        }
-        if (result.method === 'wns') {
-          wnsSuccess = result.success + wnsSuccess;
-          wns = result.success + result.failure + wns;
-        }
-      })
+      }
 
-      customJob.totalDeliveries = job.data.job.data.tokens.length;
-      customJob.totalSuccess = apnSuccess + gcmSuccess + wnsSuccess;
-      customJob.deliveryPerct = Math.round(((customJob.totalSuccess / customJob.totalDeliveries) * 100) * 10) / 10;
-      customJob.sentGoogle = gcm;
-      customJob.sentApple = apn;
-      customJob.sentWindows = wns;
+      if (Array.isArray(log.data.result)) {
+        log.data.result.forEach(function(logResult) {
+          if (Array.isArray(logResult.result)) {
+            logResult.result.forEach(processResult);
+          }
+        });
+      }
 
-      reportData.jobs.push(customJob);
+      logData.recipientsCount = log.data.subscriptionsCount;
+      logData.deliveredCount = apnSuccess + gcmSuccess + wnsSuccess;
+      logData.deliveryPerct = (Math.round(((logData.deliveredCount / logData.recipientsCount) * 100) * 10) / 10) || 0;
+
+      reportData.jobs.push(logData);
     });
     var compiledEntries;
 
