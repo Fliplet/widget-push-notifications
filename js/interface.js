@@ -17,7 +17,9 @@ function refreshReports() {
     where: {
       type: 'job'
     },
-    order: [['createdAt', 'DESC']]
+    order: [
+      ['createdAt', 'DESC']
+    ]
   }).then(function(logs) {
     logs.forEach(function(log) {
       var logData = {
@@ -96,8 +98,6 @@ Fliplet.Widget.autosize();
 Fliplet.Studio.emit('widget-save-label-update', {
   text: ''
 });
-
-// $(window).on('resize', Fliplet.Widget.autosize);
 
 $('.nav-tabs').on('click', 'a[data-toggle="tab"]', function(event) {
   event.preventDefault();
