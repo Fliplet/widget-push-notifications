@@ -17,7 +17,9 @@ function refreshReports() {
     where: {
       type: 'job'
     },
-    order: [['createdAt', 'DESC']]
+    order: [
+      ['createdAt', 'DESC']
+    ]
   }).then(function(logs) {
     logs.forEach(function(log) {
       var logData = {
@@ -93,9 +95,9 @@ function refreshReports() {
 $('.app-name').html(Fliplet.Env.get('appName'));
 new UINotification();
 Fliplet.Widget.autosize();
-Fliplet.Studio.emit('widget-save-label-update', {text: ''});
-
-$(window).on('resize', Fliplet.Widget.autosize);
+Fliplet.Studio.emit('widget-save-label-update', {
+  text: ''
+});
 
 $('.nav-tabs').on('click', 'a[data-toggle="tab"]', function(event) {
   event.preventDefault();
@@ -107,7 +109,9 @@ $('.nav-tabs').on('click', 'a[data-toggle="tab"]', function(event) {
   if (href === '#notification-send-tab' || href === '#report') {
     saveButtonLabel = '';
   }
-  Fliplet.Studio.emit('widget-save-label-update', {text: saveButtonLabel});
+  Fliplet.Studio.emit('widget-save-label-update', {
+    text: saveButtonLabel
+  });
 });
 
 $('a#note-reports').on('shown.bs.tab', function(event) {
