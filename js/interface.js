@@ -35,7 +35,7 @@ function refreshReports() {
         sentWindows: 0,
         batchesCount: log.data.jobs && log.data.jobs.length,
         batchesSent: log.data.jobs && log.data.jobs.length // this get updated further down
-      }
+      };
 
       var apnSuccess = 0;
       var gcmSuccess = 0;
@@ -94,6 +94,17 @@ function refreshReports() {
   });
 }
 
+/**
+ * Method used to hide the save message
+ */
+function hideSavedMessage() {
+  setTimeout(function() {
+    $('.settings-saved-app-msg').fadeOut(function () {
+      Fliplet.Widget.autosize();
+    });
+  }, 5000);
+}
+
 $('.app-name').html(Fliplet.Env.get('appName'));
 new UINotification();
 Fliplet.Widget.autosize();
@@ -140,7 +151,8 @@ $('#configuration').on('submit', function(event) {
   data.popupMessage = $('[name="popup_message"]').val();
 
   Fliplet.Widget.save(data).then(function () {
-    $('.settings-saved-app-msg').removeClass('hidden');
+    $('.settings-saved-app-msg').fadeIn();
     Fliplet.Widget.autosize();
+    hideSavedMessage();
   });
 });
