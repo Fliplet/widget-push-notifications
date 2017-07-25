@@ -360,3 +360,9 @@ img {
   left: -10.1%;
   width: 6%;
 }
+
+.settings-saved-app-msg {
+  font-weight: bold;
+  background: transparent;
+  color: #1DB188;
+}

@@ -6,9 +6,6 @@
       <li class="active"><a href="#notification-send-tab" data-toggle="tab" class="btn-primary">Send notifications <span class="glyphicon glyphicon-send"></span></a></li>
       <li><a href="#report" data-toggle="tab" id="note-reports">Reports</a></li>
       <li><a href="#settings" data-toggle="tab">Push interface</a></li>
-      <li><a href="#ios" data-toggle="tab">iOS {{#if apn}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</a></li>
-      <li><a href="#android" data-toggle="tab">Android {{#if gcm}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</a></li>
-      <li><a href="#windows" data-toggle="tab">Windows {{#if wns}}<i class="glyphicon glyphicon-ok"></i>{{/if}}</a></li>
     </ul>
 
     <!-- Tab panes -->
@@ -194,48 +191,8 @@ Please tap on Allow Notifications below to receive notifications on the updates.
             </div>
           </div>
         </div>
-      </div>
-      <div role="tabpanel" class="tab-pane" id="ios">
-        <div class="form-group clearfix">
-          <div class="col-sm-12">
-            <p>The authentication key, which can be created <a target="_blank" href="https://developer.apple.com/account/ios/certificate/key">here</a>.</p>
-            <textarea class="form-control" name="apnAuthKey" placeholder="Auth Key">{{apnAuthKey}}</textarea>
-            <br />
-            <p>The Key ID of the p8 file (available <a target="_blank" href="https://developer.apple.com/account/ios/certificate/key">here</a>)</p>
-            <input type="text" class="form-control" name="apnKeyId" placeholder="Key Id" value="{{apnKeyId}}" />
-            <br />
-            <p>The Team ID of your Apple Developer Account (available <a href="https://developer.apple.com/account/#/membership/" target="_blank">here</a>)</p>
-            <input type="text" class="form-control" name="apnTeamId" placeholder="Team ID" value="{{apnTeamId}}" />
-            <br />
-            <p>The Package name, also called "topic" on APN.</p>
-            <input type="text" class="form-control" name="apnTopic" placeholder="Topic" value="{{apnTopic}}" />
-          </div>
-        </div>
-      </div>
-      <div role="tabpanel" class="tab-pane" id="android">
-        <div class="form-group clearfix">
-          <div class="col-sm-12">
-            <p>A unique numerical value created when you configure your API project. The sender ID is used in the <a target="_blank" href="https://developers.google.com/cloud-messaging/registration">registration process</a> to identify an app server that
-              is permitted to send messages to the client app.</p>
-            <input type="text" class="form-control" name="gcmSenderId" placeholder="Sender ID" value="{{gcmSenderId}}" />
-            <br />
-            <p>The server key can be created in the Firebase Console using the Cloud Messaging tab of the Settings panel.</p>
-            <input type="text" class="form-control" name="gcmServerKey" placeholder="Server Key" value="{{gcmServerKey}}" />
-            <br />
-            <p>The package name from the app manifest.</p>
-            <input type="text" class="form-control" name="gcmPackageName" placeholder="Package name" value="{{gcmPackageName}}" />
-          </div>
-        </div>
-      </div>
-      <div role="tabpanel" class="tab-pane" id="windows">
-        <div class="form-group clearfix">
-          <div class="col-sm-12">
-            <p>Package Security Identifier</p>
-            <textarea class="form-control" name="wnsClientId" placeholder="Client ID">{{wnsClientId}}</textarea>
-            <br />
-            <p>Client Secret</p>
-            <input type="text" class="form-control" name="wnsClientSecret" placeholder="Client Secret" value="{{wnsClientSecret}}" />
-          </div>
+        <div class="settings-saved-app-msg fade-transition" style="display: none;">
+          Push interface configuration saved.
         </div>
       </div>
     </div>

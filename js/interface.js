@@ -1,6 +1,8 @@
 var $tbody = $('#jobs-entries');
 var source = $('#template-table-entries').html();
 var jobEntriesTemplate = Handlebars.compile(source);
+var widgetId = Fliplet.Widget.getDefaultId();
+var data = Fliplet.Widget.getData(widgetId) || {};
 
 function refreshReports() {
   $('#report .spinner-holder').addClass('animated');
@@ -33,7 +35,7 @@ function refreshReports() {
         sentWindows: 0,
         batchesCount: log.data.jobs && log.data.jobs.length,
         batchesSent: log.data.jobs && log.data.jobs.length // this get updated further down
-      }
+      };
 
       var apnSuccess = 0;
       var gcmSuccess = 0;
@@ -92,14 +94,22 @@ function refreshReports() {
   });
 }
 
+/**
+ * Method used to hide the save message
+ */
+function hideSavedMessage() {
+  setTimeout(function() {
+    $('.settings-saved-app-msg').fadeOut(function () {
+      Fliplet.Widget.autosize();
+    });
+  }, 5000);
+}
+
 $('.app-name').html(Fliplet.Env.get('appName'));
 new UINotification();
 Fliplet.Widget.autosize();
-Fliplet.Studio.emit('widget-save-label-update', {
-  text: ''
-});
 
-$('.nav-tabs').on('click', 'a[data-toggle="tab"]', function(event) {
+$('.nav-tabs').on('click', 'a[data-toggle="tab"]', function (event) {
   event.preventDefault();
   var href = $(this).attr('href');
   var saveButtonLabel = 'Save';
@@ -135,29 +145,14 @@ $('#configuration').on('submit', function(event) {
     return;
   }
 
-  var data = {
-    gcmSenderId: $('[name="gcmSenderId"]').val(),
-    gcmServerKey: $('[name="gcmServerKey"]').val(),
-    gcmPackageName: $('[name="gcmPackageName"]').val(),
-    apnAuthKey: $('[name="apnAuthKey"]').val(),
-    apnKeyId: $('[name="apnKeyId"]').val(),
-    apnTeamId: $('[name="apnTeamId"]').val(),
-    apnTopic: $('[name="apnTopic"]').val(),
-    wnsClientId: $('[name="wnsClientId"]').val(),
-    wnsClientSecret: $('[name="wnsClientSecret"]').val(),
-    showAutomatically: $('[name="showAutomatically"]').is(':checked'),
-    showOnceOnPortal: $('[name="showOnceOnPortal"]').is(':checked'),
-    popupTitle: $('[name="popup_title"]').val(),
-    popupMessage: $('[name="popup_message"]').val()
-  };
+  data.showAutomatically = $('[name="showAutomatically"]').is(':checked');
+  data.showOnceOnPortal = $('[name="showOnceOnPortal"]').is(':checked');
+  data.popupTitle = $('[name="popup_title"]').val();
+  data.popupMessage = $('[name="popup_message"]').val();
 
-  data.gcm = !!(data.gcmSenderId && data.gcmServerKey && data.gcmPackageName);
-  data.apn = !!(data.apnAuthKey && data.apnKeyId && data.apnTeamId && data.apnTopic);
-  data.wns = !!(data.wnsClientId && data.wnsClientSecret);
-
-  data.configured = !!(data.gcm || data.apn || data.wns);
-
-  Fliplet.Widget.save(data).then(function() {
-    Fliplet.Widget.complete();
+  Fliplet.Widget.save(data).then(function () {
+    $('.settings-saved-app-msg').fadeIn();
+    Fliplet.Widget.autosize();
+    hideSavedMessage();
   });
 });
