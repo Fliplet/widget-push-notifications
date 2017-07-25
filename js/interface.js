@@ -121,9 +121,8 @@ $('.nav-tabs').on('click', 'a[data-toggle="tab"]', function(event) {
   Fliplet.Studio.emit('widget-save-label-update', {
     text: saveButtonLabel
   });
-  setTimeout(function() {
-    Fliplet.Widget.autosize();
-  }, 0);
+
+  Fliplet.Widget.autosize();
 });
 
 $('a#note-reports').on('shown.bs.tab', function(event) {
@@ -159,6 +158,4 @@ $('#configuration').on('submit', function(event) {
   });
 });
 
-setTimeout(function() {
-  Fliplet.Widget.autosize();
-}, 0);
+Fliplet.Widget.autosize();
