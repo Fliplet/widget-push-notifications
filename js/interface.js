@@ -99,7 +99,7 @@ function refreshReports() {
  */
 function hideSavedMessage() {
   setTimeout(function() {
-    $('.settings-saved-app-msg').fadeOut(function () {
+    $('.settings-saved-app-msg').fadeOut(function() {
       Fliplet.Widget.autosize();
     });
   }, 5000);
@@ -109,19 +109,21 @@ $('.app-name').html(Fliplet.Env.get('appName'));
 new UINotification();
 Fliplet.Widget.autosize();
 
-$('.nav-tabs').on('click', 'a[data-toggle="tab"]', function (event) {
+$('.nav-tabs').on('click', 'a[data-toggle="tab"]', function(event) {
   event.preventDefault();
   var href = $(this).attr('href');
   var saveButtonLabel = 'Save';
   $('#configuration').attr('disabled', (href === '#notification-send-tab'));
   $(this).tab('show');
-  Fliplet.Widget.autosize();
   if (href === '#notification-send-tab' || href === '#report') {
     saveButtonLabel = '';
   }
   Fliplet.Studio.emit('widget-save-label-update', {
     text: saveButtonLabel
   });
+  setTimeout(function() {
+    Fliplet.Widget.autosize();
+  }, 0);
 });
 
 $('a#note-reports').on('shown.bs.tab', function(event) {
@@ -150,9 +152,13 @@ $('#configuration').on('submit', function(event) {
   data.popupTitle = $('[name="popup_title"]').val();
   data.popupMessage = $('[name="popup_message"]').val();
 
-  Fliplet.Widget.save(data).then(function () {
+  Fliplet.Widget.save(data).then(function() {
     $('.settings-saved-app-msg').fadeIn();
     Fliplet.Widget.autosize();
     hideSavedMessage();
   });
 });
+
+setTimeout(function() {
+  Fliplet.Widget.autosize();
+}, 0);

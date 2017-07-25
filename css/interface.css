@@ -1,8 +1,17 @@
 /**************************************/
+
+
 /** ------ Bootstrap override ------ **/
+
+
 /** ------ Bootstrap override ------ **/
+
+
 /** ------ Bootstrap override ------ **/
+
+
 /**************************************/
+
 body {
   background-color: transparent;
 }
@@ -11,43 +20,38 @@ img {
   max-width: 100%;
 }
 
-.nav-tabs > li > a {
+.nav-tabs>li>a {
   color: #00abd1;
 }
 
-.nav-tabs > li > a:focus,
-.nav-tabs > li > a:hover {
+.nav-tabs>li>a:focus, .nav-tabs>li>a:hover {
   color: #00819f;
 }
 
-.nav-tabs > li.active > a,
-.nav-tabs > li.active > a:focus,
-.nav-tabs > li.active > a:hover {
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
   background-color: #f5f5f5;
 }
 
-.nav-tabs > li > a.btn-primary {
+.nav-tabs>li>a.btn-primary {
   background-color: #00abd1;
   color: #fff !important;
 }
 
-.nav-tabs > li > a.btn-primary:focus,
-.nav-tabs > li > a.btn-primary:hover {
+.nav-tabs>li>a.btn-primary:focus, .nav-tabs>li>a.btn-primary:hover {
   background-color: #00819f;
   border-color: #00819f;
   color: #fff !important;
 }
 
-.nav-tabs > li.active > a.btn-primary,
-.nav-tabs > li.active > a.btn-primary:focus,
-.nav-tabs > li.active > a.btn-primary:hover {
+.nav-tabs>li.active>a.btn-primary, .nav-tabs>li.active>a.btn-primary:focus, .nav-tabs>li.active>a.btn-primary:hover {
   color: #fff;
   background-color: #00819f;
   border-bottom-color: transparent;
 }
 
-.tab-content > .tab-pane {
+.tab-content>.tab-pane {
   padding-top: 15px;
+  padding-bottom: 6px;
 }
 
 .spinner-holder {
@@ -67,24 +71,32 @@ img {
   text-align: center;
   display: none;
 }
+
+
 /****************************************/
+
+
 /** ------ Notification send UI ------ **/
+
+
 /** ------ Notification send UI ------ **/
+
+
 /** ------ Notification send UI ------ **/
+
+
 /****************************************/
+
 #notification-send-tab-intro h1 {
   color: #00abd1;
   font-weight: 200;
 }
 
-.bootstrap-datetimepicker-widget table td span.active,
-.bootstrap-datetimepicker-widget table td.active,
-.bootstrap-datetimepicker-widget table td.active:hover {
+.bootstrap-datetimepicker-widget table td span.active, .bootstrap-datetimepicker-widget table td.active, .bootstrap-datetimepicker-widget table td.active:hover {
   background-color: #00abd1;
 }
 
-.bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary,
-.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary {
+.bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary, .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary {
   background-color: #00abd1;
 }
 
@@ -121,7 +133,7 @@ img {
   border-radius: 21%;
 }
 
-#notification-badge-icon > label {
+#notification-badge-icon>label {
   background: #ddd;
   color: #fff;
   display: block;
@@ -138,7 +150,7 @@ img {
   transition: background-color 0.2s linear;
 }
 
-#notification-badge-icon.checked > label {
+#notification-badge-icon.checked>label {
   background: #f31705;
 }
 
@@ -155,8 +167,7 @@ img {
   margin-top: 40px;
 }
 
-#notification-send-tab .bootstrap-datetimepicker-widget .timepicker table td,
-#notification-send-tab .bootstrap-datetimepicker-widget .timepicker table td span {
+#notification-send-tab .bootstrap-datetimepicker-widget .timepicker table td, #notification-send-tab .bootstrap-datetimepicker-widget .timepicker table td span {
   width: 24px;
   height: 24px;
   line-height: 24px;
@@ -167,38 +178,29 @@ img {
   border-top-left-radius: 4px;
 }
 
-#notification_timezone_gmt_label > .glyphicon,
-#notification_timezone_local_label > .glyphicon {
+#notification_timezone_gmt_label>.glyphicon, #notification_timezone_local_label>.glyphicon {
   display: none;
 }
 
-#notification_timezone_gmt:checked ~ #notification_timezone_gmt_label,
-#notification_timezone_local:checked ~ #notification_timezone_local_label {
+#notification_timezone_gmt:checked~#notification_timezone_gmt_label, #notification_timezone_local:checked~#notification_timezone_local_label {
   background-color: #00abd1;
   border-color: #00abd1;
   color: #fff;
 }
 
-#notification_timezone_gmt:checked ~ #notification_timezone_gmt_label > .glyphicon,
-#notification_timezone_local:checked ~ #notification_timezone_local_label > .glyphicon {
+#notification_timezone_gmt:checked~#notification_timezone_gmt_label>.glyphicon, #notification_timezone_local:checked~#notification_timezone_local_label>.glyphicon {
   display: inline-block;
 }
 
-#notification-summary-badge-not > span {
+#notification-summary-badge-not>span {
   text-decoration: underline;
 }
 
-.notification-summary-confirm,
-.notification-summary-error,
-.notification-summary-sending,
-.notification-summary-sent {
+.notification-summary-confirm, .notification-summary-error, .notification-summary-sending, .notification-summary-sent {
   display: none;
 }
 
-#notification-send-tab[data-mode="confirm"] .notification-summary-confirm,
-#notification-send-tab[data-mode="error"] .notification-summary-sending,
-#notification-send-tab[data-mode="sending"] .notification-summary-sending,
-#notification-send-tab[data-mode="sent"] .notification-summary-sending {
+#notification-send-tab[data-mode="confirm"] .notification-summary-confirm, #notification-send-tab[data-mode="error"] .notification-summary-sending, #notification-send-tab[data-mode="sending"] .notification-summary-sending, #notification-send-tab[data-mode="sent"] .notification-summary-sending {
   display: block;
 }
 
@@ -206,24 +208,24 @@ img {
   display: none;
 }
 
-#notification-send-tab .notification-summary-items > .notification-summary-item {
+#notification-send-tab .notification-summary-items>.notification-summary-item {
   margin-left: 40px;
   border-top: 1px solid #efefef;
   padding: 8px 0;
 }
 
-#notification-send-tab .notification-summary-items > .notification-summary-item:first-child {
+#notification-send-tab .notification-summary-items>.notification-summary-item:first-child {
   border-top: none;
 }
 
-#notification-send-tab .notification-summary-items > .notification-summary-item > .glyphicon {
+#notification-send-tab .notification-summary-items>.notification-summary-item>.glyphicon {
   font-size: 18px;
   float: left;
   margin-left: -35px;
   color: #999;
 }
 
-#notification-send-tab .notification-summary-items > .notification-summary-item > blockquote {
+#notification-send-tab .notification-summary-items>.notification-summary-item>blockquote {
   margin-bottom: 12px;
 }
 
@@ -231,7 +233,10 @@ img {
   -webkit-transition: none;
   transition: none;
 }
+
+
 /* Notification preview */
+
 #notification-message-preview {
   position: relative;
   text-align: left;
@@ -239,19 +244,18 @@ img {
   font-size: 8px;
   pointer-events: none;
 }
+
 @media screen and (min-width: 1280px) {
   #notification-message-preview {
     font-size: 9px;
   }
 }
 
-#notification-message-preview > img {
+#notification-message-preview>img {
   width: 100%;
 }
 
-#notification-message-preview.message-empty #notification-preview-home,
-#notification-message-preview.message-empty #notification-preview-lockscreen,
-#notification-message-preview.message-empty #notification-preview-notification-center {
+#notification-message-preview.message-empty #notification-preview-home, #notification-message-preview.message-empty #notification-preview-lockscreen, #notification-message-preview.message-empty #notification-preview-notification-center {
   display: none;
 }
 
@@ -272,7 +276,7 @@ img {
   line-height: 1.4;
 }
 
-#notification-message-preview > div > img {
+#notification-message-preview>div>img {
   -moz-border-radius: 21%;
   border-radius: 21%;
 }
@@ -292,25 +296,25 @@ img {
   left: 0;
   width: 33.333%;
   background: #000;
-  background-color: rgba(0,0,0,0.75);
+  background-color: rgba(0, 0, 0, 0.75);
   padding: 0.3% 1.2% 10px 4%;
 }
 
-#notification-preview-home > img {
+#notification-preview-home>img {
   width: 5.333%;
   margin-top: 1.867%;
   float: left;
   margin-left: -8%;
 }
 
-#notification-preview-icon-home > img {
+#notification-preview-icon-home>img {
   position: absolute;
   top: 56.5%;
   left: 17.8%;
   width: 5.4%;
 }
 
-#notification-preview-icon-home > strong {
+#notification-preview-icon-home>strong {
   position: absolute;
   top: 66%;
   left: 17.2%;
@@ -329,13 +333,13 @@ img {
   top: 29.9%;
   left: 34.8%;
   border-top: 1px solid #fff;
-  border-top-color: rgba(255,255,255,0.1);
+  border-top-color: rgba(255, 255, 255, 0.1);
   width: 31.8%;
   padding-left: 2.9%;
   padding-right: 1%;
 }
 
-#notification-preview-lockscreen > img {
+#notification-preview-lockscreen>img {
   position: absolute;
   top: 10%;
   left: 0;
@@ -351,10 +355,10 @@ img {
   padding-right: 1%;
   padding-bottom: 1%;
   border-bottom: 1px solid #fff;
-  border-bottom-color: rgba(255,255,255,0.1);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
 }
 
-#notification-preview-notification-center > img {
+#notification-preview-notification-center>img {
   position: absolute;
   top: 0;
   left: -10.1%;
