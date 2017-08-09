@@ -6,11 +6,17 @@ Fliplet.Widget.register('PushNotifications', function () {
   var $popup = $('.popup-screen');
   var askPromise;
 
+  var androidConfigured = data && data.gcmServerKey;
+  var iOSConfigured = data && data.apnAuthKey && data.apnKeyId && data.apnTeamId;
+  var windowsConfigured = data && data.wnsClientId && data.wnsClientSecret;
+
+  var isConfigured = androidConfigured || iOSConfigured || windowsConfigured;
+
   if (!data || !data.showOnceOnPortal) {
     key += '-' + Fliplet.Env.get('appId');
   }
 
-  if (!data || !data.configured) {
+  if (!data || !isConfigured) {
     return removeFromDom();
   }
 
