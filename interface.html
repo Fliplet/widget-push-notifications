@@ -5,7 +5,7 @@
     <ul class="nav nav-tabs" role="tablist">
       <li class="active"><a href="#notification-send-tab" data-toggle="tab" class="btn-primary">Send notifications <span class="glyphicon glyphicon-send"></span></a></li>
       <li><a href="#report" data-toggle="tab" id="note-reports">Reports</a></li>
-      <li><a href="#settings" data-toggle="tab">Push interface</a></li>
+      <li><a href="#settings" data-toggle="tab">Subscription request</a></li>
     </ul>
 
     <!-- Tab panes -->
@@ -142,6 +142,15 @@
         </div>
       </div>
       <div role="tabpanel" class="tab-pane" id="settings">
+        <div class="col-sm-12">
+            <h4>Instructions</h4>
+            <p>Push notifications require a user to subscribe. In order to subscribe a user to push notifications please configure the following settings. After updating these settings you will need to publish your app.</p>
+            <p>Note: You cannot use or test this feature in Fliplet Viewer. It will only work in live apps with the relevant operating system push notification settings configured. Push does not work on web apps.</p>
+        </div>
+        <div class="col-sm-12">
+            <h4>Push request interface</h4>
+            <p>Configure the settings for the notification interface that will ask the user if they want to enable push notifications.</p>
+        </div>
         <div class="form-group clearfix">
           <div class="col-sm-12 control-label">
             <label for="popup_title">Notification popup title</label>
@@ -159,6 +168,10 @@
             <textarea class="form-control" name="popup_message" id="popup_message" rows="4" placeholder="Enter a message">{{#if popupMessage}}{{popupMessage}}{{else}}You will receive notifications when app updates are available.
 Please tap on Allow Notifications below to receive notifications on the updates.{{/if}}</textarea>
           </div>
+        </div>
+        <div class="col-sm-12">
+            <h4>Push request trigger</h4>
+            <p>Configure when the app should ask the user to agree to receive push notifications. It is recommend this occurs when the user understands the benefit for the app and will agree to receiving push notifications.</p>
         </div>
         <div class="form-group clearfix">
           <div class="col-sm-12 control-label">
@@ -186,8 +199,9 @@ Please tap on Allow Notifications below to receive notifications on the updates.
             <div class="checkbox checkbox-icon">
               <input type="checkbox" id="portal-popup" name="showOnceOnPortal" value="1" {{#if showOnceOnPortal}}checked{{/if}} />
               <label for="portal-popup">
-                <span class="check"><i class="fa fa-check"></i></span> Only show once on portal apps
+                <span class="check"><i class="fa fa-check"></i></span> Apps inside a portal shouldn't ask request users subscibe to push notifications.
               </label>
+              <p class="help-block">TBD</p>
             </div>
           </div>
         </div>
