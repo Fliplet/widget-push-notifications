@@ -102,19 +102,37 @@ Fliplet.Widget.register('PushNotifications', function () {
   Fliplet.Navigator.onReady().then(function () {
     return Fliplet.Storage.get(key);
   }).then(function (alreadyShown) {
-    // If the user is subscribed, clear all notifications
     Fliplet.User.getSubscriptionId().then(function (isSubscribed) {
-      var push;
+      var push = Fliplet.User.getPushNotificationInstance(data);
+
+      if (!push) {
+        return;
+      }
 
       if (isSubscribed) {
-        push = Fliplet.User.getPushNotificationInstance(data);
-
-        if (push) {
-          //Clear any notifications
-          push.setApplicationIconBadgeNumber(function() {}, function() {}, 1);
-          push.clearAllNotifications(function() {}, function() {});
-        }
+        //Clear any notifications
+        push.setApplicationIconBadgeNumber(function () { }, function () { }, 1);
+        push.clearAllNotifications(function () { }, function () { });
       }
+
+      push.on('notification', function (data) {
+        Fliplet.Hooks.run('pushNotification', data).then(function () {
+          // @TODO: show toast
+          // Specs: https://docs.google.com/document/d/1Rtqbyvha9UufODVZoi45Bmvl1Cbs4EU1FdsYxybVgvA/edit
+          // On notification click, run the commented out block below
+
+          /*
+          if (data.additionalData) {
+            // Navigate to screen
+            if (data.additionalData.appId && data.additionalData.pageId) {
+              Fliplet.Navigate.screen(data.additionalData.pageId, {
+                appId: data.additionalData.appId
+              });
+            }
+          }
+          */
+        });
+      });
     });
 
     // Show the popup if hasn't been shown yet to the user
