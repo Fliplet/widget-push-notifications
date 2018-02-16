@@ -123,11 +123,9 @@ Fliplet.Widget.register('PushNotifications', function () {
 
           /*
           if (data.additionalData) {
-            // Navigate to screen
-            if (data.additionalData.appId && data.additionalData.pageId) {
-              Fliplet.Navigate.screen(data.additionalData.pageId, {
-                appId: data.additionalData.appId
-              });
+            // Navigate to screen or else
+            if (data.additionalData.action) {
+              Fliplet.Navigate.to(data.additionalData.action);
             }
           }
           */
