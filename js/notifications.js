@@ -125,10 +125,10 @@ Fliplet.Widget.register('PushNotifications', function () {
             // Navigate to screen or else
             if (data.additionalData.action) {
               var appPages = Fliplet.Env.get('appPages');
-              var updateItem = { handlerScreenId: Fliplet.Env.get('pageId'), targetScreenId: data.additionalData.action };
+              var updateItem = { handlerScreenId: Fliplet.Env.get('pageId'), targetScreenId: parseInt(data.additionalData.action) };
 
               if (Array.isArray(appPages) && appPages.length) {
-                var page = appPages.filter(function(page) { return page.id === data.additionalData.action || page.masterPageId === data.additionalData.action });
+                var page = appPages.filter(function(page) { return page.id === updateItem.targetScreenId || page.masterPageId === updateItem.targetScreenId });
 
                 if (!page.length) {
                   //page doesn't exist try to update
@@ -139,7 +139,7 @@ Fliplet.Widget.register('PushNotifications', function () {
                   Fliplet.Storage.set('fl_notification_update', updateItem).then(function () {
                     Fliplet.Navigate.screen(updateItem.targetScreenId, {
                       query: window.location.search,
-                      addToHistory: (updateItem.targetScreenId.toString() !== Fliplet.Env.get('pageId').toString())
+                      addToHistory: (updateItem.targetScreenId !== Fliplet.Env.get('pageId'))
                     });
                   });
                 }
