@@ -121,14 +121,31 @@ Fliplet.Widget.register('PushNotifications', function () {
           // Specs: https://docs.google.com/document/d/1Rtqbyvha9UufODVZoi45Bmvl1Cbs4EU1FdsYxybVgvA/edit
           // On notification click, run the commented out block below
 
-          /*
           if (data.additionalData) {
             // Navigate to screen or else
             if (data.additionalData.action) {
-              Fliplet.Navigate.to(data.additionalData.action);
+              var appPages = Fliplet.Env.get('appPages');
+              var updateItem = { handlerScreenId: Fliplet.Env.get('pageId'), targetScreenId: data.additionalData.action };
+
+              if (Array.isArray(appPages) && appPages.length) {
+                var page = appPages.filter(function(page) { return page.id === data.additionalData.action || page.masterPageId === data.additionalData.action });
+
+                if (!page.length) {
+                  //page doesn't exist try to update
+                  Fliplet.Native.Updates.checkForUpdates(Fliplet.Env.get('appId'), true, null, updateItem);
+                  return;
+                }
+                else {
+                  Fliplet.Storage.set('fl_notification_update', updateItem).then(function () {
+                    Fliplet.Navigate.screen(updateItem.targetScreenId, {
+                      query: window.location.search,
+                      addToHistory: (updateItem.targetScreenId.toString() !== Fliplet.Env.get('pageId').toString())
+                    });
+                  });
+                }
+              }
             }
           }
-          */
         });
       });
     });
