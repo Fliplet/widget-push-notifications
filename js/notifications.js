@@ -58,7 +58,7 @@ Fliplet.Widget.register('PushNotifications', function () {
       var appPages = Fliplet.Env.get('appPages');
 
       if (Array.isArray(appPages) && appPages.length) {
-        var page = appPages.filter(function(page) { return page.id === parseInt(data.page) || page.masterPageId === parseInt(data.page);});
+        var page = appPages.filter(function(page) { return page.id === parseInt(data.page);});
 
         if (!page.length || Fliplet.Env.get('pageId') === parseInt(data.page)) {
           Fliplet.Native.Updates.checkForUpdates(Fliplet.Env.get('appId'), true, null, data);
