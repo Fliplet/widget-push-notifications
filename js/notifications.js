@@ -32,6 +32,47 @@ Fliplet.Widget.register('PushNotifications', function () {
     return Fliplet.User.subscribe(data);
   }
 
+  function handleForegroundNotification(data) {
+    $('#notificationContainer').remove();
+    $('body').append(Fliplet.Native.Templates.InAppNotification);
+
+    $('#appName').text(Fliplet.Env.get('appName'));
+    $('#notificationTitle').text(data.title);
+    $('#notificationBody').text(data.message);
+
+    if (Fliplet.Env.get('pageId') === parseInt(data.additionalData.data.page)) {
+      $('#btnNotificationNavigate').addClass('hidden');
+    } else {
+      $('#btnNotificationNavigate').on('click', function () {
+        handleNotificationPayload(data.additionalData.data);
+      });
+    }
+
+    setTimeout(() => {
+      $('#notificationContainer').remove();
+    }, 3000);
+  }
+
+  function handleNotificationPayload(data) {
+    if (data && data.page) {
+      var appPages = Fliplet.Env.get('appPages');
+
+      if (Array.isArray(appPages) && appPages.length) {
+        var page = appPages.filter(function(page) { return page.id === parseInt(data.page) || page.masterPageId === parseInt(data.page);});
+
+        if (!page.length || Fliplet.Env.get('pageId') === parseInt(data.page)) {
+          Fliplet.Native.Updates.checkForUpdates(Fliplet.Env.get('appId'), true, null, data);
+          return;
+        }
+        else {
+          Fliplet.Storage.set('fl_notification_update', data).then(function () {
+            Fliplet.Navigate.to(data);
+          });
+        }
+      }
+    }
+  }
+
   function ask() {
     if (askPromise) {
       return askPromise;
@@ -117,34 +158,13 @@ Fliplet.Widget.register('PushNotifications', function () {
 
       push.on('notification', function (data) {
         Fliplet.Hooks.run('pushNotification', data).then(function () {
-          // @TODO: show toast
-          // Specs: https://docs.google.com/document/d/1Rtqbyvha9UufODVZoi45Bmvl1Cbs4EU1FdsYxybVgvA/edit
-          // On notification click, run the commented out block below
-
           if (data.additionalData) {
-            // Navigate to screen or else
-            if (data.additionalData.action) {
-              var appPages = Fliplet.Env.get('appPages');
-              var updateItem = { handlerScreenId: Fliplet.Env.get('pageId'), targetScreenId: parseInt(data.additionalData.action) };
-
-              if (Array.isArray(appPages) && appPages.length) {
-                var page = appPages.filter(function(page) { return page.id === updateItem.targetScreenId || page.masterPageId === updateItem.targetScreenId });
-
-                if (!page.length) {
-                  //page doesn't exist try to update
-                  Fliplet.Native.Updates.checkForUpdates(Fliplet.Env.get('appId'), true, null, updateItem);
-                  return;
-                }
-                else {
-                  Fliplet.Storage.set('fl_notification_update', updateItem).then(function () {
-                    Fliplet.Navigate.screen(updateItem.targetScreenId, {
-                      query: window.location.search,
-                      addToHistory: (updateItem.targetScreenId !== Fliplet.Env.get('pageId'))
-                    });
-                  });
-                }
-              }
+            if (data.additionalData.foreground) {
+              handleForegroundNotification(data);
+              return;
             }
+
+            handleNotificationPayload(data.additionalData.data);
           }
         });
       });
