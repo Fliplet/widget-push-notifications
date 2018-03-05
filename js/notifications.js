@@ -32,6 +32,47 @@ Fliplet.Widget.register('PushNotifications', function () {
     return Fliplet.User.subscribe(data);
   }
 
+  function handleForegroundNotification(data) {
+    $('#notificationContainer').remove();
+    $('body').append(Fliplet.Native.Templates.InAppNotification);
+
+    $('#appName').text(Fliplet.Env.get('appName'));
+    $('#notificationTitle').text(data.title);
+    $('#notificationBody').text(data.message);
+
+    if (Fliplet.Env.get('pageId') === parseInt(data.additionalData.data.page)) {
+      $('#btnNotificationNavigate').addClass('hidden');
+    } else {
+      $('#btnNotificationNavigate').on('click', function () {
+        handleNotificationPayload(data.additionalData.data);
+      });
+    }
+
+    setTimeout(() => {
+      $('#notificationContainer').remove();
+    }, 3000);
+  }
+
+  function handleNotificationPayload(data) {
+    if (data && data.page) {
+      var appPages = Fliplet.Env.get('appPages');
+
+      if (Array.isArray(appPages) && appPages.length) {
+        var page = appPages.filter(function(page) { return page.id === parseInt(data.page);});
+
+        if (!page.length || Fliplet.Env.get('pageId') === parseInt(data.page)) {
+          Fliplet.Native.Updates.checkForUpdates(Fliplet.Env.get('appId'), true, null, data);
+          return;
+        }
+        else {
+          Fliplet.Storage.set('fl_notification_update', data).then(function () {
+            Fliplet.Navigate.to(data);
+          });
+        }
+      }
+    }
+  }
+
   function ask() {
     if (askPromise) {
       return askPromise;
@@ -102,19 +143,31 @@ Fliplet.Widget.register('PushNotifications', function () {
   Fliplet.Navigator.onReady().then(function () {
     return Fliplet.Storage.get(key);
   }).then(function (alreadyShown) {
-    // If the user is subscribed, clear all notifications
     Fliplet.User.getSubscriptionId().then(function (isSubscribed) {
-      var push;
+      var push = Fliplet.User.getPushNotificationInstance(data);
+
+      if (!push) {
+        return;
+      }
 
       if (isSubscribed) {
-        push = Fliplet.User.getPushNotificationInstance(data);
-
-        if (push) {
-          //Clear any notifications
-          push.setApplicationIconBadgeNumber(function() {}, function() {}, 1);
-          push.clearAllNotifications(function() {}, function() {});
-        }
+        //Clear any notifications
+        push.setApplicationIconBadgeNumber(function () { }, function () { }, 1);
+        push.clearAllNotifications(function () { }, function () { });
       }
+
+      push.on('notification', function (data) {
+        Fliplet.Hooks.run('pushNotification', data).then(function () {
+          if (data.additionalData) {
+            if (data.additionalData.foreground) {
+              handleForegroundNotification(data);
+              return;
+            }
+
+            handleNotificationPayload(data.additionalData.data);
+          }
+        });
+      });
     });
 
     // Show the popup if hasn't been shown yet to the user
