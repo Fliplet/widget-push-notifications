@@ -75,35 +75,33 @@
               </div>
             </div>
           </div>
-          <div class="row hidden">
-            <div class="col-sm-8 col-sm-offset-2 text-center">
-              <p><br class="visible-xs-block"><label>Message preview</label><br><small class="text-info">Appearance of the notification is subject to users' device, preference and accepting to receive notifications.</small></p>
-              <div class="visible-sm-block visible-md-block visible-lg-block message-empty" id="notification-message-preview">
-                <img src="{{ asset 'img/notifications_device_preview_empty.jpg' }}" />
-                <div id="notification-preview-home">
-                  <img src="{{ asset 'img/app-icon.png' }}" />
-                  <strong class="app-name"></strong>
-                  <span class="notification-message"></span>
-                </div>
-                <div id="notification-preview-icon-home">
-                  <img src="{{ asset 'img/app-icon.png' }}" />
-                  <strong class="app-name"></strong>
-                </div>
-                <div id="notification-preview-lockscreen">
-                  <img src="{{ asset 'img/app-icon.png' }}" />
-                  <strong class="app-name"></strong>
-                  <span class="notification-message"></span>
-                </div>
-                <div id="notification-preview-notification-center">
-                  <img src="{{ asset 'img/app-icon.png' }}" />
-                  <strong class="app-name"></strong>
-                  <span class="notification-message"></span>
-                </div>
+          <div class="hidden notifications-preview">
+            <p><small class="text-info">Appearance of the notification is subject to users' device, preference and accepting to receive notifications.</small></p>
+            <div class="visible-sm-block visible-md-block visible-lg-block message-empty" id="notification-message-preview">
+              <img src="{{ asset 'img/notifications_device_preview_empty.jpg' }}" />
+              <div id="notification-preview-home">
+                <img src="{{ asset 'img/app-icon.png' }}" />
+                <strong class="app-name"></strong>
+                <span class="notification-message"></span>
               </div>
-              <div class="visible-xs-block"><img src="{{ asset 'img/notifications_device_preview_mock.jpg' }}" /></div>
+              <div id="notification-preview-icon-home">
+                <img src="{{ asset 'img/app-icon.png' }}" />
+                <strong class="app-name"></strong>
+              </div>
+              <div id="notification-preview-lockscreen">
+                <img src="{{ asset 'img/app-icon.png' }}" />
+                <strong class="app-name"></strong>
+                <span class="notification-message"></span>
+              </div>
+              <div id="notification-preview-notification-center">
+                <img src="{{ asset 'img/app-icon.png' }}" />
+                <strong class="app-name"></strong>
+                <span class="notification-message"></span>
+              </div>
             </div>
+            <div class="visible-xs-block"><img src="{{ asset 'img/notifications_device_preview_mock.jpg' }}" /></div>
+            <h4 class="text-warning">Your are about to send notifications to <strong><span class="subscriptions-count"></span></strong> users. Are you sure?</h4>
           </div>
-          <hr class="hidden">
         </div>
         <div id="notification-send-step-2" class="hidden">
           <p class="lead text-center" style="margin-bottom: 1em;"><strong class="text-primary">Step 2:</strong> When do you want your users to see the notification?</p>

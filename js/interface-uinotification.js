@@ -20,7 +20,18 @@ var UINotification = (function() {
     notificationConfig: {},
     sendErrorMessage: '',
     subscriptionsCount: 0,
-    mockedRequest: Fliplet.Env.get('development') // Use a mocked request under development environment
+    mockedRequest: Fliplet.Env.get('development'), // Use a mocked request under development environment
+    linkActionProvider: {},
+    linkData: {
+      action: 'screen',
+      page: '',
+      transition: 'slide.left',
+      options: {
+        hideAction: true
+      }
+    },
+    linkSavedData: {},
+    toSendNotification: false
   };
 
   UINotification.prototype.initUI = function() {
@@ -33,6 +44,9 @@ var UINotification = (function() {
         $('#subscriptions').html(_this.subscriptionsCount);
       }
     });
+
+    // Initialise the link provider
+    _this.linkProviderInit();
 
     // Initialise message preview
     _this.onNotificationMessageUpdated();
@@ -64,15 +78,88 @@ var UINotification = (function() {
     // Sets up callback for sending/cancelling notification sending
     $(document).on('click', '.notification-send', function(event){
       event.preventDefault();
-      if (confirm('Your are about to send notifications to '+_this.subscriptionsCount+' users. Are you sure?')) {
-        _this.startNotificationSend();
+      _this.sendErrorMessage = "";
+      var title = $('#notification_title').val();
+      var body = $('#notification_message').val();
+      if (!title || !body) {
+        return Fliplet.Modal.alert({
+        title: 'Configure your notification',
+          message: 'Please enter your notification title and message'
+        });
       }
+
+      // Add subscription count to HTML
+      $('.subscriptions-count').html(_this.subscriptionsCount);
+      // Get HTML for modal
+      var html = $('.notifications-preview').html();
+      // Open Modal
+      Fliplet.Modal.confirm({
+        title: 'Notification preview',
+        message: html,
+        buttons: {
+          confirm: {
+            label: 'Send notification'
+          }
+        }
+      }).then(function (result) {
+        if (result) {
+          _this.toSendNotification = true;
+          _this.linkActionProvider.forwardSaveRequest();
+        }
+      });
     });
     $(document).on('click', '.notification-cancel', _this.cancelNotificationSend);
+    $(document).on('click', '.preview-target-screen', function(event) {
+      event.preventDefault();
+      _this.linkActionProvider.forwardSaveRequest();
+    });
 
     // Sets up callback for sending another notification
     // $(document).on( 'click', '#notification-send-tab-another', _this.resetNotificationForm )
   };
+
+  UINotification.prototype.linkProviderInit = function() {
+    _this.linkActionProvider = Fliplet.Widget.open('com.fliplet.link', {
+      // If provided, the iframe will be appended here,
+      // otherwise will be displayed as a full-size iframe overlay
+      selector: '#link-provider',
+      // Also send the data I have locally, so that
+      // the interface gets repopulated with the same stuff
+      data: _this.linkData,
+      closeOnSave: false,
+      // Events fired from the provider
+      onEvent: function (event, data) {}
+    });
+
+    // Fired when the provider has finished
+    _this.linkActionProvider.then(function (result) {
+      _this.linkSavedData.action = result.data;
+
+      if (_this.toSendNotification) {
+        _this.toSendNotification = false;
+        _this.startNotificationSend();
+        return;
+      }
+
+      _this.openPreviewOverlay();
+    });
+  }
+
+  UINotification.prototype.openPreviewOverlay = function() {
+    console.log(_this.linkSavedData.action);
+    Fliplet.Studio.emit('overlay', {
+      name: 'page-preview',
+      options: {
+        size: 'medium',
+        title: 'Previewing target screen',
+        classes: '',
+        data: {
+          appId: Fliplet.Env.get('appId'),
+          pageId: _this.linkSavedData.action.page
+        }
+      }
+    });
+  }
 
   UINotification.prototype.onNotificationMessageUpdated = function() {
     var $titleField = $('#notification_title');
@@ -240,16 +327,8 @@ var UINotification = (function() {
   };
 
   UINotification.prototype.sendNotification = function() {
-    _this.sendErrorMessage = "";
     var title = $('#notification_title').val();
     var body = $('#notification_message').val();
-    if (!title || !body) {
-      _this.sendErrorMessage = 'Please enter your notification title and message';
-      return Promise.reject({
-        message: _this.sendErrorMessage
-      });
-    }
-
     // Reset progress bar
     $('.notification-summary-sending .progress-bar').width('0%');
     $('#notification-send-tab').attr('data-mode', 'sending');
@@ -271,14 +350,20 @@ var UINotification = (function() {
     return Fliplet.App.PushNotifications.send({
       title: title,
       body: body,
-      badge: 1
+      badge: 1,
+      custom: {
+        data: _this.linkSavedData.action
+      }
     });
   };
 
   UINotification.prototype.notificationIsSent = function() {
     $('#notification-send-tab').attr('data-mode', 'sent');
     $('.notification-summary-sending .progress-bar').width('100%');
-    alert('Your notification has been sent');
+    Fliplet.Modal.alert({
+      title: 'Notification sent',
+      message: 'Your notification has been sent.'
+    });
     $('#notification_title, #notification_message').val('');
     $('#notification-send-tab').attr('data-mode', '');
   };
@@ -289,7 +374,10 @@ var UINotification = (function() {
     if (!_this.sendErrorMessage.length) {
       _this.sendErrorMessage = 'There was an error sending your notification';
     }
-    alert(_this.sendErrorMessage);
+    Fliplet.Modal.alert({
+      title: 'Error',
+      message: _this.sendErrorMessage
+    });
     $('#notification-send-tab').attr('data-mode', '');
   };
 

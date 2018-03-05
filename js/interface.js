@@ -3,31 +3,6 @@ var source = $('#template-table-entries').html();
 var jobEntriesTemplate = Handlebars.compile(source);
 var widgetId = Fliplet.Widget.getDefaultId();
 var data = Fliplet.Widget.getData(widgetId) || {};
-var linkActionProvider;
-
-var linkData = $.extend(true, {
-  action: 'screen',
-  page: '',
-  transition: 'slide.left',
-  options: {
-    hideAction: true
-  }
-}, data.action);
-
-linkActionProvider = Fliplet.Widget.open('com.fliplet.link', {
-  // If provided, the iframe will be appended here,
-  // otherwise will be displayed as a full-size iframe overlay
-  selector: '#link-provider',
-  // Also send the data I have locally, so that
-  // the interface gets repopulated with the same stuff
-  data: linkData,
-  // Events fired from the provider
-  onEvent: function (event, data) {
-    if (event === 'interface-validate') {
-      Fliplet.Widget.toggleSaveButton(data.isValid === true);
-    }
-  }
-});
 
 function refreshReports() {
   $('#report .spinner-holder').addClass('animated');
@@ -176,15 +151,9 @@ $('#show_link_provider').on('change', function(e) {
   Fliplet.Widget.autosize();
 });
 
-// 3. Fired when the provider has finished
-linkActionProvider.then(function (result) {
-  data.action = result.data;
-  $('form').submit();
-});
-
 // Fired from Fliplet Studio when the external save button is clicked
 Fliplet.Widget.onSaveRequest(function() {
-  linkActionProvider.forwardSaveRequest();
+  $('form').submit();
 });
 
 $('#configuration').on('submit', function(event) {
