@@ -244,7 +244,7 @@ var UINotification = (function() {
     var title = $('#notification_title').val();
     var body = $('#notification_message').val();
     if (!title || !body) {
-      _this.sendErrorMessage = 'Please enter your notification message';
+      _this.sendErrorMessage = 'Please enter your notification title and message';
       return Promise.reject({
         message: _this.sendErrorMessage
       });
