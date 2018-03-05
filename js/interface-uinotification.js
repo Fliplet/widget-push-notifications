@@ -126,9 +126,7 @@ var UINotification = (function() {
       // Also send the data I have locally, so that
       // the interface gets repopulated with the same stuff
       data: _this.linkData,
-      closeOnSave: false,
-      // Events fired from the provider
-      onEvent: function (event, data) {}
+      closeOnSave: false
     });
 
     // Fired when the provider has finished

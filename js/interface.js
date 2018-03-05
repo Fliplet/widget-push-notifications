@@ -139,7 +139,7 @@ $('.tab-pane#report .refresh').on('click', function(event) {
   refreshReports();
 });
 
-$('#show_link_provider').on('change', function(e) {
+$('#show_link_provider').on('change', function() {
   var value = $('#show_link_provider:checked').val();
 
   if (value === 'on') {
