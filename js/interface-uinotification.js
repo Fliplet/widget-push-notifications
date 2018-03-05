@@ -152,7 +152,7 @@ var UINotification = (function() {
       options: {
         size: 'medium',
         title: 'Previewing target screen',
-        classes: '',
+        classes: 'preview-notification',
         data: {
           appId: Fliplet.Env.get('appId'),
           pageId: _this.linkSavedData.action.page
@@ -329,6 +329,20 @@ var UINotification = (function() {
   UINotification.prototype.sendNotification = function() {
     var title = $('#notification_title').val();
     var body = $('#notification_message').val();
+    var data = {
+      title: title,
+      body: body,
+      badge: 1
+    };
+
+    // Check if page is set for deep linking
+    if ($('#show_link_provider').is(":checked") && _this.linkSavedData.action && _this.linkSavedData.action.page) {
+      console.log('CHECKED');
+      data.custom = {
+        data: _this.linkSavedData.action
+      }
+    }
+
     // Reset progress bar
     $('.notification-summary-sending .progress-bar').width('0%');
     $('#notification-send-tab').attr('data-mode', 'sending');
@@ -347,14 +361,9 @@ var UINotification = (function() {
       });
     }
 
-    return Fliplet.App.PushNotifications.send({
-      title: title,
-      body: body,
-      badge: 1,
-      custom: {
-        data: _this.linkSavedData.action
-      }
-    });
+
+
+    return Fliplet.App.PushNotifications.send(data);
   };
 
   UINotification.prototype.notificationIsSent = function() {
