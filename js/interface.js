@@ -1,4 +1,4 @@
-var $tbody = $('#jobs-entries');
+var $reportHolder = $('.reports-holder');
 var source = $('#template-table-entries').html();
 var jobEntriesTemplate = Handlebars.compile(source);
 var widgetId = Fliplet.Widget.getDefaultId();
@@ -6,9 +6,9 @@ var data = Fliplet.Widget.getData(widgetId) || {};
 
 function refreshReports() {
   $('#report .spinner-holder').addClass('animated');
-  $('.table-holder').addClass('hidden');
+  $('.reports-holder').addClass('hidden');
   $('.no-data').removeClass('show');
-  $tbody.html('');
+  $reportHolder.html('');
   Fliplet.Widget.autosize();
 
   var reportData = {
@@ -41,7 +41,7 @@ function refreshReports() {
       var gcmSuccess = 0;
       var wnsSuccess = 0;
 
-      logData.createdAt = moment(log.createdAt).format('MMM Do YYYY - HH:mm:ss');
+      logData.createdAt = moment(log.createdAt).format('MMM Do YYYY, HH:mm');
       logData.title = log.data.payload && log.data.payload.title;
       logData.message = log.data.payload && log.data.payload.body;
 
@@ -82,9 +82,9 @@ function refreshReports() {
 
     if (reportData.jobs.length) {
       compiledEntries = jobEntriesTemplate(reportData);
-      $tbody.html(compiledEntries);
+      $reportHolder.html(compiledEntries);
       $('#report .spinner-holder').removeClass('animated');
-      $('.table-holder').removeClass('hidden');
+      $('.reports-holder').removeClass('hidden');
     } else {
       $('#report .spinner-holder').removeClass('animated');
       $('.no-data').addClass('show');
@@ -104,6 +104,10 @@ function hideSavedMessage() {
     });
   }, 5000);
 }
+
+$( window ).resize(function() {
+  Fliplet.Widget.autosize();
+});
 
 $('.app-name').html(Fliplet.Env.get('appName'));
 new UINotification();
@@ -133,6 +137,18 @@ $('a#note-reports').on('shown.bs.tab', function(event) {
 $('.tab-pane#report .refresh').on('click', function(event) {
   event.preventDefault();
   refreshReports();
+});
+
+$('#show_link_provider').on('change', function() {
+  var value = $('#show_link_provider:checked').val();
+
+  if (value === 'on') {
+    $('.link-provider-holder').removeClass('hidden');
+  } else {
+    $('.link-provider-holder').addClass('hidden');
+  }
+
+  Fliplet.Widget.autosize();
 });
 
 // Fired from Fliplet Studio when the external save button is clicked
