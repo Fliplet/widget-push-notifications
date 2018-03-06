@@ -81,11 +81,22 @@ var UINotification = (function() {
       _this.sendErrorMessage = "";
       var title = $('#notification_title').val();
       var body = $('#notification_message').val();
-      if (!title || !body) {
-        return Fliplet.Modal.alert({
-        title: 'Configure your notification',
-          message: 'Please enter your notification title and message'
-        });
+      var hasErrors = false;
+
+      // Reset error messages
+      $('.notification_title_error').addClass('hidden');
+      $('.notification_message_error').addClass('hidden');
+
+      if (!title) {
+        $('.notification_title_error').removeClass('hidden');
+        hasErrors = true;
+      }
+      if (!body) {
+        $('.notification_message_error').removeClass('hidden');
+        hasErrors = true;
+      }
+      if (hasErrors) {
+        return;
       }
 
       // Add subscription count to HTML
@@ -111,18 +122,29 @@ var UINotification = (function() {
     $(document).on('click', '.notification-cancel', _this.cancelNotificationSend);
     $(document).on('click', '.preview-target-screen', function(event) {
       event.preventDefault();
+      $('.screen-error').addClass('hidden');
       _this.linkActionProvider.forwardSaveRequest();
     });
-    $(document).on('click', '.more-details', function(e) {
+    $(document).on('click', '.more-details a', function(e) {
       e.preventDefault();
-      
-      $(this).parents('.report-wrapper').toggleClass('show-more');
+      var _this = $(this);
+      var placeHodlerEl = '<div class="report-placeholder-element"></div>';
 
-      if ($(this).parents('.report-wrapper').hasClass('show-more')) {
-        $(this).find('a').text('See less details');
-      } else {
-        $(this).find('a').text('See more details');
+      if (!$(this).parents('.report-wrapper').hasClass('show-more')) {
+        $('.reports-holder').append(placeHodlerEl);
+        Fliplet.Widget.autosize();
       }
+      
+      setTimeout(function() {
+        $('.report-placeholder-element').remove();
+        _this.parents('.report-wrapper').toggleClass('show-more');
+
+        if (_this.parents('.report-wrapper').hasClass('show-more')) {
+          _this.text('See less details');
+        } else {
+          _this.text('See more details');
+        }
+      }, 0);
 
       // Wait for CSS animation to finish before running
       setTimeout(function() {
@@ -155,12 +177,17 @@ var UINotification = (function() {
         return;
       }
 
+      if (!result.data || !result.data.page) {
+        $('.screen-error').removeClass('hidden');
+        return;
+      }
+
       _this.openPreviewOverlay();
     });
   }
 
   UINotification.prototype.openPreviewOverlay = function() {
-    console.log(_this.linkSavedData.action);
+    console.log(_this.linkSavedData.action)
     Fliplet.Studio.emit('overlay', {
       name: 'page-preview',
       options: {
@@ -169,7 +196,8 @@ var UINotification = (function() {
         classes: 'preview-notification',
         data: {
           appId: Fliplet.Env.get('appId'),
-          pageId: _this.linkSavedData.action.page
+          pageId: _this.linkSavedData.action.page,
+          query: _this.linkSavedData.action.query
         }
       }
     });
@@ -351,7 +379,6 @@ var UINotification = (function() {
 
     // Check if page is set for deep linking
     if ($('#show_link_provider').is(":checked") && _this.linkSavedData.action && _this.linkSavedData.action.page) {
-      console.log('CHECKED');
       data.custom = {
         data: _this.linkSavedData.action
       }
