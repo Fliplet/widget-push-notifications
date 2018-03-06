@@ -187,7 +187,6 @@ var UINotification = (function() {
   }
 
   UINotification.prototype.openPreviewOverlay = function() {
-    console.log(_this.linkSavedData.action)
     Fliplet.Studio.emit('overlay', {
       name: 'page-preview',
       options: {
