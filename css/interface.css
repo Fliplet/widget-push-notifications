@@ -113,11 +113,6 @@ img {
   border-left: 1.1em solid #00abd1;
 }
 
-.table-holder .btn {
-  padding-left: 0;
-  padding-right: 0;
-}
-
 .no-data {
   text-align: center;
   display: none;
@@ -289,4 +284,87 @@ img {
   font-weight: bold;
   background: transparent;
   color: #1DB188;
+}
+
+/* Reports */
+.reports-holder {
+  overflow: hidden;
+}
+
+.report-wrapper {
+  position: relative;
+  padding: 20px 0 25px;
+  border-bottom: 1px solid rgba(204, 204, 204, 1);
+}
+
+.more-details {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  z-index: 1;
+}
+
+.more-details a {
+  color: #b3b3b3;
+}
+
+.report-wrapper:hover .more-details a {
+  color: #00abd1;
+}
+
+.report-notification-title {
+  font-weight: bold;
+  color: #333333;
+}
+
+.report-notification-message {
+  color: #666666;
+  margin-bottom: 0px;
+  -webkit-transition: all 0.5s ease 0.25s;
+  transition: all 0.5s ease 0.25s;
+}
+
+.report-wrapper.show-more .report-notification-message {
+  margin-bottom: 20px;
+  -webkit-transition: all 0.5s ease 0s;
+  transition: all 0.5s ease 0s;
+}
+
+.report-status {
+  font-size: 12px;
+  margin-bottom: 10px;
+  color: #808080;
+}
+
+.report-status .fa {
+  margin-right: 5px;
+}
+
+.report-other-details {
+  display: flex;
+  justify-content: space-between;
+  opacity: 0;
+  max-height: 0px;
+  margin-bottom: 20px;
+  -webkit-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+}
+
+.report-wrapper.show-more .report-other-details {
+  opacity: 1;
+  max-height: 1000px;
+}
+
+.report-recipients p,
+.report-delivery p,
+.report-batch p {
+  color: #999999;
+  margin-bottom: 0;
+}
+
+.report-recipients p+p,
+.report-delivery p+p,
+.report-batch p+p {
+  color: #333333;
+  margin-bottom: 0px;
 }

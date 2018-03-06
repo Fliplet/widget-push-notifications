@@ -113,6 +113,22 @@ var UINotification = (function() {
       event.preventDefault();
       _this.linkActionProvider.forwardSaveRequest();
     });
+    $(document).on('click', '.more-details', function(e) {
+      e.preventDefault();
+      
+      $(this).parents('.report-wrapper').toggleClass('show-more');
+
+      if ($(this).parents('.report-wrapper').hasClass('show-more')) {
+        $(this).find('a').text('See less details');
+      } else {
+        $(this).find('a').text('See more details');
+      }
+
+      // Wait for CSS animation to finish before running
+      setTimeout(function() {
+        Fliplet.Widget.autosize();
+      }, 500);
+    });
 
     // Sets up callback for sending another notification
     // $(document).on( 'click', '#notification-send-tab-another', _this.resetNotificationForm )
@@ -294,7 +310,7 @@ var UINotification = (function() {
       _this.notificationConfig.data.badge = 'Increment';
     }
     if ($('#schedule-options > li.active:eq(0)').data('option') === 'scheduled') {
-      _this.notificationConfig.push_time = moment(new Date($('#datetimepicker').find('input').val())).format('YYYY-MM-DDTHH:mm:ss');
+      _this.notificationConfig.push_time = moment(new Date($('#datetimepicker').find('input').val())).format('YYYY-MM-DDTHH:mm');
       if ($('label[for=' + $(':input[name=notification_timezone]:checked').attr('id') + ']').index('#notification-scheduled .btn-group-vertical label') === 1) {
         _this.notificationConfig.push_time += '+00:00';
       }
