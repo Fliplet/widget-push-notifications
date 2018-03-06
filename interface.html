@@ -16,25 +16,28 @@
           <div class="row">
             <div class="col-sm-9 col-sm-offset-1">
               <div class="form-group clearfix">
-                <input type="text" class="form-control" name="notification_title" placeholder="Enter notification title" id="notification_title" data-count-selector="#title-count" />
+                <input type="text" class="form-control" name="notification_title" placeholder="Enter notification title" id="notification_title" data-count-selector="#title-count" required/>
                 <div class="pull-right text-muted text-success countlabel"><span id="title-count"></span> character(s) left</div>
+                <div class="text-danger notification_title_error hidden">Please enter a notification title</div>
               </div>
               <div class="form-group clearfix">
-                <textarea class="form-control" rows="4" name="notification_message" id="notification_message" placeholder="Enter notification message (10 words recommended)" data-count-selector="#message-count"></textarea>
+                <textarea class="form-control" rows="4" name="notification_message" id="notification_message" placeholder="Enter notification message (10 words recommended)" data-count-selector="#message-count" required></textarea>
                 <div class="pull-right text-muted text-success countlabel"><span id="message-count"></span> character(s) left</div>
+                <div class="text-danger notification_message_error hidden">Please enter a notification message</div>
               </div>
               <div class="form-group clearfix">
                 <div class="checkbox checkbox-icon">
                   <input type="checkbox" id="show_link_provider" value="on">
                   <label for="show_link_provider">
-                    <span class="check"><i class="fa fa-check"></i></span> Redirect users to screen when notification is tapped.
+                    <span class="check"><i class="fa fa-check"></i></span> Redirect users to a screen when they open the notification
                   </label>
                 </div>
               </div>
               <div class="row hidden link-provider-holder">
                 <div class="col-xs-7" id="link-provider"></div>
-                <div class="col-xs-4 preview-btn-holder">
+                <div class="col-xs-5 preview-btn-holder">
                   <a class="btn btn-secondary preview-target-screen" href="#">Preview target screen</a>
+                  <p class="text-danger text-center screen-error hidden">Please select a screen</p>
                 </div>
               </div>
               <div id="notification-badge-increment" class="hidden">
@@ -76,7 +79,7 @@
             </div>
           </div>
           <div class="hidden notifications-preview">
-            <p><small class="text-info">Appearance of the notification is subject to users' device, preference and accepting to receive notifications.</small></p>
+            <p class="text-center"><small class="text-info">Appearance of the notification is subject to users' device, preference and accepting to receive notifications.</small></p>
             <div class="visible-sm-block visible-md-block visible-lg-block message-empty" id="notification-message-preview">
               <img src="{{ asset 'img/notifications_device_preview_empty.jpg' }}" />
               <div id="notification-preview-home">
@@ -100,7 +103,7 @@
               </div>
             </div>
             <div class="visible-xs-block"><img src="{{ asset 'img/notifications_device_preview_mock.jpg' }}" /></div>
-            <h4 class="text-warning">Your are about to send notifications to <strong><span class="subscriptions-count"></span></strong> users. Are you sure?</h4>
+            <h4 class="text-warning text-center">Your are about to send notifications to <strong><span class="subscriptions-count"></span></strong> users. Are you sure?</h4>
           </div>
         </div>
         <div id="notification-send-step-2" class="hidden">
@@ -212,14 +215,39 @@ Please tap on Allow Notifications below to receive notifications on the updates.
 <script type="text/html" id="template-table-entries">
   \{{#each jobs}}
   <div class="row report-wrapper">
-    <div class="more-details">
-      <a href="#">See more details</a>
-    </div>
-    <div class="col-xs-8">
+    <div class="col-xs-9">
       <div>
         <p class="report-notification-title">\{{title}}</p>
         <p class="report-notification-message">\{{message}}</p>
+        <div class="more-details">
+          <a href="#">See more details</a>
+        </div>
       </div>
+    </div>
+    <div class="col-xs-3">
+      <div class="report-status report-notification-scheduled">
+        <div class="date-info">
+          <i class="fa fa-calendar-check-o fa-fw"></i>
+          <div><strong>Scheduled on</strong></div>
+          <div><span class="notification-scheduled-date">Feb 04th 2018, 10:04</span></div>
+        </div>
+      </div>
+      <div class="report-status report-notification-sent">
+        <div class="date-info">
+          <i class="fa fa-paper-plane fa-fw"></i>
+          <div><strong>Sent on</strong></div>
+          <div><span class="notification-scheduled-date">\{{createdAt}}</span></div>
+        </div>
+      </div>
+      <div class="report-status report-notification-tobe hidden">
+        <div class="date-info">
+          <i class="fa fa-clock-o fa-fw"></i> 
+          <div><strong>To be sent on</strong></div>
+          <div><span class="notification-scheduled-date">Feb 21st 2018, 13:00</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-12">
       <div class="report-other-details">
         <div class="report-recipients">
           <p>N<sup>o</sup> Recipients (iOS/Android/Win10)</p>
@@ -233,17 +261,6 @@ Please tap on Allow Notifications below to receive notifications on the updates.
           <p>Batches (Sent/Total)</p>
           <p class="report-batch-data">\{{batchesSent}}/\{{batchesCount}}</p>
         </div>
-      </div>
-    </div>
-    <div class="col-xs-4">
-      <div class="report-status report-notification-scheduled hidden">
-        <i class="fa fa-calendar-check-o fa-fw"></i> <strong>Scheduled on</strong> <span class="notification-scheduled-date">Feb 04th 2018, 10:04</span>
-      </div>
-      <div class="report-status report-notification-sent">
-        <i class="fa fa-paper-plane fa-fw"></i> <strong>Sent on</strong> <span class="notification-scheduled-date">\{{createdAt}}</span>
-      </div>
-      <div class="report-status report-notification-tobe hidden">
-        <i class="fa fa-clock-o fa-fw"></i> <strong>To be sent on</strong> <span class="notification-scheduled-date">Feb 21st 2018, 13:00</span>
       </div>
     </div>
   </div>
