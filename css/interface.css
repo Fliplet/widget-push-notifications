@@ -340,7 +340,7 @@ img {
   display: flex;
   justify-content: space-between;
   opacity: 0;
-  max-height: 0px;
+  max-height: 0;
   margin-top: 0;
   overflow: hidden;
   -webkit-transition: all 0.5s ease;
@@ -364,7 +364,7 @@ img {
 .report-delivery p+p,
 .report-batch p+p {
   color: #333333;
-  margin-bottom: 0px;
+  margin-bottom: 0;
 }
 
 .report-placeholder-element {
