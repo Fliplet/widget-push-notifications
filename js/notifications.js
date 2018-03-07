@@ -48,7 +48,7 @@ Fliplet.Widget.register('PushNotifications', function () {
       });
     }
 
-    setTimeout(() => {
+    setTimeout(function () {
       $('#notificationContainer').remove();
     }, 3000);
   }
