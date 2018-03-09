@@ -31,7 +31,8 @@ var UINotification = (function() {
       }
     },
     linkSavedData: {},
-    toSendNotification: false
+    toSendNotification: false,
+    errorMessageTimeout: undefined
   };
 
   UINotification.prototype.initUI = function() {
@@ -122,7 +123,10 @@ var UINotification = (function() {
     $(document).on('click', '.notification-cancel', _this.cancelNotificationSend);
     $(document).on('click', '.preview-target-screen', function(event) {
       event.preventDefault();
+
+      clearTimeout(_this.errorMessageTimeout);
       $('.screen-error').addClass('hidden');
+      
       _this.linkActionProvider.forwardSaveRequest();
     });
     $(document).on('click', '.more-details a', function(e) {
@@ -179,6 +183,9 @@ var UINotification = (function() {
 
       if (!result.data || !result.data.page) {
         $('.screen-error').removeClass('hidden');
+        _this.errorMessageTimeout = setTimeout(function() {
+          $('.screen-error').addClass('hidden');
+        }, 5000);
         return;
       }
 
