@@ -32,6 +32,7 @@ var UINotification = (function() {
     },
     linkSavedData: {},
     toSendNotification: false,
+    showPreviewScreen: false,
     errorMessageTimeout: undefined
   };
 
@@ -79,54 +80,19 @@ var UINotification = (function() {
     // Sets up callback for sending/cancelling notification sending
     $(document).on('click', '.notification-send', function(event){
       event.preventDefault();
-      _this.sendErrorMessage = "";
-      var title = $('#notification_title').val();
-      var body = $('#notification_message').val();
-      var hasErrors = false;
 
-      // Reset error messages
-      $('.notification_title_error').addClass('hidden');
-      $('.notification_message_error').addClass('hidden');
-
-      if (!title) {
-        $('.notification_title_error').removeClass('hidden');
-        hasErrors = true;
-      }
-      if (!body) {
-        $('.notification_message_error').removeClass('hidden');
-        hasErrors = true;
-      }
-      if (hasErrors) {
+      if ($('#show_link_provider').is(':checked')) {
+        _this.linkActionProvider.forwardSaveRequest();
         return;
       }
-
-      // Add subscription count to HTML
-      $('.subscriptions-count').html(_this.subscriptionsCount);
-      // Get HTML for modal
-      var html = $('.notifications-preview').html();
-      // Open Modal
-      Fliplet.Modal.confirm({
-        title: 'Notification preview',
-        message: html,
-        buttons: {
-          confirm: {
-            label: 'Send notification'
-          }
-        }
-      }).then(function (result) {
-        if (result) {
-          _this.toSendNotification = true;
-          _this.linkActionProvider.forwardSaveRequest();
-        }
-      });
+      
+      _this.sendValidation();
     });
     $(document).on('click', '.notification-cancel', _this.cancelNotificationSend);
     $(document).on('click', '.preview-target-screen', function(event) {
       event.preventDefault();
 
-      clearTimeout(_this.errorMessageTimeout);
-      $('.screen-error').addClass('hidden');
-      
+      _this.showPreviewScreen = true;
       _this.linkActionProvider.forwardSaveRequest();
     });
     $(document).on('click', '.more-details a', function(e) {
@@ -160,6 +126,53 @@ var UINotification = (function() {
     // $(document).on( 'click', '#notification-send-tab-another', _this.resetNotificationForm )
   };
 
+  UINotification.prototype.showNotificationReviewModal = function() {
+    // Add subscription count to HTML
+    $('.subscriptions-count').html(_this.subscriptionsCount);
+    // Get HTML for modal
+    var html = $('.notifications-preview').html();
+    // Open Modal
+    Fliplet.Modal.confirm({
+      title: 'Notification preview',
+      message: html,
+      buttons: {
+        confirm: {
+          label: 'Send notification'
+        }
+      }
+    }).then(function (result) {
+      if (result) {
+        _this.toSendNotification = true;
+        _this.linkActionProvider.forwardSaveRequest();
+      }
+    });
+  }
+
+  UINotification.prototype.sendValidation = function(hasError) {
+    _this.sendErrorMessage = "";
+    var title = $('#notification_title').val();
+    var body = $('#notification_message').val();
+    var hasErrors = typeof hasError !== 'undefined' ? hasError : false;
+
+    // Reset error messages
+    $('.notification_title_error').addClass('hidden');
+    $('.notification_message_error').addClass('hidden');
+
+    if (!title) {
+      $('.notification_title_error').removeClass('hidden');
+      hasErrors = true;
+    }
+    if (!body) {
+      $('.notification_message_error').removeClass('hidden');
+      hasErrors = true;
+    }
+    if (hasErrors) {
+      return;
+    }
+
+    _this.showNotificationReviewModal();
+  }
+
   UINotification.prototype.linkProviderInit = function() {
     _this.linkActionProvider = Fliplet.Widget.open('com.fliplet.link', {
       // If provided, the iframe will be appended here,
@@ -174,6 +187,17 @@ var UINotification = (function() {
     // Fired when the provider has finished
     _this.linkActionProvider.then(function (result) {
       _this.linkSavedData.action = result.data;
+      clearTimeout(_this.errorMessageTimeout);
+      $('.screen-error').addClass('hidden');
+
+      if (!result.data || !result.data.page) {
+        $('.screen-error').removeClass('hidden');
+        _this.sendValidation(true);
+        _this.errorMessageTimeout = setTimeout(function() {
+          $('.screen-error').addClass('hidden');
+        }, 5000);
+        return;
+      }
 
       if (_this.toSendNotification) {
         _this.toSendNotification = false;
@@ -181,15 +205,13 @@ var UINotification = (function() {
         return;
       }
 
-      if (!result.data || !result.data.page) {
-        $('.screen-error').removeClass('hidden');
-        _this.errorMessageTimeout = setTimeout(function() {
-          $('.screen-error').addClass('hidden');
-        }, 5000);
+      if (_this.showPreviewScreen) {
+        _this.showPreviewScreen = false;
+        _this.openPreviewOverlay();
         return;
       }
 
-      _this.openPreviewOverlay();
+      _this.sendValidation();   
     });
   }
 
@@ -384,7 +406,7 @@ var UINotification = (function() {
     };
 
     // Check if page is set for deep linking
-    if ($('#show_link_provider').is(":checked") && _this.linkSavedData.action && _this.linkSavedData.action.page) {
+    if ($('#show_link_provider').is(':checked') && _this.linkSavedData.action && _this.linkSavedData.action.page) {
       data.custom = {
         data: _this.linkSavedData.action
       }
