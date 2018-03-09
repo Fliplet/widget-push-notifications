@@ -40,10 +40,13 @@ var UINotification = (function() {
     Fliplet.App.Subscriptions.get().then(function(subscriptions) {
       _this.subscriptionsCount = subscriptions.length;
       if (_this.subscriptionsCount === 0) {
-        $('#subscription-note').html('No devices are registered to receive this notification.');
+        $('#subscription-note').html('<p>No devices registered to receive this notification<br><small class="help-block"><strong>Note:</strong> Users can disable notifications on their devices.</small></p>');
         $('#subscription-note').addClass('text-danger');
+        Fliplet.Widget.autosize();
+        $('#subscription-note').removeClass('toHide');
       } else {
         $('#subscriptions').html(_this.subscriptionsCount);
+        $('#subscription-note').removeClass('toHide');
       }
     });
 
@@ -190,15 +193,6 @@ var UINotification = (function() {
       clearTimeout(_this.errorMessageTimeout);
       $('.screen-error').addClass('hidden');
 
-      if (!result.data || !result.data.page) {
-        $('.screen-error').removeClass('hidden');
-        _this.sendValidation(true);
-        _this.errorMessageTimeout = setTimeout(function() {
-          $('.screen-error').addClass('hidden');
-        }, 5000);
-        return;
-      }
-
       if (_this.toSendNotification) {
         _this.toSendNotification = false;
         _this.startNotificationSend();
@@ -208,6 +202,15 @@ var UINotification = (function() {
       if (_this.showPreviewScreen) {
         _this.showPreviewScreen = false;
         _this.openPreviewOverlay();
+        return;
+      }
+
+      if (!result.data || !result.data.page) {
+        $('.screen-error').removeClass('hidden');
+        _this.sendValidation(true);
+        _this.errorMessageTimeout = setTimeout(function() {
+          $('.screen-error').addClass('hidden');
+        }, 5000);
         return;
       }
 
@@ -430,8 +433,6 @@ var UINotification = (function() {
       });
     }
 
-
-
     return Fliplet.App.PushNotifications.send(data);
   };
 
@@ -440,7 +441,7 @@ var UINotification = (function() {
     $('.notification-summary-sending .progress-bar').width('100%');
     Fliplet.Modal.alert({
       title: 'Notification sent',
-      message: 'Your notification has been sent.'
+      message: 'Your notification has been sent to up to <strong>' + _this.subscriptionsCount + '</strong> registered devices.'
     });
     $('#notification_title, #notification_message').val('');
     $('#notification-send-tab').attr('data-mode', '');
