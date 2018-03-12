@@ -102,6 +102,7 @@ function refreshReports() {
         $reportHolder.html(compiledEntries);
         $('#report .spinner-holder').removeClass('animated');
         $('.reports-holder').removeClass('hidden');
+        $('[data-toggle="tooltip"]').tooltip();
       } else {
         $('#report .spinner-holder').removeClass('animated');
         $('.no-data').addClass('show');

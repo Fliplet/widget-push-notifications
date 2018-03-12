@@ -255,15 +255,15 @@ pushWidget.ask().then(function (subscriptionId) {
     <div class="col-xs-12">
       <div class="report-other-details">
         <div class="report-recipients">
-          <p>N<sup>o</sup> Recipients (iOS/Android/Win10)</p>
+          <p>N<sup>o</sup> Recipients (iOS/Android/Win10) <span class="question-icon" data-toggle="tooltip" data-placement="auto bottom" title="The number of users that accepted to receive push notifications from the app."><i class="fa fa-question-circle"></i></span></p>
           <p class="report-recipients-data">\{{recipientsCount}} (\{{sentApple}}/\{{sentGoogle}}/\{{sentWindows}})</p>
         </div>
         <div class="report-delivery">
-          <p>Accepted for delivery</p>
+          <p>Accepted for delivery <span class="question-icon" data-toggle="tooltip" data-placement="auto bottom" title="Fliplet sends a request to Apple/Google/Microsoft to deliver the push notifications to the devices. This shows how many were accepted. However, whether they do or not accept is out of Fliplet's control."><i class="fa fa-question-circle"></i></span></p>
           <p class="report-delivery-data">\{{deliveredCount}} (\{{deliveryPerct}}%)</p>
         </div>
         <div class="report-batch">
-          <p>Batches (Sent/Total)</p>
+          <p>Batches (Sent/Total) <span class="question-icon" data-toggle="tooltip" data-placement="auto left" title="The number of push notification batches that were sent."><i class="fa fa-question-circle"></i></span></p>
           <p class="report-batch-data">\{{batchesSent}}/\{{batchesCount}}</p>
         </div>
       </div>
