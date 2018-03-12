@@ -88,7 +88,7 @@ var UINotification = (function() {
         _this.linkActionProvider.forwardSaveRequest();
         return;
       }
-      
+
       _this.sendValidation();
     });
     $(document).on('click', '.notification-cancel', _this.cancelNotificationSend);
@@ -107,7 +107,7 @@ var UINotification = (function() {
         $('.reports-holder').append(placeHodlerEl);
         Fliplet.Widget.autosize();
       }
-      
+
       setTimeout(function() {
         $('.report-placeholder-element').remove();
         _this.parents('.report-wrapper').toggleClass('show-more');
@@ -136,6 +136,7 @@ var UINotification = (function() {
     var html = $('.notifications-preview').html();
     // Open Modal
     Fliplet.Modal.confirm({
+      size: 'large',
       title: 'Notification preview',
       message: html,
       buttons: {
@@ -214,7 +215,7 @@ var UINotification = (function() {
         return;
       }
 
-      _this.sendValidation();   
+      _this.sendValidation();
     });
   }
 
@@ -240,7 +241,7 @@ var UINotification = (function() {
 
     var previewHtml = '';
     if ($titleField.val().length) {
-      previewHtml += `<strong>${$titleField.val()}</strong>`;
+      previewHtml += '<strong>' + $titleField.val() + '</strong><br>';
     }
     previewHtml += $messageField.val();
 
