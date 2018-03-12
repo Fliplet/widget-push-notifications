@@ -25,7 +25,7 @@
                 <div class="pull-right text-muted text-success countlabel"><span id="message-count"></span> character(s) left</div>
                 <div class="text-danger notification_message_error hidden">Please enter a notification message</div>
               </div>
-              <div class="form-group clearfix hidden">
+              <div class="form-group clearfix">
                 <div class="checkbox checkbox-icon">
                   <input type="checkbox" id="show_link_provider" value="on">
                   <label for="show_link_provider">
@@ -33,7 +33,7 @@
                   </label>
                 </div>
               </div>
-              <div class="row hidden link-provider-holder hidden">
+              <div class="row hidden link-provider-holder">
                 <div class="col-xs-7" id="link-provider"></div>
                 <div class="col-xs-5 preview-btn-holder">
                   <a class="btn btn-secondary preview-target-screen" href="#">Preview target screen</a>
@@ -222,7 +222,7 @@ pushWidget.ask().then(function (subscriptionId) {
         <p class="report-notification-title">\{{title}}</p>
         <p class="report-notification-message">\{{message}}</p>
         \{{#if screenName}}
-          <p class="report-notification-screen hidden"><strong>Target screen:</strong> \{{screenName}}</p>
+          <p class="report-notification-screen"><strong>Target screen:</strong> \{{screenName}}</p>
         \{{/if}}
         <div class="more-details">
           <a href="#">See more details</a>
