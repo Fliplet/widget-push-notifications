@@ -4,8 +4,8 @@
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
       <li class="active"><a href="#notification-send-tab" data-toggle="tab">Send notifications</a></li>
-      <li><a href="#report" data-toggle="tab" id="note-reports">Reports</a></li>
-      <li><a href="#settings" data-toggle="tab">Push interface</a></li>
+      <li><a href="#report" data-toggle="tab" id="note-reports">Sent notifications</a></li>
+      <li><a href="#settings" data-toggle="tab">Permission popup</a></li>
     </ul>
 
     <!-- Tab panes -->
@@ -68,7 +68,7 @@
           -->
           <div class="row">
             <div class="col-xs-8 col-xs-offset-2 text-center">
-              <p id="subscription-note">Up to <strong><span id="subscriptions">x</span></strong> registered devices will recieve this notification.</p>
+              <div id="subscription-note" class="toHide"><p>Up to <strong><span id="subscriptions">x</span></strong> registered devices will recieve this notification</p></div>
               <p>
                 <a class="btn btn-primary notification-send" href="#">Review &amp; send notification</a>
                 <a class="btn btn-secondary notification-cancel" href="#">Cancel</a>
@@ -103,7 +103,7 @@
               </div>
             </div>
             <div class="visible-xs-block"><img src="{{ asset 'img/notifications_device_preview_mock.jpg' }}" /></div>
-            <h4 class="text-warning text-center">Your are about to send notifications to <strong><span class="subscriptions-count"></span></strong> users. Are you sure?</h4>
+            <h4 class="text-warning text-center">Your are about to send notifications to <strong><span class="subscriptions-count"></span></strong> registered devices.<br>Are you sure?</h4>
           </div>
         </div>
         <div id="notification-send-step-2" class="hidden">
@@ -155,57 +155,59 @@
         </div>
       </div>
       <div role="tabpanel" class="tab-pane" id="settings">
-        <div class="form-group clearfix">
-          <div class="col-sm-12 control-label">
-            <label for="popup_title">Notification popup title</label>
-          </div>
-          <div class="col-sm-12">
-            <input type="text" name="popup_title" class="form-control" id="popup_title" placeholder="Enter a title" value="{{#if popupTitle}}{{popupTitle}}{{else}}App updates and notifications{{/if}}" />
-            <p class="help-block">The popup will only appear once for users that allow or reject notifications.</p>
-          </div>
-        </div>
-        <div class="form-group clearfix">
-          <div class="col-sm-12 control-label">
-            <label for="popup_message">Notification popup message</label>
-          </div>
-          <div class="col-sm-12">
-            <textarea class="form-control" name="popup_message" id="popup_message" rows="4" placeholder="Enter a message">{{#if popupMessage}}{{popupMessage}}{{else}}You will receive notifications when app updates are available.
-Please tap on Allow Notifications below to receive notifications on the updates.{{/if}}</textarea>
-          </div>
-        </div>
-        <div class="form-group clearfix">
-          <div class="col-sm-12 control-label">
-            <label for="auto-popup">Do you want to show the push notification popup automatically on the first screen of the app?</label>
-          </div>
-          <div class="col-sm-12">
-            <div class="checkbox checkbox-icon">
-              <input type="checkbox" id="auto-popup" name="showAutomatically" value="1" {{#if showAutomatically}}checked{{/if}} />
-              <label for="auto-popup">
-                <span class="check"><i class="fa fa-check"></i></span> Show notification popup automatically
-              </label>
-              <p class="help-block">If you want to manually show the popup on a specific screen, please disable this option and use the snippet of code below.</p>
+        <p>To receive notifications, your app users will be asked for permission. Configure the popup below:</p>
+        <div class="row">
+          <div class="form-group clearfix">
+            <div class="col-sm-12 control-label">
+              <label for="popup_title">Permission popup title</label>
             </div>
-            <pre><code>var pushWidget = Fliplet.Widget.get('PushNotifications');
-
-  pushWidget.ask().then(function (subscriptionId) {
-    // user pressed allow and has been registered
-  }, function (err) {
-    // contains code and message
-  })</code></pre>
+            <div class="col-sm-12">
+              <input type="text" name="popup_title" class="form-control" id="popup_title" placeholder="Enter a title" value="{{#if popupTitle}}{{popupTitle}}{{else}}App updates and notifications{{/if}}" />
+              <p class="help-block">The popup will only appear once for users that allow or reject push notifications.</p>
+            </div>
           </div>
-        </div>
-        <div class="form-group clearfix">
-          <div class="col-sm-12">
-            <div class="checkbox checkbox-icon">
-              <input type="checkbox" id="portal-popup" name="showOnceOnPortal" value="1" {{#if showOnceOnPortal}}checked{{/if}} />
-              <label for="portal-popup">
-                <span class="check"><i class="fa fa-check"></i></span> Only show once on portal apps
-              </label>
+          <div class="form-group clearfix">
+            <div class="col-sm-12 control-label">
+              <label for="popup_message">Permission popup message</label>
+            </div>
+            <div class="col-sm-12">
+              <textarea class="form-control" name="popup_message" id="popup_message" rows="4" placeholder="Enter a message">{{#if popupMessage}}{{popupMessage}}{{else}}Tap Allow Notifications below to be notified of app updates.{{/if}}</textarea>
+            </div>
+          </div>
+          <div class="form-group clearfix">
+            <div class="col-sm-12 control-label">
+              <label for="auto-popup">Do you want to show the push notification permission popup automatically on the first screen of the app?</label>
+            </div>
+            <div class="col-sm-12">
+              <div class="checkbox checkbox-icon">
+                <input type="checkbox" id="auto-popup" name="showAutomatically" value="1" {{#if showAutomatically}}checked{{/if}} />
+                <label for="auto-popup">
+                  <span class="check"><i class="fa fa-check"></i></span> Show notification popup automatically
+                </label>
+                <p class="help-block">If you want to manually show the popup on a specific screen, please disable this option and copy the snippet of code below and paste it on the screen's JavaScript code editor, using the <a href="#" onclick="Fliplet.Studio.emit('navigate', { name: 'appEditDeveloper' })">Developer Options</a>.</p>
+              </div>
+              <pre><code>var pushWidget = Fliplet.Widget.get('PushNotifications');
+
+pushWidget.ask().then(function (subscriptionId) {
+  // user pressed allow and has been registered
+}, function (err) {
+  // contains code and message
+})</code></pre>
+            </div>
+          </div>
+          <div class="form-group clearfix">
+            <div class="col-sm-12">
+              <div class="checkbox checkbox-icon">
+                <input type="checkbox" id="portal-popup" name="showOnceOnPortal" value="1" {{#if showOnceOnPortal}}checked{{/if}} />
+                <label for="portal-popup">
+                  <span class="check"><i class="fa fa-check"></i></span> Only show once on portal apps
+                </label>
+              </div>
             </div>
           </div>
         </div>
         <div class="settings-saved-app-msg fade-transition" style="display: none;">
-          Push interface configuration saved.
+          Configuration saved.
         </div>
       </div>
     </div>
@@ -219,6 +221,9 @@ Please tap on Allow Notifications below to receive notifications on the updates.
       <div>
         <p class="report-notification-title">\{{title}}</p>
         <p class="report-notification-message">\{{message}}</p>
+        \{{#if screenName}}
+          <p class="report-notification-screen"><strong>Target screen:</strong> \{{screenName}}</p>
+        \{{/if}}
         <div class="more-details">
           <a href="#">See more details</a>
         </div>
@@ -250,15 +255,15 @@ Please tap on Allow Notifications below to receive notifications on the updates.
     <div class="col-xs-12">
       <div class="report-other-details">
         <div class="report-recipients">
-          <p>N<sup>o</sup> Recipients (iOS/Android/Win10)</p>
+          <p>N<sup>o</sup> Recipients (iOS/Android/Win10) <span class="question-icon" data-toggle="tooltip" data-placement="auto bottom" title="The number of users that accepted to receive push notifications from the app."><i class="fa fa-question-circle"></i></span></p>
           <p class="report-recipients-data">\{{recipientsCount}} (\{{sentApple}}/\{{sentGoogle}}/\{{sentWindows}})</p>
         </div>
         <div class="report-delivery">
-          <p>Accepted for delivery</p>
+          <p>Accepted for delivery <span class="question-icon" data-toggle="tooltip" data-placement="auto bottom" title="Fliplet sends a request to Apple/Google/Microsoft to deliver the push notifications to the devices. This shows how many were accepted. However, whether they do or not accept is out of Fliplet's control."><i class="fa fa-question-circle"></i></span></p>
           <p class="report-delivery-data">\{{deliveredCount}} (\{{deliveryPerct}}%)</p>
         </div>
         <div class="report-batch">
-          <p>Batches (Sent/Total)</p>
+          <p>Batches (Sent/Total) <span class="question-icon" data-toggle="tooltip" data-placement="auto left" title="The number of push notification batches that were sent."><i class="fa fa-question-circle"></i></span></p>
           <p class="report-batch-data">\{{batchesSent}}/\{{batchesCount}}</p>
         </div>
       </div>
