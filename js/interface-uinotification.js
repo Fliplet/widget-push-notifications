@@ -136,6 +136,7 @@ var UINotification = (function() {
     var html = $('.notifications-preview').html();
     // Open Modal
     Fliplet.Modal.confirm({
+      size: 'large',
       title: 'Notification preview',
       message: html,
       buttons: {
