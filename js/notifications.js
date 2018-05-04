@@ -75,11 +75,16 @@ Fliplet.Widget.register('PushNotifications', function () {
 
   function ask() {
     if (!data || !isConfigured) {
-      return Promise.reject('Please configure your push notification settings first.');
+      return Promise.reject({
+        code: 0,
+        message: 'Please configure your push notification settings first.'
+      });
     }
 
+    // Push notifications are not enabled while using edit mode in Fliplet Studio.
+    // We just return a promise that is never fulfilled.
     if (Fliplet.Env.get('interact')) {
-      return Promise.reject('Push notifications are not enabled while using edit mode in Fliplet Studio.')
+      return new Promise(function () {});
     }
 
     if (askPromise) {
