@@ -87,6 +87,13 @@ Fliplet.Widget.register('PushNotifications', function () {
       return new Promise(function () {});
     }
 
+    if (Fliplet.Env.is('web') && Fliplet.Env.get('mode') === 'view') {
+      return Promise.reject({
+        code: -1,
+        message: 'Push notifications are not supported on the web platform yet.'
+      });
+    }
+
     if (askPromise) {
       return askPromise;
     }
