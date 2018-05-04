@@ -13,7 +13,7 @@ Fliplet.Widget.register('PushNotifications', function () {
   }
 
   if (!data || !isConfigured) {
-    return removeFromDom();
+    removeFromDom();
   }
 
   function removeFromDom() {
@@ -74,36 +74,56 @@ Fliplet.Widget.register('PushNotifications', function () {
   }
 
   function ask() {
+    if (!data || !isConfigured) {
+      return Promise.reject({
+        code: 0,
+        message: 'Please configure your push notification settings first.'
+      });
+    }
+
+    // Push notifications are not enabled while using edit mode in Fliplet Studio.
+    // We just return a promise that is never fulfilled.
+    if (Fliplet.Env.get('interact')) {
+      return new Promise(function () {});
+    }
+
+    if (Fliplet.Env.is('web') && Fliplet.Env.get('mode') === 'view') {
+      return Promise.reject({
+        code: -1,
+        message: 'Push notifications are not supported on the web platform yet.'
+      });
+    }
+
     if (askPromise) {
       return askPromise;
     }
 
-    askPromise = Fliplet.Storage.get(key);
+    askPromise = Fliplet.Storage.get(key).then(function (alreadyShown) {
+      if (!alreadyShown || typeof alreadyShown !== 'string') {
+        return true;
+      }
 
-    askPromise.then(function (value) {
-      if (!value || value.indexOf('disallow') === -1) {
-        return Promise.resolve();
+      // If the user already allowed, just subscribe it
+      if (alreadyShown.indexOf('allow') === 0) {
+        return false;
       }
 
       return Promise.reject({
         code: 4,
         message: 'User has disallowed push notifications'
       });
-    }).then(function () {
-      if (Fliplet.Env.get('platform') === 'web') {
-        return Promise.resolve();
+    }).then(function (displayPopup) {
+      if (!displayPopup) {
+        return subscribeUser();
       }
 
       return new Promise(function (resolve, reject) {
         $popup.find('[data-allow]').one('click', function () {
           dismiss();
-          markAsSeen('allow');
-
-          Fliplet.Navigator.onReady().then(function () {
+          
+          markAsSeen('allow').then(function () {
             return subscribeUser();
-          }).then(function (subscriptionId) {
-            resolve(subscriptionId);
-          }, function (err) {
+          }).then(resolve).catch(function (err) {
             console.error(err);
 
             reject({
@@ -115,22 +135,22 @@ Fliplet.Widget.register('PushNotifications', function () {
 
         $popup.find('[data-dont-allow]').one('click', function () {
           dismiss();
-          markAsSeen('disallow');
-
-          reject({
-            code: 2,
-            message: 'The user did not allow push notifications.'
-          });
+          markAsSeen('disallow').then(function () {
+            reject({
+              code: 2,
+              message: 'The user did not allow push notifications.'
+            }); 
+          }).catch(reject);
         });
 
         $popup.find('[data-remind]').one('click', function () {
           dismiss();
-          markAsSeen('remind');
-
-          reject({
-            code: 3,
-            message: 'The user pressed the "remind later" button.'
-          });
+          markAsSeen('remind').then(function () {
+            reject({
+              code: 3,
+              message: 'The user pressed the "remind later" button.'
+            });
+          }).catch(reject);
         });
 
         $popup.addClass('ready');
@@ -140,9 +160,13 @@ Fliplet.Widget.register('PushNotifications', function () {
     return askPromise;
   }
 
-  Fliplet.Navigator.onReady().then(function () {
+  Fliplet().then(function () {
     return Fliplet.Storage.get(key);
   }).then(function (alreadyShown) {
+    if (!data || !isConfigured) {
+      return;
+    }
+
     Fliplet.User.getSubscriptionId().then(function (isSubscribed) {
       var push = Fliplet.User.getPushNotificationInstance(data);
 
@@ -190,5 +214,4 @@ Fliplet.Widget.register('PushNotifications', function () {
       return Fliplet.Storage.remove(key);
     }
   };
-
 });
