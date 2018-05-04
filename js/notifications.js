@@ -82,9 +82,7 @@ Fliplet.Widget.register('PushNotifications', function () {
       return askPromise;
     }
 
-    askPromise = Fliplet.Storage.get(key);
-
-    askPromise.then(function (value) {
+    askPromise = Fliplet.Storage.get(key).then(function (value) {
       if (!value || value.indexOf('disallow') === -1) {
         return Promise.resolve();
       }
