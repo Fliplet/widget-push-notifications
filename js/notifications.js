@@ -13,7 +13,7 @@ Fliplet.Widget.register('PushNotifications', function () {
   }
 
   if (!data || !isConfigured) {
-    return removeFromDom();
+    removeFromDom();
   }
 
   function removeFromDom() {
@@ -74,6 +74,10 @@ Fliplet.Widget.register('PushNotifications', function () {
   }
 
   function ask() {
+    if (!data || !isConfigured) {
+      return Promise.reject('Please configure your push notification settings first.');
+    }
+
     if (askPromise) {
       return askPromise;
     }
@@ -142,6 +146,10 @@ Fliplet.Widget.register('PushNotifications', function () {
   Fliplet().then(function () {
     return Fliplet.Storage.get(key);
   }).then(function (alreadyShown) {
+    if (!data || !isConfigured) {
+      return;
+    }
+
     Fliplet.User.getSubscriptionId().then(function (isSubscribed) {
       var push = Fliplet.User.getPushNotificationInstance(data);
 
@@ -189,5 +197,4 @@ Fliplet.Widget.register('PushNotifications', function () {
       return Fliplet.Storage.remove(key);
     }
   };
-
 });

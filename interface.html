@@ -190,9 +190,9 @@
 
 pushWidget.ask().then(function (subscriptionId) {
   // user pressed allow and has been registered
-}, function (err) {
+}.catch(function (err) {
   // contains code and message
-})</code></pre>
+});</code></pre>
             </div>
           </div>
           <div class="form-group clearfix">
