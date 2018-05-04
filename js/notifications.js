@@ -78,22 +78,31 @@ Fliplet.Widget.register('PushNotifications', function () {
       return Promise.reject('Please configure your push notification settings first.');
     }
 
+    if (Fliplet.Env.get('interact')) {
+      return Promise.reject('Push notifications are not enabled while using edit mode in Fliplet Studio.')
+    }
+
     if (askPromise) {
       return askPromise;
     }
 
-    askPromise = Fliplet.Storage.get(key).then(function (value) {
-      if (!value || value.indexOf('disallow') === -1) {
-        return Promise.resolve();
+    askPromise = Fliplet.Storage.get(key).then(function (alreadyShown) {
+      if (!alreadyShown || typeof alreadyShown !== 'string') {
+        return true;
+      }
+
+      // If the user already allowed, just subscribe it
+      if (alreadyShown.indexOf('allow') === 0) {
+        return false;
       }
 
       return Promise.reject({
         code: 4,
         message: 'User has disallowed push notifications'
       });
-    }).then(function () {
-      if (Fliplet.Env.get('platform') === 'web') {
-        return Promise.resolve();
+    }).then(function (displayPopup) {
+      if (!displayPopup) {
+        return subscribeUser();
       }
 
       return new Promise(function (resolve, reject) {
@@ -101,10 +110,8 @@ Fliplet.Widget.register('PushNotifications', function () {
           dismiss();
           
           markAsSeen('allow').then(function () {
-            return Fliplet();
-          }).then(function () {
-            resolve(subscriptionId);
-          }).catch(function (err) {
+            return subscribeUser();
+          }).then(resolve).catch(function (err) {
             console.error(err);
 
             reject({
