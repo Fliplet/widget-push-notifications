@@ -97,13 +97,12 @@ Fliplet.Widget.register('PushNotifications', function () {
       return new Promise(function (resolve, reject) {
         $popup.find('[data-allow]').one('click', function () {
           dismiss();
-          markAsSeen('allow');
-
-          Fliplet.Navigator.onReady().then(function () {
-            return subscribeUser();
-          }).then(function (subscriptionId) {
+          
+          markAsSeen('allow').then(function () {
+            return Fliplet();
+          }).then(function () {
             resolve(subscriptionId);
-          }, function (err) {
+          }).catch(function (err) {
             console.error(err);
 
             reject({
@@ -115,22 +114,22 @@ Fliplet.Widget.register('PushNotifications', function () {
 
         $popup.find('[data-dont-allow]').one('click', function () {
           dismiss();
-          markAsSeen('disallow');
-
-          reject({
-            code: 2,
-            message: 'The user did not allow push notifications.'
-          });
+          markAsSeen('disallow').then(function () {
+            reject({
+              code: 2,
+              message: 'The user did not allow push notifications.'
+            }); 
+          }).catch(reject);
         });
 
         $popup.find('[data-remind]').one('click', function () {
           dismiss();
-          markAsSeen('remind');
-
-          reject({
-            code: 3,
-            message: 'The user pressed the "remind later" button.'
-          });
+          markAsSeen('remind').then(function () {
+            reject({
+              code: 3,
+              message: 'The user pressed the "remind later" button.'
+            });
+          }).catch(reject);
         });
 
         $popup.addClass('ready');
@@ -140,7 +139,7 @@ Fliplet.Widget.register('PushNotifications', function () {
     return askPromise;
   }
 
-  Fliplet.Navigator.onReady().then(function () {
+  Fliplet().then(function () {
     return Fliplet.Storage.get(key);
   }).then(function (alreadyShown) {
     Fliplet.User.getSubscriptionId().then(function (isSubscribed) {
