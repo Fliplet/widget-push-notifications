@@ -160,14 +160,10 @@ Fliplet.Widget.register('PushNotifications', function () {
     return askPromise;
   }
 
-  Fliplet().then(function () {
-    return Fliplet.Storage.get(key);
-  }).then(function (alreadyShown) {
-    if (!data || !isConfigured) {
-      return;
-    }
-
-    Fliplet.User.getSubscriptionId().then(function (isSubscribed) {
+  if (isConfigured) {
+    Fliplet().then(function () {
+      return Fliplet.User.getSubscriptionId();
+    }).then(function (isSubscribed) {
       var push = Fliplet.User.getPushNotificationInstance(data);
 
       if (!push) {
@@ -178,35 +174,24 @@ Fliplet.Widget.register('PushNotifications', function () {
         //Clear any notifications
         push.setApplicationIconBadgeNumber(function () { }, function () { }, 1);
         push.clearAllNotifications(function () { }, function () { });
-      }
 
-      push.on('notification', function (data) {
-        Fliplet.Hooks.run('pushNotification', data).then(function () {
-          if (data.additionalData) {
-            if (data.additionalData.foreground) {
-              handleForegroundNotification(data);
-              return;
+        push.on('notification', function (data) {
+          Fliplet.Hooks.run('pushNotification', data).then(function () {
+            if (data.additionalData) {
+              if (data.additionalData.foreground) {
+                handleForegroundNotification(data);
+                return;
+              }
+
+              handleNotificationPayload(data.additionalData.data);
             }
-
-            handleNotificationPayload(data.additionalData.data);
-          }
+          });
         });
-      });
+      } else if (data.showAutomatically) {
+        ask();
+      }
     });
-
-    // Show the popup if hasn't been shown yet to the user
-    // and the component is set for automatic display
-    if (!alreadyShown && data.showAutomatically) {
-      return ask();
-    }
-
-    // Check if user has pressed allow but for some reason isn't subscribed yet.
-    // This also happens when the user pressed allow from a parent app (portal)
-    // and "showOnceOnPortal" is checked
-    if (typeof alreadyShown === 'string' && alreadyShown.indexOf('allow') === 0) {
-      return subscribeUser();
-    }
-  });
+  }
 
   return {
     ask: ask,
