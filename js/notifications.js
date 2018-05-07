@@ -166,11 +166,7 @@ Fliplet.Widget.register('PushNotifications', function () {
     }).then(function (isSubscribed) {
       var push = Fliplet.User.getPushNotificationInstance(data);
 
-      if (!push) {
-        return;
-      }
-
-      if (isSubscribed) {
+      if (push && isSubscribed) {
         //Clear any notifications
         push.setApplicationIconBadgeNumber(function () { }, function () { }, 1);
         push.clearAllNotifications(function () { }, function () { });
