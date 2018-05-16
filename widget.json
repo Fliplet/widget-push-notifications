@@ -14,7 +14,8 @@
       "fliplet-studio-ui",
       "moment",
       "bootstrap-js",
-      "handlebars"
+      "handlebars",
+      "lodash"
     ],
     "assets": [
       "css/interface.css",

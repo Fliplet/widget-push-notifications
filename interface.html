@@ -3,81 +3,108 @@
 
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
-      <li class="active"><a href="#notification-send-tab" data-toggle="tab" class="btn-primary">Send notifications <span class="glyphicon glyphicon-send"></span></a></li>
-      <li><a href="#report" data-toggle="tab" id="note-reports">Reports</a></li>
-      <li><a href="#settings" data-toggle="tab">Subscription request</a></li>
+      <li class="active"><a href="#notification-send-tab" data-toggle="tab">Send notifications</a></li>
+      <li><a href="#report" data-toggle="tab" id="note-reports">Sent notifications</a></li>
+      <li><a href="#settings" data-toggle="tab">Permission popup</a></li>
     </ul>
 
     <!-- Tab panes -->
     <div class="tab-content">
       <div role="tabpanel" class="tab-pane active" id="notification-send-tab">
         <div class="container-fluid" id="notification-send-step-1">
-          <p class="lead text-center" style="margin-bottom: 1em;margin-top: 1em;"><strong class="text-primary hidden">Step 1: </strong>Configure your message</p>
+          <h2 class="lead text-center" style="margin-top: 1em;"><span class="hidden">Step 1: </span>Configure your notification</h2>
           <div class="row">
-            <div class="col-sm-8 col-sm-offset-2">
+            <div class="col-sm-9 col-sm-offset-1">
               <div class="form-group clearfix">
-                <div class="text-center">
-                  <label>Compose message <small class="text-muted" style="font-weight:normal;"></small></label>
-                </div>
-                <input type="text" class="form-control" name="notification_title" placeholder="Enter notification title" id="notification_title" data-count-selector="#title-count" />
+                <input type="text" class="form-control" name="notification_title" placeholder="Enter notification title" id="notification_title" data-count-selector="#title-count" required/>
                 <div class="pull-right text-muted text-success countlabel"><span id="title-count"></span> character(s) left</div>
+                <div class="text-danger notification_title_error hidden">Please enter a notification title</div>
               </div>
               <div class="form-group clearfix">
-                <textarea class="form-control" rows="4" name="notification_message" id="notification_message" placeholder="Enter notification message (10 words recommended)" data-count-selector="#message-count"></textarea>
+                <textarea class="form-control" rows="4" name="notification_message" id="notification_message" placeholder="Enter notification message (10 words recommended)" data-count-selector="#message-count" required></textarea>
                 <div class="pull-right text-muted text-success countlabel"><span id="message-count"></span> character(s) left</div>
+                <div class="text-danger notification_message_error hidden">Please enter a notification message</div>
+              </div>
+              <div class="form-group clearfix">
+                <div class="checkbox checkbox-icon">
+                  <input type="checkbox" id="show_link_provider" value="on">
+                  <label for="show_link_provider">
+                    <span class="check"><i class="fa fa-check"></i></span> Redirect users to a screen when they open the notification
+                  </label>
+                </div>
+              </div>
+              <div class="row hidden link-provider-holder">
+                <div class="col-xs-7" id="link-provider"></div>
+                <div class="col-xs-5 preview-btn-holder">
+                  <a class="btn btn-secondary preview-target-screen" href="#">Preview target screen</a>
+                  <p class="text-danger text-center screen-error hidden">Please select a screen</p>
+                </div>
               </div>
               <div id="notification-badge-increment" class="hidden">
                 <span id="notification-badge-icon" class="checked"><img src="img/app-icon.png" /><label for="notification_badge">+1</label></span>
                 <div id="notification-badge-label"><label for="notification_badge">Increase app icon badge by 1<br>(available for iOS devices only)</label></div>
                 <input type="checkbox" name="notification_badge" id="notification_badge" checked class="bootstrap-switch" data-on-text="Yes" data-on-color="primary" data-off-text="No" data-off-color="default" data-size="small" class="pull-right">
               </div>
-              <div class="hidden">
-                <br /><br /><br />
-                <small class="text-info"><span class="glyphicon glyphicon-chevron-down"></span> Scroll down for Step 2</small>
+            </div>
+          </div>
+          <!-- HIDDEN
+          <h2 class="lead text-center" style="margin-top: 1em;">Step 2: Schedule notification</h2>
+          <div class="row">
+            <div class="col-xs-8 col-xs-offset-2 text-center">
+              <div class="form-group clearfix inline-radio">
+                <div class="radio-buttons clearfix">
+                  <div class="radio radio-icon">
+                    <input type="radio" id="enable-yes" name="enable_option" value="show">
+                    <label for="enable-yes">Send my notification now</label>
+                  </div>
+                  <div class="radio radio-icon">
+                    <input type="radio" id="enable-no" name="enable_option" value="no-show">
+                    <label for="enable-no">Schedule for later</label>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+          -->
           <div class="row">
             <div class="col-xs-8 col-xs-offset-2 text-center">
-              <p id="subscription-note">Up to <strong><span id="subscriptions">x</span></strong> registered devices will recieve this notification.</p>
+              <div id="subscription-note" class="toHide"><p>Up to <strong><span id="subscriptions">x</span></strong> registered devices will receive this notification</p></div>
               <p>
-                <a class="btn btn-primary btn-lg notification-send" href="#">Send notification</a>
-                <a class="btn btn-default btn-lg notification-cancel" href="#">Cancel</a>
+                <a class="btn btn-primary notification-send" href="#">Review &amp; send notification</a>
+                <a class="btn btn-secondary notification-cancel" href="#">Cancel</a>
               </p>
               <div class="progress notification-summary-sending">
                 <div class="progress-bar progress-bar-success progress-bar-striped"></div>
               </div>
             </div>
           </div>
-          <div class="row">
-            <div class="col-sm-8 col-sm-offset-2 text-center">
-              <p><br class="visible-xs-block"><label>Message preview</label><br><small class="text-info">Appearance of the notification is subject to users' device, preference and accepting to receive notifications.</small></p>
-              <div class="visible-sm-block visible-md-block visible-lg-block message-empty" id="notification-message-preview">
-                <img src="{{ asset 'img/notifications_device_preview_empty.jpg' }}" />
-                <div id="notification-preview-home">
-                  <img src="{{ asset 'img/app-icon.png' }}" />
-                  <strong class="app-name"></strong>
-                  <span class="notification-message"></span>
-                </div>
-                <div id="notification-preview-icon-home">
-                  <img src="{{ asset 'img/app-icon.png' }}" />
-                  <strong class="app-name"></strong>
-                </div>
-                <div id="notification-preview-lockscreen">
-                  <img src="{{ asset 'img/app-icon.png' }}" />
-                  <strong class="app-name"></strong>
-                  <span class="notification-message"></span>
-                </div>
-                <div id="notification-preview-notification-center">
-                  <img src="{{ asset 'img/app-icon.png' }}" />
-                  <strong class="app-name"></strong>
-                  <span class="notification-message"></span>
-                </div>
+          <div class="hidden notifications-preview">
+            <p class="text-center"><small class="text-info">Appearance of the notification is subject to users' device, preference and accepting to receive notifications.</small></p>
+            <div class="visible-sm-block visible-md-block visible-lg-block message-empty" id="notification-message-preview">
+              <img src="{{ asset 'img/notifications_device_preview_empty.jpg' }}" />
+              <div id="notification-preview-home">
+                <img src="{{ asset 'img/app-icon.png' }}" />
+                <strong class="app-name"></strong>
+                <span class="notification-message"></span>
               </div>
-              <div class="visible-xs-block"><img src="{{ asset 'img/notifications_device_preview_mock.jpg' }}" /></div>
+              <div id="notification-preview-icon-home">
+                <img src="{{ asset 'img/app-icon.png' }}" />
+                <strong class="app-name"></strong>
+              </div>
+              <div id="notification-preview-lockscreen">
+                <img src="{{ asset 'img/app-icon.png' }}" />
+                <strong class="app-name"></strong>
+                <span class="notification-message"></span>
+              </div>
+              <div id="notification-preview-notification-center">
+                <img src="{{ asset 'img/app-icon.png' }}" />
+                <strong class="app-name"></strong>
+                <span class="notification-message"></span>
+              </div>
             </div>
+            <div class="visible-xs-block"><img src="{{ asset 'img/notifications_device_preview_mock.jpg' }}" /></div>
+            <h4 class="text-warning text-center">Your are about to send notifications to <strong><span class="subscriptions-count"></span></strong> registered devices.<br>Are you sure?</h4>
           </div>
-          <hr class="hidden">
         </div>
         <div id="notification-send-step-2" class="hidden">
           <p class="lead text-center" style="margin-bottom: 1em;"><strong class="text-primary">Step 2:</strong> When do you want your users to see the notification?</p>
@@ -120,93 +147,72 @@
           <p>Loading...</p>
         </div>
         <div class="no-data">
-          <p><strong>No notifications sent yet.</strong>
-            <p>
-              <p><a class="btn btn-link refresh" href="#">Refresh reports</a></p>
+          <p><strong>No notifications sent yet.</strong></p>
+          <p><a class="btn btn-link refresh" href="#">Refresh reports</a></p>
         </div>
-        <div class="table-holder hidden">
-          <a class="btn btn-link pull-right refresh" href="#">Refresh reports</a>
-          <table class="table report-table">
-            <thead>
-              <th>Sent at</th>
-              <th>No. Recipients<br> (iOS/Android/Win10)
-              </th>
-              <th>Accepted for delivery</th>
-              <th>Batches (Sent/Total)</th>
-              <th>Message</th>
-            </thead>
-            <tbody id="jobs-entries">
+        <div class="reports-holder hidden">
 
-            </tbody>
-          </table>
         </div>
       </div>
       <div role="tabpanel" class="tab-pane" id="settings">
-        <div class="col-sm-12">
-            <h4>Instructions</h4>
-            <p>Push notifications require a user to subscribe. In order to subscribe a user to push notifications please configure the following settings. After updating these settings you will need to publish your app.</p>
-            <p>Note: You cannot use or test this feature in Fliplet Viewer. It will only work in live apps with the relevant operating system push notification settings configured. Push does not work on web apps.</p>
-        </div>
-        <div class="col-sm-12">
-            <h4>Push request interface</h4>
-            <p>Configure the settings for the notification interface that will ask the user if they want to enable push notifications.</p>
-        </div>
-        <div class="form-group clearfix">
-          <div class="col-sm-12 control-label">
-            <label for="popup_title">Notification popup title</label>
-          </div>
-          <div class="col-sm-12">
-            <input type="text" name="popup_title" class="form-control" id="popup_title" placeholder="Enter a title" value="{{#if popupTitle}}{{popupTitle}}{{else}}App updates and notifications{{/if}}" />
-            <p class="help-block">The popup will only appear once for users that allow or reject notifications.</p>
-          </div>
-        </div>
-        <div class="form-group clearfix">
-          <div class="col-sm-12 control-label">
-            <label for="popup_message">Notification popup message</label>
-          </div>
-          <div class="col-sm-12">
-            <textarea class="form-control" name="popup_message" id="popup_message" rows="4" placeholder="Enter a message">{{#if popupMessage}}{{popupMessage}}{{else}}You will receive notifications when app updates are available.
-Please tap on Allow Notifications below to receive notifications on the updates.{{/if}}</textarea>
-          </div>
-        </div>
-        <div class="col-sm-12">
-            <h4>Push request trigger</h4>
-            <p>Configure when the app should ask the user to agree to receive push notifications. It is recommend this occurs when the user understands the benefit for the app and will agree to receiving push notifications.</p>
-        </div>
-        <div class="form-group clearfix">
-          <div class="col-sm-12 control-label">
-            <label for="auto-popup">Do you want to show the push notification popup automatically on the first screen of the app?</label>
-          </div>
-          <div class="col-sm-12">
-            <div class="checkbox checkbox-icon">
-              <input type="checkbox" id="auto-popup" name="showAutomatically" value="1" {{#if showAutomatically}}checked{{/if}} />
-              <label for="auto-popup">
-                <span class="check"><i class="fa fa-check"></i></span> Show notification popup automatically
-              </label>
-              <p class="help-block">If you want to manually show the popup on a specific screen, please disable this option and use the snippet of code below.</p>
+        <h4>Instructions</h4>
+        <p>Push notifications require a user to subscribe. In order to subscribe a user to push notifications please configure the following settings. After updating these settings you will need to publish your app.</p>
+        <p>Note: You cannot use or test this feature in Fliplet Viewer. It will only work in live apps with the relevant operating system push notification settings configured. Push does not work on web apps.</p>
+        <h4>Push request interface</h4>
+        <p>Configure the settings for the notification interface that will ask the user if they want to enable push notifications.</p>
+        <div class="row">
+          <div class="form-group clearfix">
+            <div class="col-sm-12 control-label">
+              <label for="popup_title">Permission popup title</label>
             </div>
-            <pre><code>var pushWidget = Fliplet.Widget.get('PushNotifications');
-
-  pushWidget.ask().then(function (subscriptionId) {
-    // user pressed allow and has been registered
-  }, function (err) {
-    // contains code and message
-  })</code></pre>
+            <div class="col-sm-12">
+              <input type="text" name="popup_title" class="form-control" id="popup_title" placeholder="Enter a title" value="{{#if popupTitle}}{{popupTitle}}{{else}}App updates and notifications{{/if}}" />
+              <p class="help-block">The popup will only appear once for users that allow or reject push notifications.</p>
+            </div>
           </div>
-        </div>
-        <div class="form-group clearfix">
-          <div class="col-sm-12">
-            <div class="checkbox checkbox-icon">
-              <input type="checkbox" id="portal-popup" name="showOnceOnPortal" value="1" {{#if showOnceOnPortal}}checked{{/if}} />
-              <label for="portal-popup">
-                <span class="check"><i class="fa fa-check"></i></span> Apps inside a portal shouldn't request users to subscibe to push notifications.
-              </label>
-              <p class="help-block">TBD</p>
+          <div class="form-group clearfix">
+            <div class="col-sm-12 control-label">
+              <label for="popup_message">Permission popup message</label>
+            </div>
+            <div class="col-sm-12">
+              <textarea class="form-control" name="popup_message" id="popup_message" rows="4" placeholder="Enter a message">{{#if popupMessage}}{{popupMessage}}{{else}}Tap Allow Notifications below to be notified of app updates.{{/if}}</textarea>
+            </div>
+          </div>
+          <div class="form-group clearfix">
+            <div class="col-sm-12 control-label">
+              <label for="auto-popup">Do you want to show the push notification permission popup automatically on the first screen of the app?</label>
+            </div>
+            <div class="col-sm-12">
+              <div class="checkbox checkbox-icon">
+                <input type="checkbox" id="auto-popup" name="showAutomatically" value="1" {{#if showAutomatically}}checked{{/if}} />
+                <label for="auto-popup">
+                  <span class="check"><i class="fa fa-check"></i></span> Show notification popup automatically
+                </label>
+                <p class="help-block">If you want to manually show the popup on a specific screen, please disable this option and copy the snippet of code below and paste it on the screen's JavaScript code editor, using the <a href="#" onclick="Fliplet.Studio.emit('navigate', { name: 'appEditDeveloper' })">Developer Options</a>.</p>
+              </div>
+              <pre><code>var pushWidget = Fliplet.Widget.get('PushNotifications');
+
+pushWidget.ask().then(function (subscriptionId) {
+  // user pressed allow and has been registered
+}).catch(function (err) {
+  // contains code and message
+});</code></pre>
+            </div>
+          </div>
+
+          <div class="form-group clearfix">
+            <div class="col-sm-12">
+              <div class="checkbox checkbox-icon">
+                <input type="checkbox" id="portal-popup" name="showOnceOnPortal" value="1" {{#if showOnceOnPortal}}checked{{/if}} />
+                <label for="portal-popup">
+                  <span class="check"><i class="fa fa-check"></i></span> Only show once on portal apps
+                </label>
+              </div>
             </div>
           </div>
         </div>
         <div class="settings-saved-app-msg fade-transition" style="display: none;">
-          Push interface configuration saved.
+          Configuration saved.
         </div>
       </div>
     </div>
@@ -215,12 +221,58 @@ Please tap on Allow Notifications below to receive notifications on the updates.
 
 <script type="text/html" id="template-table-entries">
   \{{#each jobs}}
-  <tr>
-    <td>\{{createdAt}}</td>
-    <td>\{{recipientsCount}} (\{{sentApple}}/\{{sentGoogle}}/\{{sentWindows}})</td>
-    <td>\{{deliveredCount}} (\{{deliveryPerct}}%)</td>
-    <td>\{{batchesSent}}/\{{batchesCount}}</td>
-    <td><strong>\{{title}}</strong><br> \{{message}}</td>
-  </tr>
+  <div class="row report-wrapper">
+    <div class="col-xs-9">
+      <div>
+        <p class="report-notification-title">\{{title}}</p>
+        <p class="report-notification-message">\{{message}}</p>
+        \{{#if screenName}}
+          <p class="report-notification-screen"><strong>Target screen:</strong> \{{screenName}}</p>
+        \{{/if}}
+        <div class="more-details">
+          <a href="#">See more details</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-3">
+      <div class="report-status report-notification-scheduled hidden">
+        <div class="date-info">
+          <i class="fa fa-calendar-check-o fa-fw"></i>
+          <div><strong>Scheduled on</strong></div>
+          <div><span class="notification-scheduled-date">Feb 04th 2018, 10:04</span></div>
+        </div>
+      </div>
+      <div class="report-status report-notification-sent">
+        <div class="date-info">
+          <i class="fa fa-paper-plane fa-fw"></i>
+          <div><strong>Sent on</strong></div>
+          <div><span class="notification-scheduled-date">\{{createdAt}}</span></div>
+        </div>
+      </div>
+      <div class="report-status report-notification-tobe hidden">
+        <div class="date-info">
+          <i class="fa fa-clock-o fa-fw"></i> 
+          <div><strong>To be sent on</strong></div>
+          <div><span class="notification-scheduled-date">Feb 21st 2018, 13:00</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-12">
+      <div class="report-other-details">
+        <div class="report-recipients">
+          <p>N<sup>o</sup> Recipients (iOS/Android/Win10) <span class="question-icon" data-toggle="tooltip" data-placement="auto bottom" title="Number of devices that registered top receive push notification from the app."><i class="fa fa-question-circle"></i></span></p>
+          <p class="report-recipients-data">\{{recipientsCount}} (\{{sentApple}}/\{{sentGoogle}}/\{{sentWindows}})</p>
+        </div>
+        <div class="report-delivery">
+          <p>Accepted for delivery <span class="question-icon" data-toggle="tooltip" data-placement="auto bottom" title="Number of push notification requests accepted by Apple/Google/Microsoft to deliver to the devices. Push notification requests may be rejected if the device registered is no longer valid."><i class="fa fa-question-circle"></i></span></p>
+          <p class="report-delivery-data">\{{deliveredCount}} (\{{deliveryPerct}}%)</p>
+        </div>
+        <div class="report-batch">
+          <p>Batches (Sent/Total) <span class="question-icon" data-toggle="tooltip" data-placement="auto left" title="Fliplet sends the push notifications to Apple/Google/Microsoft in batches. This shows the number of batches that have been processed and sent."><i class="fa fa-question-circle"></i></span></p>
+          <p class="report-batch-data">\{{batchesSent}}/\{{batchesCount}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
   \{{/each}}
 </script>

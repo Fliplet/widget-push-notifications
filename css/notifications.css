@@ -21,6 +21,8 @@
 .popup-wrapper {
     position: absolute;
     top: 5%;
+    top: calc(constant(safe-area-inset-top) + 5%);
+    top: calc(env(safe-area-inset-top) + 5%);
     left: 5%;
     right: 5%;
     max-width: 300px;
