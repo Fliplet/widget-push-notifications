@@ -155,7 +155,11 @@
         </div>
       </div>
       <div role="tabpanel" class="tab-pane" id="settings">
-        <p>To receive notifications, your app users will be asked for permission. Configure the popup below:</p>
+        <h4>Instructions</h4>
+        <p>Push notifications require a user to subscribe. In order to subscribe a user to push notifications please configure the following settings. After updating these settings you will need to publish your app.</p>
+        <p>Note: You cannot use or test this feature in Fliplet Viewer. It will only work in live apps with the relevant operating system push notification settings configured. Push does not work on web apps.</p>
+        <h4>Push request interface</h4>
+        <p>Configure the settings for the notification interface that will ask the user if they want to enable push notifications.</p>
         <div class="row">
           <div class="form-group clearfix">
             <div class="col-sm-12 control-label">
@@ -195,6 +199,7 @@ pushWidget.ask().then(function (subscriptionId) {
 });</code></pre>
             </div>
           </div>
+
           <div class="form-group clearfix">
             <div class="col-sm-12">
               <div class="checkbox checkbox-icon">
