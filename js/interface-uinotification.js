@@ -125,13 +125,25 @@ var UINotification = (function() {
       }, 500);
     });
 
+    $(document).on('click', '.enter-subscription-ids', function () {
+      $('#target-subscription-ids').removeClass('hidden');
+      Fliplet.Widget.autosize();
+      return false;
+    });
+
     // Sets up callback for sending another notification
     // $(document).on( 'click', '#notification-send-tab-another', _this.resetNotificationForm )
   };
 
   UINotification.prototype.showNotificationReviewModal = function() {
+    var targetSubscriptionIDs = _.compact(_.map($('#target-subscription-ids').val().split(','), function (id) {
+      return parseInt(id, 10);
+    }));
+
     // Add subscription count to HTML
-    $('.subscriptions-count').html(_this.subscriptionsCount);
+    $('.subscriptions-count').html(targetSubscriptionIDs.length
+      ? targetSubscriptionIDs.length
+      : _this.subscriptionsCount);
     // Get HTML for modal
     var html = $('.notifications-preview').html();
     // Open Modal
@@ -414,6 +426,13 @@ var UINotification = (function() {
       data.custom = {
         data: _this.linkSavedData.action
       }
+    }
+
+    var targetSubscriptionIDs = _.compact(_.map($('#target-subscription-ids').val().split(','), function (id) {
+      return parseInt(id, 10);
+    }));
+    if (targetSubscriptionIDs.length) {
+      data.subscriptions = targetSubscriptionIDs;
     }
 
     // Reset progress bar
