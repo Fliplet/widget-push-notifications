@@ -136,7 +136,7 @@ var UINotification = (function() {
   };
 
   UINotification.prototype.showNotificationReviewModal = function() {
-    var targetSubscriptionIDs = _.compact(_.map($('#target-subscription-ids').val().split(','), function (id) {
+    var targetSubscriptionIDs = _.compact(_.map($('#subscription-ids').val().split(','), function (id) {
       return parseInt(id, 10);
     }));
 
@@ -428,7 +428,7 @@ var UINotification = (function() {
       }
     }
 
-    var targetSubscriptionIDs = _.compact(_.map($('#target-subscription-ids').val().split(','), function (id) {
+    var targetSubscriptionIDs = _.compact(_.map($('#subscription-ids').val().split(','), function (id) {
       return parseInt(id, 10);
     }));
     if (targetSubscriptionIDs.length) {
