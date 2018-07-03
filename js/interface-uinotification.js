@@ -125,10 +125,10 @@ var UINotification = (function() {
       }, 500);
     });
 
-    $(document).on('click', '.enter-subscription-ids', function () {
+    $(document).on('click', '.enter-subscription-ids', function (e) {
+      e.preventDefault();
       $('#target-subscription-ids').removeClass('hidden');
       Fliplet.Widget.autosize();
-      return false;
     });
 
     // Sets up callback for sending another notification
