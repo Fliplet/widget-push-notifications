@@ -81,9 +81,10 @@ Fliplet.Widget.register('PushNotifications', function () {
       });
     }
 
-    // Push notifications are not enabled while using edit mode in Fliplet Studio.
+    // Push notifications are not enabled in Fliplet Studio.
     // We just return a promise that is never fulfilled.
-    if (Fliplet.Env.get('interact')) {
+    if (Fliplet.Env.get('interact')
+      || (Fliplet.Env.is('web') && Fliplet.Env.get('mode') === 'preview')) {
       return new Promise(function () {});
     }
 
