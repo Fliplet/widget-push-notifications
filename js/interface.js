@@ -3,12 +3,24 @@ var source = $('#template-table-entries').html();
 var jobEntriesTemplate = Handlebars.compile(source);
 var widgetId = Fliplet.Widget.getDefaultId();
 var data = Fliplet.Widget.getData(widgetId) || {};
+var limit = 20;
+var offset = 0;
 
-function refreshReports() {
-  $('#report .spinner-holder').addClass('animated');
-  $('.reports-holder').addClass('hidden');
-  $('.no-data').removeClass('show');
-  $reportHolder.html('');
+$reportHolder.on('click', '[data-load-more]', function (event) {
+  event.preventDefault();
+  $(this).remove();
+  refreshReports(true);
+});
+
+function refreshReports(append) {
+
+  if (!append) {
+    $reportHolder.html('');
+    $('#report .spinner-holder').addClass('animated');
+    $('.reports-holder').addClass('hidden');
+    $('.no-data').removeClass('show');
+  }
+
   Fliplet.Widget.autosize();
 
   var appPages;
@@ -26,8 +38,16 @@ function refreshReports() {
       },
       order: [
         ['createdAt', 'DESC']
-      ]
+      ],
+      limit: limit,
+      offset: offset
     }).then(function(logs) {
+      offset += limit;
+
+      if (!logs.length && append) {
+        return;
+      }
+
       logs.forEach(function(log) {
         var logData = {
           createdAt: '',
@@ -99,7 +119,7 @@ function refreshReports() {
 
       if (reportData.jobs.length) {
         compiledEntries = jobEntriesTemplate(reportData);
-        $reportHolder.html(compiledEntries);
+        $reportHolder.append(compiledEntries);
         $('#report .spinner-holder').removeClass('animated');
         $('.reports-holder').removeClass('hidden');
         $('[data-toggle="tooltip"]').tooltip();
@@ -109,6 +129,10 @@ function refreshReports() {
       }
 
       Fliplet.Widget.autosize();
+
+      if (logs.length === limit) {
+        $reportHolder.append('<a href="#" data-load-more>Load more</a>');
+      }
     });
   });
 }
