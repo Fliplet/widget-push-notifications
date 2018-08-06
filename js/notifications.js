@@ -121,7 +121,7 @@ Fliplet.Widget.register('PushNotifications', function () {
       return new Promise(function (resolve, reject) {
         $popup.find('[data-allow]').one('click', function () {
           dismiss();
-          
+
           markAsSeen('allow').then(function () {
             return subscribeUser();
           }).then(resolve).catch(function (err) {
@@ -140,7 +140,7 @@ Fliplet.Widget.register('PushNotifications', function () {
             reject({
               code: 2,
               message: 'The user did not allow push notifications.'
-            }); 
+            });
           }).catch(reject);
         });
 
@@ -167,11 +167,13 @@ Fliplet.Widget.register('PushNotifications', function () {
     }).then(function (isSubscribed) {
       var push = Fliplet.User.getPushNotificationInstance(data);
 
-      if (push && isSubscribed) {
+      if (push) {
         //Clear any notifications
         push.setApplicationIconBadgeNumber(function () { }, function () { }, 1);
         push.clearAllNotifications(function () { }, function () { });
+      }
 
+      if (isSubscribed) {
         push.on('notification', function (data) {
           Fliplet.Hooks.run('pushNotification', data).then(function () {
             if (data.additionalData) {
