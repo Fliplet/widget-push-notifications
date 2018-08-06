@@ -171,22 +171,24 @@ Fliplet.Widget.register('PushNotifications', function () {
         //Clear any notifications
         push.setApplicationIconBadgeNumber(function () { }, function () { }, 1);
         push.clearAllNotifications(function () { }, function () { });
+
+        if (isSubscribed) {
+          push.on('notification', function (data) {
+            Fliplet.Hooks.run('pushNotification', data).then(function () {
+              if (data.additionalData) {
+                if (data.additionalData.foreground) {
+                  handleForegroundNotification(data);
+                  return;
+                }
+
+                handleNotificationPayload(data.additionalData.data);
+              }
+            });
+          });
+        }
       }
 
-      if (isSubscribed) {
-        push.on('notification', function (data) {
-          Fliplet.Hooks.run('pushNotification', data).then(function () {
-            if (data.additionalData) {
-              if (data.additionalData.foreground) {
-                handleForegroundNotification(data);
-                return;
-              }
-
-              handleNotificationPayload(data.additionalData.data);
-            }
-          });
-        });
-      } else if (data.showAutomatically) {
+      if (!isSubscribed && data.showAutomatically) {
         ask();
       }
     });
