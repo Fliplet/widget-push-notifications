@@ -393,9 +393,9 @@ var UINotification = (function() {
     $('#notification-send-tab').attr('data-mode', 'confirm');
     // Send request
     _this.sendNotification()
-      .then(function() {
+      .then(function(response) {
         // Push was successful
-        _this.notificationIsSent();
+        _this.notificationIsSent(response.subscriptionsCount);
       })
       .catch(function(error) {
         // Handle error
@@ -445,7 +445,9 @@ var UINotification = (function() {
       return new Promise(function(resolve, reject) {
         var mockSuccessResponse = false;
         if (mockSuccessResponse) {
-          return resolve();
+          return resolve({
+            subscriptionsCount: targetSubscriptionIDs.length
+          });
         }
         return reject({
           message: 'Mocked error response'
@@ -456,12 +458,12 @@ var UINotification = (function() {
     return Fliplet.App.PushNotifications.send(data);
   };
 
-  UINotification.prototype.notificationIsSent = function() {
+  UINotification.prototype.notificationIsSent = function(count) {
     $('#notification-send-tab').attr('data-mode', 'sent');
     $('.notification-summary-sending .progress-bar').width('100%');
     Fliplet.Modal.alert({
       title: 'Notification sent',
-      message: 'Your notification has been sent to up to <strong>' + _this.subscriptionsCount + '</strong> registered devices.'
+      message: 'Your notification has been sent to up to <strong>' + (count || _this.subscriptionsCount) + '</strong> registered devices.'
     });
     $('#notification_title, #notification_message').val('');
     $('#notification-send-tab').attr('data-mode', '');
