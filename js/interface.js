@@ -213,3 +213,16 @@ $('#configuration').on('submit', function(event) {
 });
 
 Fliplet.Widget.autosize();
+
+Fliplet.App.get()
+  .then(function (app) {
+    if (!app || !app.icon) {
+      return;
+    }
+
+    $('<img>')
+      .on('load', function () {
+        $('.app-icon-preview').attr('src', app.icon);
+      })
+      .attr('src', app.icon);
+  });
