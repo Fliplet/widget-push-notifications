@@ -35,8 +35,7 @@ Fliplet.Widget.register('PushNotifications', function () {
   function handleForegroundNotification(data) {
     Fliplet.Navigator.Notifications.schedule({
       title: data.title,
-      text: data.message,
-      data: data.additionalData && data.additionalData.data
+      text: data.message
     }, function () {
       // notification has been scheduled
       console.log('Notification scheduled');
