@@ -196,8 +196,9 @@ Fliplet.Widget.register('PushNotifications', function () {
               }
             });
           });
-
-          bindLocalNotificationsClick();
+  
+          // Uncomment to enable deep-linking once finished
+          // bindLocalNotificationsClick();
         }
       }
 
