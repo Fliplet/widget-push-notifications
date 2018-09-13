@@ -33,24 +33,14 @@ Fliplet.Widget.register('PushNotifications', function () {
   }
 
   function handleForegroundNotification(data) {
-    $('#notificationContainer').remove();
-    $('body').append(Fliplet.Native.Templates.InAppNotification);
-
-    $('#appName').text(Fliplet.Env.get('appName'));
-    $('#notificationTitle').text(data.title);
-    $('#notificationBody').text(data.message);
-
-    if (Fliplet.Env.get('pageId') === parseInt(data.additionalData.data.page)) {
-      $('#btnNotificationNavigate').addClass('hidden');
-    } else {
-      $('#btnNotificationNavigate').on('click', function () {
-        handleNotificationPayload(data.additionalData.data);
-      });
-    }
-
-    setTimeout(function () {
-      $('#notificationContainer').remove();
-    }, 3000);
+    Fliplet.Navigator.Notifications.schedule({
+      title: data.title,
+      text: data.message,
+      data: data.additionalData && data.additionalData.data
+    }, function () {
+      // notification has been scheduled
+      console.log('Notification scheduled');
+    }, this, { skipPermission: true });
   }
 
   function handleNotificationPayload(data) {
