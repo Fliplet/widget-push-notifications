@@ -5,6 +5,7 @@ Fliplet.Widget.register('PushNotifications', function () {
   var key = 'push-allow';
   var $popup = $('.popup-screen');
   var askPromise;
+  var push = Fliplet.User.getPushNotificationInstance(data);
 
   var isConfigured = data && (data.apn || data.gcm || data.wns);
 
@@ -37,7 +38,7 @@ Fliplet.Widget.register('PushNotifications', function () {
       title: data.title,
       text: data.message
     }, function () {
-      // notification has been scheduled
+      // Notification has been scheduled
       console.log('Notification scheduled');
     }, this, { skipPermission: true });
   }
@@ -52,14 +53,33 @@ Fliplet.Widget.register('PushNotifications', function () {
         if (!page.length || Fliplet.Env.get('pageId') === parseInt(data.page)) {
           Fliplet.Native.Updates.checkForUpdates(Fliplet.Env.get('appId'), true, null, data);
           return;
-        }
-        else {
+        } else {
           Fliplet.Storage.set('fl_notification_update', data).then(function () {
             Fliplet.Navigate.to(data);
           });
         }
       }
     }
+  }
+
+  function setBadgeNumber(number) {
+    if (!push) {
+      return Promise.reject('Push Notification not available');
+    }
+  
+    return new Promise(function (resovle, reject) {
+      push.setApplicationIconBadgeNumber(resolve, reject, number);
+    });
+  }
+
+  function clearAllNotifications() {
+    if (!push) {
+      return Promise.reject('Push Notification not available');
+    }
+
+    return new Promise(function (resolve, reject) {
+      push.clearAllNotifications(resolve, reject);
+    });
   }
 
   function ask() {
@@ -150,31 +170,34 @@ Fliplet.Widget.register('PushNotifications', function () {
     return askPromise;
   }
 
+  function reset () {
+    return Fliplet.Storage.remove(key);
+  }
+
+  if (push) {
+    // Clear any notifications
+    setBadgeNumber(1).then(clearAllNotifications);    
+  }
+
   if (isConfigured) {
     Fliplet().then(function () {
       return Fliplet.User.getSubscriptionId();
     }).then(function (isSubscribed) {
-      var push = Fliplet.User.getPushNotificationInstance(data);
+      if (push && isSubscribed) {
+        push.on('notification', function (data) {
+          Fliplet.Hooks.run('pushNotification', data).then(function () {
+            if (!data.additionalData) {
+              return;
+            }
 
-      if (push) {
-        //Clear any notifications
-        push.setApplicationIconBadgeNumber(function () { }, function () { }, 1);
-        push.clearAllNotifications(function () { }, function () { });
+            if (data.additionalData.foreground) {
+              handleForegroundNotification(data);
+              return;
+            }
 
-        if (isSubscribed) {
-          push.on('notification', function (data) {
-            Fliplet.Hooks.run('pushNotification', data).then(function () {
-              if (data.additionalData) {
-                if (data.additionalData.foreground) {
-                  handleForegroundNotification(data);
-                  return;
-                }
-
-                handleNotificationPayload(data.additionalData.data);
-              }
-            });
+            handleNotificationPayload(data.additionalData.data);
           });
-        }
+        });
       }
 
       if (!isSubscribed && data.showAutomatically) {
@@ -185,8 +208,6 @@ Fliplet.Widget.register('PushNotifications', function () {
 
   return {
     ask: ask,
-    reset: function () {
-      return Fliplet.Storage.remove(key);
-    }
+    reset: reset
   };
 });
