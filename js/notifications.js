@@ -131,6 +131,8 @@ Fliplet.Widget.register('PushNotifications', function () {
               code: 1,
               message: err
             });
+
+            askPromise = undefined;
           });
         });
 
@@ -141,6 +143,8 @@ Fliplet.Widget.register('PushNotifications', function () {
               code: 2,
               message: 'The user did not allow push notifications.'
             });
+
+            askPromise = undefined;
           }).catch(reject);
         });
 
@@ -151,6 +155,8 @@ Fliplet.Widget.register('PushNotifications', function () {
               code: 3,
               message: 'The user pressed the "remind later" button.'
             });
+
+            askPromise = undefined;
           }).catch(reject);
         });
 
@@ -197,6 +203,7 @@ Fliplet.Widget.register('PushNotifications', function () {
   return {
     ask: ask,
     reset: function () {
+      askPromise = undefined;
       return Fliplet.Storage.remove(key);
     }
   };
