@@ -127,36 +127,36 @@ Fliplet.Widget.register('PushNotifications', function () {
           }).then(resolve).catch(function (err) {
             console.error(err);
 
-            askPromise = undefined;
-
             reject({
               code: 1,
               message: err
             });
+
+            askPromise = undefined;
           });
         });
 
         $popup.find('[data-dont-allow]').one('click', function () {
           dismiss();
           markAsSeen('disallow').then(function () {
-            askPromise = undefined;
-
             reject({
               code: 2,
               message: 'The user did not allow push notifications.'
             });
+
+            askPromise = undefined;
           }).catch(reject);
         });
 
         $popup.find('[data-remind]').one('click', function () {
           dismiss();
           markAsSeen('remind').then(function () {
-            askPromise = undefined;
-
             reject({
               code: 3,
               message: 'The user pressed the "remind later" button.'
             });
+
+            askPromise = undefined;
           }).catch(reject);
         });
 
