@@ -82,7 +82,6 @@ Fliplet.Widget.register('PushNotifications', function () {
       data: data.additionalData
     }, function () {
       // notification has been scheduled
-      console.log('Notification scheduled');
     }, this, { skipPermission: true });
   }
 
