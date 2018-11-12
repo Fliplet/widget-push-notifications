@@ -63,9 +63,10 @@ Fliplet.Widget.register('PushNotifications', function () {
       return; // do nothing if native app hasn't got the plugin installed
     }
 
-    cordova.plugins.notification.local.on('click', function () {
-      console.log('Clicked notification', this, arguments);
-      handleNotificationPayload();
+    cordova.plugins.notification.local.on('click', function (notification) {
+      if (notification && notification.data) {
+        handleNotificationPayload(notification.data);
+      }
     }, this);
 
     if (cordova.plugins.notification.local.launchDetails) {
@@ -193,13 +194,12 @@ Fliplet.Widget.register('PushNotifications', function () {
                   return;
                 }
 
-                handleNotificationPayload(data.additionalData.data);
+                handleNotificationPayload(data.additionalData);
               }
             });
           });
 
-          // Uncomment to enable deep-linking once finished
-          // bindLocalNotificationsClick();
+          bindLocalNotificationsClick();
         }
       }
 
