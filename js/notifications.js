@@ -48,7 +48,7 @@ Fliplet.Widget.register('PushNotifications', function () {
       }
       else {
         Fliplet.Storage.set('fl_notification_update', data).then(function () {
-          Fliplet.Navigate.to(data);
+          Fliplet.Navigate.screen(data.page);
         });
       }
     }
@@ -77,7 +77,8 @@ Fliplet.Widget.register('PushNotifications', function () {
     Fliplet.Navigator.Notifications.schedule({
       title: data.title,
       text: data.message,
-      data: data.additionalData && data.additionalData.data
+      foreground: true,
+      data: data.additionalData
     }, function () {
       // notification has been scheduled
       console.log('Notification scheduled');
@@ -196,7 +197,7 @@ Fliplet.Widget.register('PushNotifications', function () {
               }
             });
           });
-  
+
           // Uncomment to enable deep-linking once finished
           // bindLocalNotificationsClick();
         }
