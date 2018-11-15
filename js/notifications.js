@@ -32,45 +32,57 @@ Fliplet.Widget.register('PushNotifications', function () {
     return Fliplet.User.subscribe(data);
   }
 
-  function handleForegroundNotification(data) {
-    $('#notificationContainer').remove();
-    $('body').append(Fliplet.Native.Templates.InAppNotification);
-
-    $('#appName').text(Fliplet.Env.get('appName'));
-    $('#notificationTitle').text(data.title);
-    $('#notificationBody').text(data.message);
-
-    if (Fliplet.Env.get('pageId') === parseInt(data.additionalData.data.page)) {
-      $('#btnNotificationNavigate').addClass('hidden');
-    } else {
-      $('#btnNotificationNavigate').on('click', function () {
-        handleNotificationPayload(data.additionalData.data);
-      });
+  function handleNotificationPayload(data) {
+    if (!data || !data.page) {
+      return;
     }
 
-    setTimeout(function () {
-      $('#notificationContainer').remove();
-    }, 3000);
-  }
+    var appPages = Fliplet.Env.get('appPages');
 
-  function handleNotificationPayload(data) {
-    if (data && data.page) {
-      var appPages = Fliplet.Env.get('appPages');
+    if (Array.isArray(appPages) && appPages.length) {
+      var page = appPages.filter(function(page) { return page.id === parseInt(data.page);});
 
-      if (Array.isArray(appPages) && appPages.length) {
-        var page = appPages.filter(function(page) { return page.id === parseInt(data.page);});
-
-        if (!page.length || Fliplet.Env.get('pageId') === parseInt(data.page)) {
-          Fliplet.Native.Updates.checkForUpdates(Fliplet.Env.get('appId'), true, null, data);
-          return;
-        }
-        else {
-          Fliplet.Storage.set('fl_notification_update', data).then(function () {
-            Fliplet.Navigate.to(data);
-          });
-        }
+      if (!page.length || Fliplet.Env.get('pageId') === parseInt(data.page)) {
+        Fliplet.Native.Updates.checkForUpdates(Fliplet.Env.get('appId'), true, null, data);
+        return;
+      }
+      else {
+        Fliplet.Storage.set('fl_notification_update', data).then(function () {
+          Fliplet.Navigate.screen(data.page);
+        });
       }
     }
+  }
+
+  function bindLocalNotificationsClick() {
+    if (!Fliplet.Env.is('native')) {
+      return; // only native devices
+    }
+
+    if (typeof cordova.plugins.notification === 'undefined') {
+      return; // do nothing if native app hasn't got the plugin installed
+    }
+
+    cordova.plugins.notification.local.on('click', function (notification) {
+      if (notification && notification.data) {
+        handleNotificationPayload(notification.data);
+      }
+    }, this);
+
+    if (cordova.plugins.notification.local.launchDetails) {
+      console.log('Launch details', launchDetails);
+    }
+  }
+
+  function handleForegroundNotification(data) {
+    Fliplet.Navigator.Notifications.schedule({
+      title: data.title,
+      text: data.message,
+      foreground: true,
+      data: data.additionalData
+    }, function () {
+      // notification has been scheduled
+    }, this, { skipPermission: true });
   }
 
   function ask() {
@@ -174,9 +186,21 @@ Fliplet.Widget.register('PushNotifications', function () {
       var push = Fliplet.User.getPushNotificationInstance(data);
 
       if (push) {
-        //Clear any notifications
-        push.setApplicationIconBadgeNumber(function () { }, function () { }, 1);
-        push.clearAllNotifications(function () { }, function () { });
+        function clearNotifications() {
+          push.clearAllNotifications(function () {
+            // cleared
+          }, function (err) {
+            console.error('Cannot clear notifications', err);
+          });
+        }
+
+        //Clear any notification after setting the badge to 1 (it's a hack)
+        push.setApplicationIconBadgeNumber(function () {
+          clearNotifications();
+        }, function (err) {
+          console.error('Cannot set badge number', err);
+          clearNotifications();
+        }, 1);
 
         if (isSubscribed) {
           push.on('notification', function (data) {
@@ -187,10 +211,12 @@ Fliplet.Widget.register('PushNotifications', function () {
                   return;
                 }
 
-                handleNotificationPayload(data.additionalData.data);
+                handleNotificationPayload(data.additionalData);
               }
             });
           });
+
+          bindLocalNotificationsClick();
         }
       }
 
