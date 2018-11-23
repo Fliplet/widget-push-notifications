@@ -14,6 +14,15 @@ body {
   display: block;
 }
 
+[data-view="list"] th,
+[data-view="list"] td {
+  border: none;
+}
+
+[data-view="list"] tr {
+  border-bottom: 1px solid #dddddd;
+}
+
 .custom-h4 {
   margin-top: 30px;
   color: #14505e;
@@ -121,21 +130,6 @@ body {
 #subscription-note.toHide {
   opacity: 0;
 }
-
-
-/****************************************/
-
-
-/** ------ Notification send UI ------ **/
-
-
-/** ------ Notification send UI ------ **/
-
-
-/** ------ Notification send UI ------ **/
-
-
-/****************************************/
 
 #push-notifications-tab-intro h1 {
   color: #00abd1;
