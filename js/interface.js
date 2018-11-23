@@ -464,10 +464,15 @@ function renderNotifications(options) {
   if (!notifications.length) {
     if (options.mode === 'append') {
       $('#notifications-tab').find('[data-load-more]').remove();
+      Fliplet.Widget.autosize();
       return;
     }
-    $('#notifications-tab [data-view="list"]').html(Fliplet.Widget.Templates['templates.noNotifications']());
-    return;
+
+    if (options.mode !== 'prepend') {
+      $('#notifications-tab [data-view="list"]').html(Fliplet.Widget.Templates['templates.noNotifications']());
+        Fliplet.Widget.autosize();
+      return;
+    }
   }
 
   var $html = $(html);
@@ -558,10 +563,12 @@ function loadPushNotifications(append) {
       if (!reportData.jobs.length) {
         if (append) {
           $('#push-notifications-tab').find('[data-load-more]').remove();
+          Fliplet.Widget.autosize();
           return;
         }
 
         $('#push-notifications-tab [data-view="list"]').html(Fliplet.Widget.Templates['templates.noPushNotifications']());
+        Fliplet.Widget.autosize();
         return;
       }
 
