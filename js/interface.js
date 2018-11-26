@@ -128,6 +128,10 @@ function getPushNotifications() {
       offset: pushNotificationsOffset
     });
   }).then(function(logs) {
+    _.remove(logs, function (log) {
+      return !log || !_.hasIn(log, 'data.payload');
+    });
+
     logs.forEach(function(log) {
       var logData = {
         createdAt: '',
