@@ -477,7 +477,7 @@ var UINotification = (function() {
         payload: _.cloneDeep(data)
       };
 
-      pushNotification.payload.message = pushNotification.payload.body;
+      pushNotification.payload.message = _.clone(pushNotification.payload.body);
       delete pushNotification.payload.body;
 
       var targetSubscriptionIDs = _.compact(_.map($('#subscription-ids').val().split(','), function (id) {
