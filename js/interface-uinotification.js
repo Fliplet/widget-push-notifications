@@ -547,7 +547,7 @@ var UINotification = (function() {
 
     var message = isUpdate ? 'Your notification has been updated' : 'Your notification has been sent';
     if (pushNotificationCount) {
-      message += ', including up to <strong>' + (count || _this.subscriptionsCount) + '</strong>push notification(s) sent to registered devices'
+      message += ', including up to <strong>' + (pushNotificationCount || _this.subscriptionsCount) + '</strong>push notification(s) sent to registered devices'
     }
     message += '.';
 
