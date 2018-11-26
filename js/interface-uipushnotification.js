@@ -124,9 +124,6 @@ var UIPushNotification = (function() {
       $('#target-push-subscription-ids').removeClass('hidden');
       Fliplet.Widget.autosize();
     });
-
-    // Sets up callback for sending another notification
-    // $(document).on( 'click', '#push-notification-form-another', _this.resetNotificationForm )
   };
 
   UIPushNotification.prototype.showNotificationReviewModal = function() {
@@ -464,9 +461,12 @@ var UIPushNotification = (function() {
     Fliplet.Modal.alert({
       title: 'Notification sent',
       message: 'Your notification has been sent to up to <strong>' + (count || _this.subscriptionsCount) + '</strong> registered device(s).'
+    }).then(function () {
+      $('#push-notification-form').attr('data-mode', '');
+      _this.resetNotificationForm();
+      Fliplet.Widget.autosize();
+      return Fliplet.Hooks.run('pushNotificationSent', notification, isUpdate);
     });
-    $('#push_notification_title, #push_notification_message').val('');
-    $('#push-notification-form').attr('data-mode', '');
   };
 
   UIPushNotification.prototype.notificationIsNotSent = function() {
@@ -485,7 +485,6 @@ var UIPushNotification = (function() {
 
   UIPushNotification.prototype.resetNotificationForm = function() {
     $('#push_notification_title, #push_notification_message').val('');
-    $('#push-notification-form').attr('data-mode', 'confirm');
     $('#notification-message-preview').addClass('message-empty');
     setTimeout(_this.onNotificationMessageUpdated, 0);
     return false;
