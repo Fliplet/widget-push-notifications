@@ -555,7 +555,6 @@ var UINotification = (function() {
       title: 'Success!',
       message: message
     }).then(function () {
-      $('#notifications-tab').attr('data-mode', 'list');
       $('#notification-form').attr('data-mode', '');
       _this.resetNotificationForm();
       Fliplet.Widget.autosize();

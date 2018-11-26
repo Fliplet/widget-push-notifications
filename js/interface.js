@@ -237,6 +237,8 @@ function attachObservers() {
       firstNotification = true;
     }
 
+    $('#notifications-tab').attr('data-mode', 'list');
+
     if (isUpdate) {
       updateNotifications(notification);
       return;
@@ -250,6 +252,12 @@ function attachObservers() {
     if (firstNotification) {
       removeLoadMoreNotificationsButton();
     }
+  });
+
+  Fliplet.Hooks.on('pushNotificationSent', function (response) {
+    $('#push-notifications-tab').attr('data-mode', 'list');
+    $('#push-notifications-tab [data-view="list"]').html(Fliplet.Widget.Templates['templates.loading']()).addClass('loading');
+    loadPushNotifications();
   });
 
   $(window).on('resize', Fliplet.Widget.autosize);
