@@ -467,7 +467,7 @@ var UIPushNotification = (function() {
       $('#push-notification-form').attr('data-mode', '');
       _this.resetNotificationForm();
       Fliplet.Widget.autosize();
-      return Fliplet.Hooks.run('pushNotificationSent', notification, isUpdate);
+      return Fliplet.Hooks.run('pushNotificationSent', response);
     });
   };
 
