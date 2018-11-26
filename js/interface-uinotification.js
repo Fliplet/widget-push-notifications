@@ -538,7 +538,7 @@ var UINotification = (function() {
     var notification = response.notification;
     var pushNotificationResult = response.pushNotificationsResult;
     var pushNotificationCount = pushNotificationResult && pushNotificationResult.subscriptionsCount
-      ? pushNotificationresults.subscriptionsCount
+      ? pushNotificationResult.subscriptionsCount
       : 0;
 
     $('#notification-form').attr('data-mode', 'sent');

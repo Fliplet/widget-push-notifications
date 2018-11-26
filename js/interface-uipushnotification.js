@@ -389,7 +389,7 @@ var UIPushNotification = (function() {
     _this.sendNotification()
       .then(function(response) {
         // Push was successful
-        _this.notificationIsSent(response.subscriptionsCount);
+        _this.notificationIsSent(response);
       })
       .catch(function(error) {
         // Handle error
@@ -454,7 +454,9 @@ var UIPushNotification = (function() {
     return Fliplet.App.PushNotifications.send(data);
   };
 
-  UIPushNotification.prototype.notificationIsSent = function(count) {
+  UIPushNotification.prototype.notificationIsSent = function(response) {
+    response = response || {};
+    var count = response.subscriptionsCount;
     $('#push-notification-form').attr('data-mode', 'sent');
     Fliplet.Widget.autosize();
     $('.notification-summary-sending .progress-bar').width('100%');
