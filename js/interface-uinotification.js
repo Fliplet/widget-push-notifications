@@ -143,9 +143,12 @@ var UINotification = (function() {
   };
 
   UINotification.prototype.showNotificationReviewModal = function() {
-    var targetSubscriptionIDs = _.compact(_.map($('#subscription-ids').val().split(','), function (id) {
-      return parseInt(id, 10);
-    }));
+    var targetSubscriptionIDs = [];
+    if ($('#subscription-ids').length) {
+      targetSubscriptionIDs = _.compact(_.map($('#subscription-ids').val().split(','), function (id) {
+        return parseInt(id, 10);
+      }));
+    }
 
     // Add subscription count to HTML
     $('#notification-form .subscriptions-count').html(targetSubscriptionIDs.length
@@ -481,7 +484,6 @@ var UINotification = (function() {
         return parseInt(id, 10);
       }));
       if (targetSubscriptionIDs.length) {
-        // @TODO Verify support for subscriptionIds by API
         pushNotification.subscriptions = targetSubscriptionIDs;
       }
     }

@@ -213,6 +213,10 @@ function initializeHandlebars() {
   Handlebars.registerPartial('pushNotificationEntries', Fliplet.Widget.Templates['templates.pushNotificationEntries']());
 }
 
+function removeLoadMoreNotificationsButton() {
+  $('#notifications-tab').find('[data-load-more]').remove();
+}
+
 function attachObservers() {
   // Fired from Fliplet Studio when the external save button is clicked
   Fliplet.Widget.onSaveRequest(function() {
@@ -224,6 +228,11 @@ function attachObservers() {
   });
 
   Fliplet.Hooks.on('notificationSent', function (notification, isUpdate) {
+    var firstNotification = false;
+    if (!allNotifications.length) {
+      firstNotification = true;
+    }
+
     if (isUpdate) {
       updateNotifications(notification);
       return;
@@ -231,8 +240,12 @@ function attachObservers() {
 
     renderNotifications({
       notifications: [notification],
-      mode: 'prepend'
+      mode: firstNotification ? 'html' : 'prepend'
     });
+
+    if (firstNotification) {
+      removeLoadMoreNotificationsButton();
+    }
   });
 
   $(window).on('resize', Fliplet.Widget.autosize);
@@ -463,7 +476,7 @@ function renderNotifications(options) {
   $('#notifications-tab [data-view="list"]').removeClass('loading');
   if (!notifications.length) {
     if (options.mode === 'append') {
-      $('#notifications-tab').find('[data-load-more]').remove();
+      removeLoadMoreNotificationsButton();
       Fliplet.Widget.autosize();
       return;
     }
@@ -489,6 +502,10 @@ function renderNotifications(options) {
     default:
       $('#notifications-tab [data-view="list"]').html($html);
       break;
+  }
+
+  if (options.loadMore === false) {
+    removeLoadMoreNotificationsButton();
   }
 
   Fliplet.Widget.autosize();
@@ -533,7 +550,8 @@ function loadNotifications(append) {
     .then(function (notifications) {
       renderNotifications({
         notifications: notifications,
-        mode: append ? 'append' : 'replace'
+        mode: append ? 'append' : 'replace',
+        loadMore: notifications.length >= limit
       });
     });
 }
