@@ -618,7 +618,6 @@ function loadPushNotifications(append) {
 
 function init() {
   loadNotifications();
-  // loadPushNotifications();
 }
 
 initializeHandlebars();
