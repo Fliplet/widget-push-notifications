@@ -391,3 +391,69 @@ body {
 #target-subscription-ids {
   margin-bottom: 10px;
 }
+
+/*
+ * Callouts
+ *
+ * Not quite alerts, but custom and helpful notes for folks reading the docs.
+ * Requires a base and modifier class.
+ */
+
+/* Common styles for all types */
+
+.callout {
+  padding: 20px;
+  margin: 0 0 20px;
+  border: 1px solid #eee;
+  border-left-width: 5px;
+  border-radius: 3px;
+}
+.callout h4 {
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+.callout p:last-child {
+  margin-bottom: 0;
+}
+.callout code {
+  border-radius: 3px;
+}
+
+/* Tighten up space between multiple callouts */
+
+.callout + .callout {
+  margin-top: -5px;
+}
+
+/* Variations */
+
+.callout-default {
+  border-left-color: #333333;
+}
+.callout-default h4 {
+  color: #333333;
+}
+.callout-danger {
+  border-left-color: #d9534f;
+}
+.callout-danger h4 {
+  color: #d9534f;
+}
+.callout-warning {
+  border-left-color: #f0ad4e;
+}
+.callout-warning h4 {
+  color: #f0ad4e;
+}
+.callout-info {
+  border-left-color: #00abd1;
+}
+.callout-info h4 {
+  color: #00abd1;
+}
+.callout-success {
+  border-left-color: #5cb85c;
+}
+.callout-success h4 {
+  color: #5cb85c;
+}
