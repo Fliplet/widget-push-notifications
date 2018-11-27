@@ -400,6 +400,7 @@ function attachObservers() {
 
 function setupNewNotificationForm() {
   if ($('.tab-pane.active [data-view="new"]').html().trim() !== '') {
+    uiNotification.resetNotificationForm();
     return;
   }
 
