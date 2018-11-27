@@ -12,6 +12,7 @@
     "dependencies": [
       "fliplet-core",
       "fliplet-studio-ui",
+      "fliplet-notifications",
       "moment",
       "bootstrap-js",
       "handlebars",
@@ -24,6 +25,8 @@
       "js/bootstrap-switch.min.js",
       "js/bootstrap-datetimepicker.min.js",
       "js/interface-uinotification.js",
+      "js/interface-uipushnotification.js",
+      "js/interface.templates.js",
       "js/interface.js",
       "img/app-icon.png",
       "img/notifications_device_preview_empty.jpg",

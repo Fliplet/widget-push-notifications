@@ -1,24 +1,26 @@
-/**************************************/
-
-
-/** ------ Bootstrap override ------ **/
-
-
-/** ------ Bootstrap override ------ **/
-
-
-/** ------ Bootstrap override ------ **/
-
-
-/**************************************/
-
 body {
   background-color: transparent;
-  overflow: hidden;
+  /*overflow: hidden;*/
+  /*padding: 0 10px;*/
 }
 
-img {
-  max-width: 100%;
+[data-view="new"],
+[data-view="list"] {
+  display: none;
+}
+
+[data-mode="new"] [data-view="new"],
+[data-mode="list"] [data-view="list"] {
+  display: block;
+}
+
+[data-view="list"] th,
+[data-view="list"] td {
+  border: none;
+}
+
+[data-view="list"] tr {
+  border-bottom: 1px solid #dddddd;
 }
 
 .custom-h4 {
@@ -60,12 +62,6 @@ img {
 
 .radio.radio-icon + .radio.radio-icon {
   margin-top: 0;
-  margin-right: 0;
-  margin-left: 5px;
-}
-
-.radio.radio-icon input[type="radio"] + label {
-  padding-left: 15px;
 }
 
 .inline-radio .radio:first-child label,
@@ -135,22 +131,7 @@ img {
   opacity: 0;
 }
 
-
-/****************************************/
-
-
-/** ------ Notification send UI ------ **/
-
-
-/** ------ Notification send UI ------ **/
-
-
-/** ------ Notification send UI ------ **/
-
-
-/****************************************/
-
-#notification-send-tab-intro h1 {
+#push-notifications-tab-intro h1 {
   color: #00abd1;
   font-weight: 200;
 }
@@ -163,13 +144,13 @@ img {
   background-color: #00abd1;
 }
 
-#notification-send-tab .label {
+#push-notifications-tab .label {
   font-weight: 300;
   position: relative;
   top: -2px;
 }
 
-#notification-send-tab textarea {
+#push-notifications-tab textarea {
   resize: none;
 }
 
@@ -196,7 +177,7 @@ img {
   border-radius: 21%;
 }
 
-#notification-badge-icon>label {
+#notification-badge-icon > label {
   background: #ddd;
   color: #fff;
   display: block;
@@ -213,24 +194,24 @@ img {
   transition: background-color 0.2s linear;
 }
 
-#notification-badge-icon.checked>label {
+#notification-badge-icon.checked > label {
   background: #f31705;
 }
 
-#notification-send-tab .bootstrap-datetimepicker-widget .datepicker table tr:first-child th {
+#push-notifications-tab .bootstrap-datetimepicker-widget .datepicker table tr:first-child th {
   color: #00abd1;
 }
 
-#notification-send-tab .bootstrap-datetimepicker-widget .timepicker table {
+#push-notifications-tab .bootstrap-datetimepicker-widget .timepicker table {
   width: auto;
   margin: 0 auto;
 }
 
-#notification-send-tab .bootstrap-datetimepicker-widget .timepicker table {
+#push-notifications-tab .bootstrap-datetimepicker-widget .timepicker table {
   margin-top: 40px;
 }
 
-#notification-send-tab .bootstrap-datetimepicker-widget .timepicker table td, #notification-send-tab .bootstrap-datetimepicker-widget .timepicker table td span {
+#push-notifications-tab .bootstrap-datetimepicker-widget .timepicker table td, #push-notifications-tab .bootstrap-datetimepicker-widget .timepicker table td span {
   width: 24px;
   height: 24px;
   line-height: 24px;
@@ -251,11 +232,12 @@ img {
   color: #fff;
 }
 
-#notification_timezone_gmt:checked~#notification_timezone_gmt_label>.glyphicon, #notification_timezone_local:checked~#notification_timezone_local_label>.glyphicon {
+#notification_timezone_gmt:checked~#notification_timezone_gmt_label > .glyphicon, #notification_timezone_local:checked~#notification_timezone_local_label > .glyphicon {
   display: inline-block;
 }
 
-#notification-summary-badge-not>span {
+#notification-summary-badge-not>span,
+#push-notification-summary-badge-not>span {
   text-decoration: underline;
 }
 
@@ -263,36 +245,49 @@ img {
   display: none;
 }
 
-#notification-send-tab[data-mode="confirm"] .notification-summary-confirm, #notification-send-tab[data-mode="error"] .notification-summary-sending, #notification-send-tab[data-mode="sending"] .notification-summary-sending, #notification-send-tab[data-mode="sent"] .notification-summary-sending {
+#notification-form[data-mode="confirm"] .notification-summary-confirm,
+#notification-form[data-mode="error"] .notification-summary-sending,
+#notification-form[data-mode="sending"] .notification-summary-sending,
+#notification-form[data-mode="sent"] .notification-summary-sending,
+#push-notification-form[data-mode="confirm"] .notification-summary-confirm,
+#push-notification-form[data-mode="error"] .notification-summary-sending,
+#push-notification-form[data-mode="sending"] .notification-summary-sending,
+#push-notification-form[data-mode="sent"] .notification-summary-sending {
   display: block;
 }
 
-#notification-send-tab[data-mode="sending"] .modal-footer {
+#notification-form[data-mode="sending"] .modal-footer,
+#push-notification-form[data-mode="sending"] .modal-footer {
   display: none;
 }
 
-#notification-send-tab .notification-summary-items>.notification-summary-item {
+#notifications-tab .notification-summary-items > .notification-summary-item,
+#push-notifications-tab .notification-summary-items > .notification-summary-item {
   margin-left: 40px;
   border-top: 1px solid #efefef;
   padding: 8px 0;
 }
 
-#notification-send-tab .notification-summary-items>.notification-summary-item:first-child {
+#notifications-tab .notification-summary-items > .notification-summary-item:first-child.
+#push-notifications-tab .notification-summary-items > .notification-summary-item:first-child {
   border-top: none;
 }
 
-#notification-send-tab .notification-summary-items>.notification-summary-item>.glyphicon {
+#notifications-tab .notification-summary-items > .notification-summary-item > .glyphicon,
+#push-notifications-tab .notification-summary-items > .notification-summary-item > .glyphicon {
   font-size: 18px;
   float: left;
   margin-left: -35px;
   color: #999;
 }
 
-#notification-send-tab .notification-summary-items>.notification-summary-item>blockquote {
+#notifications-tab .notification-summary-items > .notification-summary-item > blockquote,
+#push-notifications-tab .notification-summary-items > .notification-summary-item > blockquote {
   margin-bottom: 12px;
 }
 
-#notification-send-tab[data-mode="confirm"] .notification-summary-sending .progress-bar {
+#notification-form[data-mode="confirm"] .notification-summary-sending .progress-bar,
+#push-notification-form[data-mode="confirm"] .notification-summary-sending .progress-bar {
   -webkit-transition: none;
   transition: none;
 }
@@ -306,6 +301,7 @@ img {
 /* Reports */
 .reports-holder {
   overflow: hidden;
+  margin-bottom: 20px;
 }
 
 .report-wrapper {
@@ -394,4 +390,70 @@ img {
 
 #target-subscription-ids {
   margin-bottom: 10px;
+}
+
+/*
+ * Callouts
+ *
+ * Not quite alerts, but custom and helpful notes for folks reading the docs.
+ * Requires a base and modifier class.
+ */
+
+/* Common styles for all types */
+
+.callout {
+  padding: 20px;
+  margin: 0 0 20px;
+  border: 1px solid #eee;
+  border-left-width: 5px;
+  border-radius: 3px;
+}
+.callout h4 {
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+.callout p:last-child {
+  margin-bottom: 0;
+}
+.callout code {
+  border-radius: 3px;
+}
+
+/* Tighten up space between multiple callouts */
+
+.callout + .callout {
+  margin-top: -5px;
+}
+
+/* Variations */
+
+.callout-default {
+  border-left-color: #333333;
+}
+.callout-default h4 {
+  color: #333333;
+}
+.callout-danger {
+  border-left-color: #d9534f;
+}
+.callout-danger h4 {
+  color: #d9534f;
+}
+.callout-warning {
+  border-left-color: #f0ad4e;
+}
+.callout-warning h4 {
+  color: #f0ad4e;
+}
+.callout-info {
+  border-left-color: #00abd1;
+}
+.callout-info h4 {
+  color: #00abd1;
+}
+.callout-success {
+  border-left-color: #5cb85c;
+}
+.callout-success h4 {
+  color: #5cb85c;
 }

@@ -1,0 +1,17 @@
+<p><a class="btn btn-primary" data-action="new-notification" href="#">New notification</a></p>
+<table>
+  <thead>
+    <tr>
+      <th width="180">Created at</th>
+      <th>Notification</th>
+      <th width="100">Status</th>
+      <th width="100" class="hidden">Display in apps</th>
+      <th width="100" class="hidden">Sent as push notification</th>
+      <th width="100">&nbsp;</th>
+    </tr>
+  </thead>
+  <tbody>
+  \{{> notificationEntries}}
+  </tbody>
+</table>
+<p class="text-center"><a href="#" data-load-more>Load more</a></p>

@@ -1,0 +1,18 @@
+\{{#each this}}
+  <tr data-status="\{{status}}" data-id="\{{id}}">
+    <td><span title="\{{moment createdAt format="MMM Do YYYY, HH:mm"}}">\{{moment createdAt calendar=null}}</span></td>
+    <td><strong>\{{data.title}}</strong>\{{#and data.title data.message}}<br>\{{/and}}\{{data.message}}</td>
+    <td>\{{statusText}}</td>
+    <td class="hidden">\{{#or data.title data.message}}<i class="fa fa-fw fa-lg fa-check"></i>\{{/or}}</td>
+    \{{#if pushNotificationPayload}}
+    <td class="hidden">\{{#or pushNotificationPayload.title pushNotificationPayload.message}}<i class="fa fa-fw fa-lg fa-check"></i>\{{/or}}</td>
+    \{{else}}
+    <td class="hidden"></td>
+    \{{/if}}
+    \{{#unless isDeleted}}
+    <td><a href="#" data-action="edit" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-fw fa-lg fa-pencil"></i></a> <a class="hidden" href="#" data-action="clone" data-toggle="tooltip" data-placement="top" title="Copy as new draft"><i class="fa fa-fw fa-lg fa-clone"></i></a> <a href="#" data-action="delete" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-fw fa-lg fa-trash"></i></a></td>
+    \{{else}}
+    <td><a class="hidden" href="#" data-toggle="tooltip" data-placement="top" title="Copy as new draft"><i class="fa fa-fw fa-lg fa-clone"></i></a></td>
+    \{{/unless}}
+  </tr>
+\{{/each}}

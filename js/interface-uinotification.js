@@ -5,6 +5,15 @@
 var UINotification = (function() {
   // this reference
   var _this;
+  var DEFAULT_LINK_DATA = {
+    action: 'screen',
+    page: '',
+    transition: 'slide.left',
+    options: {
+      hideAction: true
+    }
+  };
+  var loadedNotification;
 
   // Constructor
   function UINotification() {
@@ -22,14 +31,7 @@ var UINotification = (function() {
     subscriptionsCount: 0,
     mockedRequest: Fliplet.Env.get('development'), // Use a mocked request under development environment
     linkActionProvider: {},
-    linkData: {
-      action: 'screen',
-      page: '',
-      transition: 'slide.left',
-      options: {
-        hideAction: true
-      }
-    },
+    linkData: _.cloneDeep(DEFAULT_LINK_DATA),
     linkSavedData: {},
     toSendNotification: false,
     showPreviewScreen: false,
@@ -41,17 +43,31 @@ var UINotification = (function() {
       ? Promise.resolve([1,2,3])
       : Fliplet.App.Subscriptions.get();
 
+    $('.app-name').html(Fliplet.Env.get('appName'));
+
+    Fliplet.App.get()
+      .then(function (app) {
+        if (!app || !app.icon) {
+          return;
+        }
+
+        $('<img>')
+          .on('load', function () {
+            $('#notification-form .app-icon-preview').attr('src', app.icon);
+          })
+          .attr('src', app.icon);
+      });
+
     getSubscriptionsCount.then(function(subscriptions) {
       _this.subscriptionsCount = subscriptions.length;
       if (_this.subscriptionsCount === 0) {
         $('#subscription-note').html('<p>No devices registered to receive this notification<br><small class="help-block"><strong>Note:</strong> Users can disable notifications on their devices.</small></p>');
         $('#subscription-note').addClass('text-danger');
         Fliplet.Widget.autosize();
-        $('#subscription-note').removeClass('toHide');
       } else {
         $('#subscriptions').html(_this.subscriptionsCount);
-        $('#subscription-note').removeClass('toHide');
       }
+      Fliplet.Widget.autosize();
     });
 
     // Initialise the link provider
@@ -85,7 +101,7 @@ var UINotification = (function() {
     // $(document).on( 'click', '#notification-confirm', _this.initialiseNotificationConfirmationModal );
 
     // Sets up callback for sending/cancelling notification sending
-    $(document).on('click', '.notification-send', function(event){
+    $(document).on('click', '#notification-form .notification-send', function(event){
       event.preventDefault();
 
       if ($('#show_link_provider').is(':checked')) {
@@ -96,78 +112,58 @@ var UINotification = (function() {
       _this.sendValidation();
     });
 
-    $(document).on('click', '.notification-cancel', _this.cancelNotificationSend);
-    $(document).on('click', '.preview-target-screen', function(event) {
+    $(document).on('click', '#notification-form .notification-cancel', _this.cancelNotificationSend);
+    $(document).on('click', '#notification-form .preview-target-screen', function(event) {
       event.preventDefault();
 
       _this.showPreviewScreen = true;
       _this.linkActionProvider.forwardSaveRequest();
     });
 
-    $(document).on('click', '.more-details a', function(e) {
-      e.preventDefault();
-      var _this = $(this);
-      var placeHodlerEl = '<div class="report-placeholder-element"></div>';
-
-      if (!$(this).parents('.report-wrapper').hasClass('show-more')) {
-        $('.reports-holder').append(placeHodlerEl);
-        Fliplet.Widget.autosize();
-      }
-
-      setTimeout(function() {
-        $('.report-placeholder-element').remove();
-        _this.parents('.report-wrapper').toggleClass('show-more');
-
-        if (_this.parents('.report-wrapper').hasClass('show-more')) {
-          _this.text('See less details');
-        } else {
-          _this.text('See more details');
-        }
-      }, 0);
-
-      // Wait for CSS animation to finish before running
-      setTimeout(function() {
-        Fliplet.Widget.autosize();
-      }, 500);
-    });
-
-    $(document).on('click', '.enter-subscription-ids', function (e) {
+    $(document).on('click', '#notification-form .enter-subscription-ids', function (e) {
       e.preventDefault();
       $('#target-subscription-ids').removeClass('hidden');
       Fliplet.Widget.autosize();
     });
 
-    // Sets up callback for sending another notification
-    // $(document).on( 'click', '#notification-send-tab-another', _this.resetNotificationForm )
+    $(document).on('change', '#show_link_provider', _this.onAddLinkUpdated);
+
+    $(document).on('change', '#send_push_notification', _this.onPushNotificationToggled);
+
+    $(document).on('change', 'input[type="radio"][name="notification_status"]', _this.onStatusUpdated);
   };
 
   UINotification.prototype.showNotificationReviewModal = function() {
-    var targetSubscriptionIDs = _.compact(_.map($('#subscription-ids').val().split(','), function (id) {
-      return parseInt(id, 10);
-    }));
+    var targetSubscriptionIDs = [];
+    if ($('#subscription-ids').length) {
+      targetSubscriptionIDs = _.compact(_.map($('#subscription-ids').val().split(','), function (id) {
+        return parseInt(id, 10);
+      }));
+    }
 
     // Add subscription count to HTML
-    $('.subscriptions-count').html(targetSubscriptionIDs.length
+    $('#notification-form .subscriptions-count').html(targetSubscriptionIDs.length
       ? targetSubscriptionIDs.length
       : _this.subscriptionsCount);
 
+    if ($('#send_push_notification').is(':checked')) {
+      $('#notification-form .notifications-preview .push-notification-preview').removeClass('hidden');
+    } else {
+      $('#notification-form .notifications-preview .push-notification-preview').addClass('hidden');
+    }
+
     // Get HTML for modal
-    var html = $('.notifications-preview').html();
+    var html = $('#notification-form .notifications-preview').html();
 
     // Open Modal
-    Fliplet.Modal.confirm({
+    return Fliplet.Modal.confirm({
       size: 'large',
       title: 'Notification preview',
       message: html,
       buttons: {
         confirm: {
-          label: 'Send notification'
+          label: !!$('#notification_id').val() ? 'Save notification' : 'Send notification'
         }
-      }
-    }).then(function (result) {
-      if (result) {
-        _this.toSendNotification = true;
-        _this.linkActionProvider.forwardSaveRequest();
       }
     });
   }
@@ -195,10 +191,18 @@ var UINotification = (function() {
       return;
     }
 
-    _this.showNotificationReviewModal();
+    _this.showNotificationReviewModal().then(function (confirmed) {
+      if (!confirmed) {
+        return;
+      }
+
+      _this.toSendNotification = true;
+      _this.linkActionProvider.forwardSaveRequest();
+    });
   }
 
   UINotification.prototype.linkProviderInit = function() {
+    $('#link-provider').empty();
     _this.linkActionProvider = Fliplet.Widget.open('com.fliplet.link', {
       // If provided, the iframe will be appended here,
       // otherwise will be displayed as a full-size iframe overlay
@@ -241,6 +245,7 @@ var UINotification = (function() {
   }
 
   UINotification.prototype.openPreviewOverlay = function() {
+    debugger;
     Fliplet.Studio.emit('overlay', {
       name: 'page-preview',
       options: {
@@ -266,7 +271,7 @@ var UINotification = (function() {
     }
     previewHtml += $messageField.val();
 
-    $('#notification-message-preview .notification-message').html(previewHtml);
+    $('#notification-form .notifications-preview .notification-message').html(previewHtml);
     if (!$titleField.val().length && !$messageField.val().length) {
       $('#notification-message-preview').addClass('message-empty');
     } else {
@@ -276,10 +281,38 @@ var UINotification = (function() {
     _this.refreshCharCount($messageField, _this.messageCharLimit);
   };
 
+  UINotification.prototype.onStatusUpdated = function() {
+    var loadedAsPublished = loadedNotification && (loadedNotification.status === 'published');
+    if ($('#notification_status_published').prop('checked') && !loadedAsPublished) {
+      $('#push_notification_form_group').removeClass('hidden');
+    } else {
+      $('#push_notification_form_group').addClass('hidden');
+    }
+    Fliplet.Widget.autosize();
+  };
+
+  UINotification.prototype.onPushNotificationToggled = function() {
+    if ($('#send_push_notification').prop('checked')) {
+      $('.push-only').removeClass('hidden');
+    } else {
+      $('.push-only').addClass('hidden');
+    }
+    Fliplet.Widget.autosize();
+  };
+
+  UINotification.prototype.onAddLinkUpdated = function() {
+    if ($('#show_link_provider').prop('checked')) {
+      $('#notification-form .link-provider-holder').removeClass('hidden');
+    } else {
+      $('#notification-form .link-provider-holder').addClass('hidden');
+    }
+    Fliplet.Widget.autosize();
+  }
+
   UINotification.prototype.refreshCharCount = function($field, charLimit) {
     var count = $field.val().length;
     var $countContainer = $($field.data('countSelector'));
-    var $countLabel = $countContainer.parents('countlabel');
+    var $countLabel = $countContainer.parents('.countlabel');
     $countContainer.html(charLimit - count);
     if (count > charLimit) {
       $countLabel.addClass('text-danger').removeClass('text-success');
@@ -366,7 +399,7 @@ var UINotification = (function() {
         break;
     }
 
-    $('#notification-send-tab').attr('data-mode', 'confirm');
+    $('#notification-form').attr('data-mode', 'confirm');
     $("body").data("modalmanager").getOpenModals().pop().layout();
   };
 
@@ -399,54 +432,69 @@ var UINotification = (function() {
   };
 
   UINotification.prototype.startNotificationSend = function() {
-    $('#notification-send-tab').attr('data-mode', 'confirm');
+    $('#notification-form').attr('data-mode', 'confirm');
     // Send request
     _this.sendNotification()
       .then(function(response) {
         // Push was successful
-        _this.notificationIsSent(response.subscriptionsCount);
+        _this.notificationIsSent(response, !!$('#notification_id').val());
       })
       .catch(function(error) {
         // Handle error
-        var msg = error.responseJSON && error.responseJSON.message || error.message || error;
+        var msg = Fliplet.parseError(error);
         _this.sendErrorMessage = "Error: " + msg;
         _this.notificationIsNotSent();
       });
   };
 
   UINotification.prototype.cancelNotificationSend = function() {
-    $('[href="#settings"]').tab('show');
-    $('#notification-send-tab textarea').val('');
-    _this.onNotificationMessageUpdated();
-    $('#notification-send-tab').attr('data-mode', '');
+    _this.resetNotificationForm();
+    $('#notification-form').attr('data-mode', '');
+    $('#notifications-tab').attr('data-mode', 'list');
+    Fliplet.Widget.autosize();
   };
 
   UINotification.prototype.sendNotification = function() {
-    var title = $('#notification_title').val();
-    var body = $('#notification_message').val();
+    var notifications = Fliplet.Notifications.init();
+    var title = $('#notification_title').val().trim();
+    var message = $('#notification_message').val().trim();
+    var notification = {};
+    var pushNotification;
     var data = {
       title: title,
-      body: body,
-      badge: 1
+      message: message
     };
 
     // Check if page is set for deep linking
     if ($('#show_link_provider').is(':checked') && _this.linkSavedData.action && _this.linkSavedData.action.page) {
-      data.custom = {
-        data: _this.linkSavedData.action
+      data.navigate = _this.linkSavedData.action;
+    }
+
+    notification.data = _.cloneDeep(data);
+
+    if ($('#send_push_notification').is(':checked')) {
+      pushNotification = {
+        payload: _.cloneDeep(data)
+      };
+
+      pushNotification.payload.body = pushNotification.payload.message;
+      delete pushNotification.payload.message;
+
+      var targetSubscriptionIDs = _.compact(_.map($('#subscription-ids').val().split(','), function (id) {
+        return parseInt(id, 10);
+      }));
+      if (targetSubscriptionIDs.length) {
+        pushNotification.subscriptions = targetSubscriptionIDs;
       }
     }
 
-    var targetSubscriptionIDs = _.compact(_.map($('#subscription-ids').val().split(','), function (id) {
-      return parseInt(id, 10);
-    }));
-    if (targetSubscriptionIDs.length) {
-      data.subscriptions = targetSubscriptionIDs;
-    }
+    notification.pushNotification = _.cloneDeep(pushNotification);
+    notification.status = $('[name="notification_status"]:checked').val();
 
     // Reset progress bar
     $('.notification-summary-sending .progress-bar').width('0%');
-    $('#notification-send-tab').attr('data-mode', 'sending');
+    $('#notification-form').attr('data-mode', 'sending');
+    Fliplet.Widget.autosize();
     // Set progress bar to UI to provide visual user feedback
     $('.notification-summary-sending .progress-bar').width('90%');
 
@@ -455,7 +503,22 @@ var UINotification = (function() {
         var mockSuccessResponse = false;
         if (mockSuccessResponse) {
           return resolve({
-            subscriptionsCount: targetSubscriptionIDs.length
+            "notification": {
+              "scope": {},
+              "readBy":[],
+              "orderAt": moment().toISOString(),
+              "id": 43,
+              "appId": Fliplet.Env.get('appId'),
+              "createdByUserId": Fliplet.Env.get('user').id,
+              "status": $('[name="notification_status"]:checked').val(),
+              "data" : {
+                "title": title,
+                "message": message
+              },
+              "updatedAt": moment().toISOString(),
+              "createdAt":moment().toISOString(),
+              "deletedAt":null
+            }
           });
         }
         return reject({
@@ -464,22 +527,43 @@ var UINotification = (function() {
       });
     }
 
-    return Fliplet.App.PushNotifications.send(data);
+    if (!$('#notification_id').val()) {
+      return notifications.insert(notification);
+    }
+
+    return notifications.update(parseInt($('#notification_id').val(), 10), notification);
   };
 
-  UINotification.prototype.notificationIsSent = function(count) {
-    $('#notification-send-tab').attr('data-mode', 'sent');
+  UINotification.prototype.notificationIsSent = function(response, isUpdate) {
+    var notification = response.notification;
+    var pushNotificationResult = response.pushNotificationsResult;
+    var pushNotificationCount = pushNotificationResult && pushNotificationResult.subscriptionsCount
+      ? pushNotificationResult.subscriptionsCount
+      : 0;
+
+    $('#notification-form').attr('data-mode', 'sent');
+    Fliplet.Widget.autosize();
     $('.notification-summary-sending .progress-bar').width('100%');
+
+    var message = isUpdate ? 'Your notification has been updated' : 'Your notification has been sent';
+    if (pushNotificationCount) {
+      message += ', including up to <strong>' + (pushNotificationCount || _this.subscriptionsCount) + '</strong> push notification(s) sent to registered devices'
+    }
+    message += '.';
+
     Fliplet.Modal.alert({
-      title: 'Notification sent',
-      message: 'Your notification has been sent to up to <strong>' + (count || _this.subscriptionsCount) + '</strong> registered devices.'
+      title: 'Success!',
+      message: message
+    }).then(function () {
+      $('#notification-form').attr('data-mode', '');
+      _this.resetNotificationForm();
+      return Fliplet.Hooks.run('notificationSent', notification, isUpdate);
     });
-    $('#notification_title, #notification_message').val('');
-    $('#notification-send-tab').attr('data-mode', '');
   };
 
   UINotification.prototype.notificationIsNotSent = function() {
-    $('#notification-send-tab').attr('data-mode', 'error');
+    $('#notification-form').attr('data-mode', 'error');
+    Fliplet.Widget.autosize();
     $('.notification-summary-sending .progress-bar').width('100%');
     if (!_this.sendErrorMessage.length) {
       _this.sendErrorMessage = 'There was an error sending your notification';
@@ -487,15 +571,51 @@ var UINotification = (function() {
     Fliplet.Modal.alert({
       title: 'Error',
       message: _this.sendErrorMessage
+    }).then(function () {
+      $('#notifications-tab').attr('data-mode', 'list');
+      $('#notification-form').attr('data-mode', '');
     });
-    $('#notification-send-tab').attr('data-mode', '');
+  };
+
+  UINotification.prototype.loadNotificationForm = function(notification) {
+    loadedNotification = _.cloneDeep(notification);
+    $('#notification_id').val(notification.id);
+    $('#notification_title').val(notification.data.title);
+    $('#notification_message').val(notification.data.message);
+    $('#notification-form').attr('data-mode', '');
+    $('#show_link_provider').prop('checked', _.has(notification, 'data.navigate'));
+    $('#notification_status_' + notification.status).prop('checked', true);
+    $('#notification-form [name="notification_status"]').prop('disabled', notification.status === 'published');
+    $('#send_push_notification').prop('checked', false);
+    $('#send_push_notification').prop('disabled', notification.status === 'published');
+    _this.linkData = _.assign(_.cloneDeep(DEFAULT_LINK_DATA), notification.data.navigate);
+
+    _this.onNotificationMessageUpdated();
+    _this.onAddLinkUpdated();
+    _this.onStatusUpdated();
+    _this.onPushNotificationToggled();
+
+    _this.linkProviderInit();
+    $('#notification-form .notification-send').html('Review &amp; save notification');
+    Fliplet.Widget.autosize();
   };
 
   UINotification.prototype.resetNotificationForm = function() {
-    $('#notification_title, #notification_message').val('');
-    $('#notification-send-tab').attr('data-mode', 'confirm');
+    loadedNotification = null;
+    $('#notification_id, #notification_title, #notification_message').val('');
+    $('#notification-form').attr('data-mode', '');
     $('#notification-message-preview').addClass('message-empty');
-    setTimeout(_this.onNotificationMessageUpdated, 0);
+    $('#show_link_provider, #send_push_notification').prop('checked', false);
+    $('#notification_status_draft').prop('checked', true);
+    $('#notification-form [name="notification_status"], #send_push_notification').prop('disabled', false);
+    $('.push-only').removeClass('hidden');
+
+    _this.onNotificationMessageUpdated();
+    _this.onAddLinkUpdated();
+    _this.onStatusUpdated();
+    _this.onPushNotificationToggled();
+    Fliplet.Widget.autosize();
+
     return false;
   };
 
