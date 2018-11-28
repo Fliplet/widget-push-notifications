@@ -245,7 +245,13 @@ var UINotification = (function() {
   }
 
   UINotification.prototype.openPreviewOverlay = function() {
-    debugger;
+    if (!_this.linkSavedData.action.page) {
+      Fliplet.Modal.alert({
+        message: 'Please select a screen to preview'
+      });
+      return;
+    }
+
     Fliplet.Studio.emit('overlay', {
       name: 'page-preview',
       options: {
