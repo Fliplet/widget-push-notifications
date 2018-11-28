@@ -138,6 +138,7 @@ var UIPushNotification = (function() {
 
     // Get HTML for modal
     var html = $('#push-notification-form .notifications-preview').html();
+    html = html.replace('push-notification-message-preview', 'notification-message-preview');
 
     // Open Modal
     return Fliplet.Modal.confirm({
