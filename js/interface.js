@@ -257,6 +257,7 @@ function attachObservers() {
   Fliplet.Hooks.on('pushNotificationSent', function (response) {
     $('#push-notifications-tab').attr('data-mode', 'list');
     $('#push-notifications-tab [data-view="list"]').html(Fliplet.Widget.Templates['templates.loading']()).addClass('loading');
+    pushNotificationsOffset = 0;
     loadPushNotifications();
   });
 
