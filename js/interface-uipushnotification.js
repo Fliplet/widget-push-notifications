@@ -251,11 +251,11 @@ var UIPushNotification = (function() {
     }
     previewHtml += $messageField.val();
 
-    $('#notification-message-preview .notification-message').html(previewHtml);
+    $('#push-notification-message-preview .notification-message').html(previewHtml);
     if (!$titleField.val().length && !$messageField.val().length) {
-      $('#notification-message-preview').addClass('message-empty');
+      $('#push-notification-message-preview').addClass('message-empty');
     } else {
-      $('#notification-message-preview').removeClass('message-empty');
+      $('#push-notification-message-preview').removeClass('message-empty');
     }
     _this.refreshCharCount($titleField, _this.titleCharLimit);
     _this.refreshCharCount($messageField, _this.messageCharLimit);
@@ -487,7 +487,7 @@ var UIPushNotification = (function() {
 
   UIPushNotification.prototype.resetNotificationForm = function() {
     $('#push_notification_title, #push_notification_message').val('');
-    $('#notification-message-preview').addClass('message-empty');
+    $('#push-notification-message-preview').addClass('message-empty');
     setTimeout(_this.onNotificationMessageUpdated, 0);
     return false;
   };
