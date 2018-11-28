@@ -454,7 +454,6 @@ var UINotification = (function() {
   };
 
   UINotification.prototype.cancelNotificationSend = function() {
-    _this.resetNotificationForm();
     $('#notification-form').attr('data-mode', '');
     $('#notifications-tab').attr('data-mode', 'list');
     Fliplet.Widget.autosize();
@@ -620,8 +619,11 @@ var UINotification = (function() {
     _this.onAddLinkUpdated();
     _this.onStatusUpdated();
     _this.onPushNotificationToggled();
-    Fliplet.Widget.autosize();
 
+    _this.linkData = _.cloneDeep(DEFAULT_LINK_DATA);
+    _this.linkProviderInit();
+
+    Fliplet.Widget.autosize();
     return false;
   };
 
