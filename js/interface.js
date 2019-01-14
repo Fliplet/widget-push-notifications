@@ -127,7 +127,9 @@ function getPushNotifications() {
       limit: limit,
       offset: pushNotificationsOffset
     });
-  }).then(function(logs) {
+  }).then(function(response) {
+    var logs = response.logs || [];
+
     _.remove(logs, function (log) {
       return !log || !_.hasIn(log, 'data.payload');
     });
