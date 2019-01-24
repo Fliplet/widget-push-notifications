@@ -124,6 +124,8 @@ var UIPushNotification = (function() {
       $('#target-push-subscription-ids').removeClass('hidden');
       Fliplet.Widget.autosize();
     });
+
+    $(document).on('change', '#push_show_link_provider', _this.onAddLinkUpdated);
   };
 
   UIPushNotification.prototype.showNotificationReviewModal = function() {
@@ -261,6 +263,15 @@ var UIPushNotification = (function() {
     _this.refreshCharCount($titleField, _this.titleCharLimit);
     _this.refreshCharCount($messageField, _this.messageCharLimit);
   };
+
+  UIPushNotification.prototype.onAddLinkUpdated = function() {
+    if ($('#push_show_link_provider').prop('checked')) {
+      $('#push-notification-form .link-provider-holder').removeClass('hidden');
+    } else {
+      $('#push-notification-form .link-provider-holder').addClass('hidden');
+    }
+    Fliplet.Widget.autosize();
+  }
 
   UIPushNotification.prototype.refreshCharCount = function($field, charLimit) {
     var count = $field.val().length;
@@ -420,7 +431,7 @@ var UIPushNotification = (function() {
     // Check if page is set for deep linking
     if ($('#push_show_link_provider').is(':checked') && _this.linkSavedData.action && _this.linkSavedData.action.page) {
       data.custom = {
-        data: _this.linkSavedData.action
+        customData: _this.linkSavedData.action
       }
     }
 
@@ -489,6 +500,7 @@ var UIPushNotification = (function() {
   UIPushNotification.prototype.resetNotificationForm = function() {
     $('#push_notification_title, #push_notification_message').val('');
     $('#push-notification-message-preview').addClass('message-empty');
+    $('#push_show_link_provider').prop('checked', false);
     setTimeout(_this.onNotificationMessageUpdated, 0);
     return false;
   };

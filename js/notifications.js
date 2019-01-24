@@ -64,8 +64,12 @@ Fliplet.Widget.register('PushNotifications', function () {
     }
 
     cordova.plugins.notification.local.on('click', function (notification) {
-      if (notification && notification.data) {
-        handleNotificationPayload(notification.data);
+      /**
+       * customData will carry the data needed for deep-links, for example:
+       * "customData":{"options":{"hideAction":true},"action":"screen","page":"106","transition":"slide.left"}
+       */
+      if (notification && notification.data && notification.data.customData) {
+        handleNotificationPayload(notification.data.customData);
       }
     }, this);
 
@@ -211,7 +215,7 @@ Fliplet.Widget.register('PushNotifications', function () {
                   return;
                 }
 
-                handleNotificationPayload(data.additionalData);
+                handleNotificationPayload(data.additionalData.customData);
               }
             });
           });

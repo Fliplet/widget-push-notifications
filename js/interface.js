@@ -402,18 +402,23 @@ function attachObservers() {
 }
 
 function setupNewNotificationForm() {
-  if ($('.tab-pane.active [data-view="new"]').html().trim() !== '') {
-    uiNotification.resetNotificationForm();
-    return;
-  }
-
   var tab = $('.tab-pane.active').prop('id');
   switch (tab) {
     case 'notifications-tab':
+      if ($('.tab-pane.active [data-view="new"]').html().trim() !== '') {
+        if(uiNotification){
+          uiNotification.resetNotificationForm();
+        }
+      }
       $('#notifications-tab [data-view="new"]').html(Fliplet.Widget.Templates['templates.newNotification']());
       uiNotification = new UINotification();
       break;
     case 'push-notifications-tab':
+      if ($('.tab-pane.active [data-view="new"]').html().trim() !== '') {
+        if(uiPushNotification){
+          uiPushNotification.resetNotificationForm();
+        }
+      }
       $('#push-notifications-tab [data-view="new"]').html(Fliplet.Widget.Templates['templates.newPushNotification']());
       uiPushNotification = new UIPushNotification();
       break;
