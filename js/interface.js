@@ -408,6 +408,7 @@ function setupNewNotificationForm() {
       if ($('.tab-pane.active [data-view="new"]').html().trim() !== '') {
         if(uiNotification){
           uiNotification.resetNotificationForm();
+          return;
         }
       }
       $('#notifications-tab [data-view="new"]').html(Fliplet.Widget.Templates['templates.newNotification']());
@@ -417,6 +418,7 @@ function setupNewNotificationForm() {
       if ($('.tab-pane.active [data-view="new"]').html().trim() !== '') {
         if(uiPushNotification){
           uiPushNotification.resetNotificationForm();
+          return;
         }
       }
       $('#push-notifications-tab [data-view="new"]').html(Fliplet.Widget.Templates['templates.newPushNotification']());
