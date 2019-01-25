@@ -422,6 +422,7 @@ function setupNewNotificationForm() {
           return;
         }
       }
+
       $('#push-notifications-tab [data-view="new"]').html(Fliplet.Widget.Templates['templates.newPushNotification']());
       uiPushNotification = new UIPushNotification();
       break;
