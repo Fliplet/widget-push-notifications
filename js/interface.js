@@ -411,6 +411,7 @@ function setupNewNotificationForm() {
           return;
         }
       }
+
       $('#notifications-tab [data-view="new"]').html(Fliplet.Widget.Templates['templates.newNotification']());
       uiNotification = new UINotification();
       break;
