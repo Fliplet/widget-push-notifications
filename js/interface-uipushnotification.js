@@ -5,6 +5,14 @@
 var UIPushNotification = (function() {
   // this reference
   var _this;
+  var DEFAULT_LINK_DATA = {
+    action: 'screen',
+    page: '',
+    transition: 'slide.left',
+    options: {
+      hideAction: true
+    }
+  }; 
 
   // Constructor
   function UIPushNotification() {
@@ -22,14 +30,7 @@ var UIPushNotification = (function() {
     subscriptionsCount: 0,
     mockedRequest: Fliplet.Env.get('development'), // Use a mocked request under development environment
     linkActionProvider: {},
-    linkData: {
-      action: 'screen',
-      page: '',
-      transition: 'slide.left',
-      options: {
-        hideAction: true
-      }
-    },
+    linkData:  _.cloneDeep(DEFAULT_LINK_DATA),
     linkSavedData: {},
     toSendNotification: false,
     showPreviewScreen: false,
@@ -501,7 +502,11 @@ var UIPushNotification = (function() {
     $('#push_notification_title, #push_notification_message').val('');
     $('#push-notification-message-preview').addClass('message-empty');
     $('#push_show_link_provider').prop('checked', false);
-    setTimeout(_this.onNotificationMessageUpdated, 0);
+    _this.onNotificationMessageUpdated();
+    _this.onAddLinkUpdated();
+    _this.linkData = _.cloneDeep(DEFAULT_LINK_DATA);
+    _this.linkProviderInit();
+    Fliplet.Widget.autosize();
     return false;
   };
 
