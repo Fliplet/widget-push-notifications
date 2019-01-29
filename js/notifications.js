@@ -50,7 +50,7 @@ Fliplet.Widget.register('PushNotifications', function () {
       }
       else {
         Fliplet.Storage.set('fl_notification_update', data).then(function () {
-          Fliplet.Navigate.screen(data.page, { transition: data.transition });
+          Fliplet.Navigate.screen(data.page, data);
         });
       }
     }
