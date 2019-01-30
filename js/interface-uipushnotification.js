@@ -188,6 +188,7 @@ var UIPushNotification = (function() {
   }
 
   UIPushNotification.prototype.linkProviderInit = function() {
+    $('#push-link-provider').empty();
     _this.linkActionProvider = Fliplet.Widget.open('com.fliplet.link', {
       // If provided, the iframe will be appended here,
       // otherwise will be displayed as a full-size iframe overlay
