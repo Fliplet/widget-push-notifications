@@ -176,7 +176,7 @@ Fliplet.Widget.register('PushNotifications', function () {
       });
     }).then(function (displayPopup) {
       if (!displayPopup) {
-        return subscribeUser().then(function(subscriptionId){
+        return subscribeUser().then(function(subscriptionId) {
           initPushNotifications(subscriptionId);
           return subscriptionId;
         });
@@ -242,14 +242,13 @@ Fliplet.Widget.register('PushNotifications', function () {
   if (isConfigured) {
     Fliplet().then(function () {
       return Fliplet.User.getSubscriptionId();
-    }).then(function (isSubscribed) {
+    }).then(function (subscriptionId) {
       /**
        * if the user isn't subscribed already and the push widget is set to show automatically - show it
        */
-      if(isSubscribed){
-        initPushNotifications();
-      }
-      else if (data.showAutomatically) {
+      if (subscriptionId) {
+        initPushNotifications(subscriptionId);
+      } else if (data.showAutomatically) {
         ask();
       }
     });
