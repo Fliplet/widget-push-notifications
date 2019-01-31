@@ -176,7 +176,7 @@ Fliplet.Widget.register('PushNotifications', function () {
       });
     }).then(function (displayPopup) {
       if (!displayPopup) {
-        return subscribeUser().then(function(subscriptionId){
+        return subscribeUser().then(function(subscriptionId) {
           initPushNotifications(subscriptionId);
           return subscriptionId;
         });
@@ -248,8 +248,7 @@ Fliplet.Widget.register('PushNotifications', function () {
        */
       if(isSubscribed){
         initPushNotifications();
-      }
-      else if (data.showAutomatically) {
+      } else if (data.showAutomatically) {
         ask();
       }
     });
