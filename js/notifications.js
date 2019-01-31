@@ -26,6 +26,49 @@ Fliplet.Widget.register('PushNotifications', function () {
 
   function markAsSeen(val) {
     return Fliplet.Storage.set(key, val + '-' + Date.now());
+  } 
+
+  function initPushNotifications(subscriptionId) {
+    /**
+     * if we have subscribed successfully, get the push notification instance
+     * and add the event handlers on it
+     */
+    var push = Fliplet.User.getPushNotificationInstance(data);
+    if (push) {
+      function clearNotifications() {
+        push.clearAllNotifications(function () {
+          // cleared
+        }, function (err) {
+          console.error('Cannot clear notifications', err);
+        });
+      }
+
+      //Clear any notification after setting the badge to 1 (it's a hack)
+      push.setApplicationIconBadgeNumber(function () {
+        clearNotifications();
+      }, function (err) {
+        console.error('Cannot set badge number', err);
+        clearNotifications();
+      }, 1);
+
+      if (subscriptionId) {
+        push.on('notification', function (data) {
+          Fliplet.Hooks.run('pushNotification', data).then(function () {
+            if (data.additionalData) {
+              if (data.additionalData.foreground) {
+                handleForegroundNotification(data);
+                return;
+              }
+
+              handleNotificationPayload(data.additionalData.customData);
+            }
+          });
+        });
+
+        bindLocalNotificationsClick();
+      }
+    }
+    return push;
   }
 
   function subscribeUser() {
@@ -133,7 +176,10 @@ Fliplet.Widget.register('PushNotifications', function () {
       });
     }).then(function (displayPopup) {
       if (!displayPopup) {
-        return subscribeUser();
+        return subscribeUser().then(function(subscriptionId){
+          initPushNotifications(subscriptionId);
+          return subscriptionId;
+        });
       }
 
       return new Promise(function (resolve, reject) {
@@ -142,6 +188,9 @@ Fliplet.Widget.register('PushNotifications', function () {
 
           markAsSeen('allow').then(function () {
             return subscribeUser();
+          }).then(function (subscriptionId) {
+            initPushNotifications(subscriptionId);
+            return subscriptionId;
           }).then(resolve).catch(function (err) {
             console.error(err);
 
@@ -185,48 +234,22 @@ Fliplet.Widget.register('PushNotifications', function () {
     return askPromise;
   }
 
+  /**
+   * once this widget loads, 
+   * if it is has been configured properly, immediately ask for push permission
+   * with our custom popup
+   */
   if (isConfigured) {
     Fliplet().then(function () {
       return Fliplet.User.getSubscriptionId();
     }).then(function (isSubscribed) {
-      var push = Fliplet.User.getPushNotificationInstance(data);
-
-      if (push) {
-        function clearNotifications() {
-          push.clearAllNotifications(function () {
-            // cleared
-          }, function (err) {
-            console.error('Cannot clear notifications', err);
-          });
-        }
-
-        //Clear any notification after setting the badge to 1 (it's a hack)
-        push.setApplicationIconBadgeNumber(function () {
-          clearNotifications();
-        }, function (err) {
-          console.error('Cannot set badge number', err);
-          clearNotifications();
-        }, 1);
-
-        if (isSubscribed) {
-          push.on('notification', function (data) {
-            Fliplet.Hooks.run('pushNotification', data).then(function () {
-              if (data.additionalData) {
-                if (data.additionalData.foreground) {
-                  handleForegroundNotification(data);
-                  return;
-                }
-
-                handleNotificationPayload(data.additionalData.customData);
-              }
-            });
-          });
-
-          bindLocalNotificationsClick();
-        }
+      /**
+       * if the user isn't subscribed already and the push widget is set to show automatically - show it
+       */
+      if(isSubscribed){
+        initPushNotifications();
       }
-
-      if (!isSubscribed && data.showAutomatically) {
+      else if (data.showAutomatically) {
         ask();
       }
     });
