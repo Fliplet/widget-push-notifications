@@ -246,7 +246,7 @@ Fliplet.Widget.register('PushNotifications', function () {
       /**
        * if the user isn't subscribed already and the push widget is set to show automatically - show it
        */
-      if(subscriptionId) {
+      if (subscriptionId) {
         initPushNotifications(subscriptionId);
       } else if (data.showAutomatically) {
         ask();
