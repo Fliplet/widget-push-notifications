@@ -29,7 +29,47 @@ Fliplet.Widget.register('PushNotifications', function () {
   }
 
   function subscribeUser() {
-    return Fliplet.User.subscribe(data);
+    return Fliplet.User.subscribe(data).then(function(subscriptionId){
+      /**
+       * if we have subscribed successfully, get the push notification instance
+       * and add the event handlers on it
+       */
+      var push = Fliplet.User.getPushNotificationInstance(data);
+      if (push) {
+        function clearNotifications() {
+          push.clearAllNotifications(function () {
+            // cleared
+          }, function (err) {
+            console.error('Cannot clear notifications', err);
+          });
+        }
+
+        //Clear any notification after setting the badge to 1 (it's a hack)
+        push.setApplicationIconBadgeNumber(function () {
+          clearNotifications();
+        }, function (err) {
+          console.error('Cannot set badge number', err);
+          clearNotifications();
+        }, 1);
+
+        if (subscriptionId) {
+          push.on('notification', function (data) {
+            Fliplet.Hooks.run('pushNotification', data).then(function () {
+              if (data.additionalData) {
+                if (data.additionalData.foreground) {
+                  handleForegroundNotification(data);
+                  return;
+                }
+
+                handleNotificationPayload(data.additionalData.customData);
+              }
+            });
+          });
+
+          bindLocalNotificationsClick();
+        }
+      }
+    });
   }
 
   function handleNotificationPayload(data) {
@@ -185,47 +225,18 @@ Fliplet.Widget.register('PushNotifications', function () {
     return askPromise;
   }
 
+  /**
+   * once this widget loads, 
+   * if it is has been configured properly, immediately ask for push permission
+   * with our custom popup
+   */
   if (isConfigured) {
     Fliplet().then(function () {
       return Fliplet.User.getSubscriptionId();
     }).then(function (isSubscribed) {
-      var push = Fliplet.User.getPushNotificationInstance(data);
-
-      if (push) {
-        function clearNotifications() {
-          push.clearAllNotifications(function () {
-            // cleared
-          }, function (err) {
-            console.error('Cannot clear notifications', err);
-          });
-        }
-
-        //Clear any notification after setting the badge to 1 (it's a hack)
-        push.setApplicationIconBadgeNumber(function () {
-          clearNotifications();
-        }, function (err) {
-          console.error('Cannot set badge number', err);
-          clearNotifications();
-        }, 1);
-
-        if (isSubscribed) {
-          push.on('notification', function (data) {
-            Fliplet.Hooks.run('pushNotification', data).then(function () {
-              if (data.additionalData) {
-                if (data.additionalData.foreground) {
-                  handleForegroundNotification(data);
-                  return;
-                }
-
-                handleNotificationPayload(data.additionalData.customData);
-              }
-            });
-          });
-
-          bindLocalNotificationsClick();
-        }
-      }
-
+      /**
+       * if the user isn't subscribed already and the push widget is set to show automatically - show it
+       */
       if (!isSubscribed && data.showAutomatically) {
         ask();
       }
