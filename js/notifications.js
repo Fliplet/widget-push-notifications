@@ -51,14 +51,14 @@ Fliplet.Widget.register('PushNotifications', function () {
         clearNotifications();
       }, 1);
 
-      if (subscriptionId) {
-        push.on('notification', function (data) {
-          Fliplet.Hooks.run('pushNotification', data).then(function () {
-            if (data.additionalData) {
-              if (data.additionalData.foreground) {
-                handleForegroundNotification(data);
-                return;
-              }
+			if (subscriptionId) {
+				push.on('notification', function (data) {
+					Fliplet.Hooks.run('pushNotification', data).then(function () {
+						if (data.additionalData) {
+							if (data.additionalData.foreground) {
+								handleForegroundNotification(data);
+								return;
+							}
               /**
                * background notifications seem to open the application quite fast
                * and sometimes the transition is not applied
@@ -69,13 +69,13 @@ Fliplet.Widget.register('PushNotifications', function () {
 								Modernizr.ios && !data.additionalData.coldstart && !data.additionalData.foreground
 									? IOS_BACKGROUND_TRANSITION_DELAY
 									: null
-              );            
-            }
-          });
-        });
+							);
+						}
+					});
+				});
 
-        bindLocalNotificationsClick();
-      }
+				bindLocalNotificationsClick();
+			}
     }
     return push;
   }
