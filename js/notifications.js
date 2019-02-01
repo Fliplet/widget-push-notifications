@@ -1,5 +1,5 @@
 Fliplet.Widget.register('PushNotifications', function () {
-
+  var IOS_BACKGROUND_TRANSITION_DELAY = 300;
   var id = $('[data-push-notification-id]').data('push-notification-id');
   var data = Fliplet.Widget.getData(id);
   var key = 'push-allow';
@@ -59,8 +59,17 @@ Fliplet.Widget.register('PushNotifications', function () {
                 handleForegroundNotification(data);
                 return;
               }
-
-              handleNotificationPayload(data.additionalData.customData);
+              /**
+               * background notifications seem to open the application quite fast
+               * and sometimes the transition is not applied
+               * the 300ms delay we have introduced here should allow for it to animate
+               */
+							handleNotificationPayload(
+								data.additionalData.customData,
+								Modernizr.ios && !data.additionalData.coldstart && !data.additionalData.foreground
+									? IOS_BACKGROUND_TRANSITION_DELAY
+									: null
+              );            
             }
           });
         });
@@ -75,7 +84,7 @@ Fliplet.Widget.register('PushNotifications', function () {
     return Fliplet.User.subscribe(data);
   }
 
-  function handleNotificationPayload(data) {
+  function handleNotificationPayload(data, delay) {
     if (!data || !data.page) {
       return;
     }
@@ -93,7 +102,14 @@ Fliplet.Widget.register('PushNotifications', function () {
       }
       else {
         Fliplet.Storage.set('fl_notification_update', data).then(function () {
-          Fliplet.Navigate.screen(data.page, data);
+          if(delay){
+            setTimeout(function(){
+              Fliplet.Navigate.screen(data.page, data);
+            }, delay)
+          }
+          else{
+            Fliplet.Navigate.screen(data.page, data);
+          }
         });
       }
     }
