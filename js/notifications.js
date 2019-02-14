@@ -26,7 +26,7 @@ Fliplet.Widget.register('PushNotifications', function () {
 
   function markAsSeen(val) {
     return Fliplet.Storage.set(key, val + '-' + Date.now());
-  } 
+  }
 
   function initPushNotifications(subscriptionId) {
     /**
@@ -73,8 +73,6 @@ Fliplet.Widget.register('PushNotifications', function () {
             }
           });
         });
-
-        bindLocalNotificationsClick();
       }
     }
     return push;
@@ -251,9 +249,9 @@ Fliplet.Widget.register('PushNotifications', function () {
   }
 
   /**
-   * once this widget loads, 
-   * if it is has been configured properly, immediately ask for push permission
-   * with our custom popup
+   * Once this widget loads, given it is has been configured in the settings
+   * initialise the component. If it's marked for showing the popup automatically
+   * then also ask for push permission straight away .
    */
   if (isConfigured) {
     Fliplet().then(function () {
@@ -269,6 +267,12 @@ Fliplet.Widget.register('PushNotifications', function () {
       }
     });
   }
+
+  /**
+   * Bind deep linking for local notifications even when push notifications are not configured.
+   * This ensures that deep linking works for local notifications triggered by custom code.
+   */
+  bindLocalNotificationsClick();
 
   return {
     ask: ask,
