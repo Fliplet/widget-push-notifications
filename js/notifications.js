@@ -213,12 +213,6 @@ Fliplet.Widget.register('PushNotifications', function () {
     });
   }
 
-  /**
-   * Bind deep linking for local notifications even when push notifications are not configured.
-   * This ensures that deep linking works for local notifications triggered by custom code.
-   */
-  bindLocalNotificationsClick();
-
   return {
     ask: ask,
     reset: function () {
