@@ -26,7 +26,7 @@ Fliplet.Widget.register('PushNotifications', function () {
 
   function markAsSeen(val) {
     return Fliplet.Storage.set(key, val + '-' + Date.now());
-  } 
+  }
 
   function initPushNotifications(subscriptionId) {
     /**
@@ -64,7 +64,7 @@ Fliplet.Widget.register('PushNotifications', function () {
                * and sometimes the transition is not applied
                * the 300ms delay we have introduced here should allow for it to animate
                */
-              handleNotificationPayload(
+              Fliplet.Native.Notifications.handle(
                 data.additionalData.customData,
                 Modernizr.ios && !data.additionalData.coldstart && !data.additionalData.foreground
                   ? IOS_BACKGROUND_TRANSITION_DELAY
@@ -73,8 +73,6 @@ Fliplet.Widget.register('PushNotifications', function () {
             }
           });
         });
-
-        bindLocalNotificationsClick();
       }
     }
     return push;
@@ -82,61 +80,6 @@ Fliplet.Widget.register('PushNotifications', function () {
 
   function subscribeUser() {
     return Fliplet.User.subscribe(data);
-  }
-
-  function handleNotificationPayload(data, delay) {
-    if (!data || !data.page) {
-      return;
-    }
-
-    var appPages = Fliplet.Env.get('appPages');
-
-    if (Array.isArray(appPages) && appPages.length) {
-      var page = appPages.filter(function(page) {
-        return page.masterPageId === parseInt(data.page, 10) || page.id === parseInt(data.page, 10);
-      });
-
-      if (!page.length || Fliplet.Env.get('pageId') === parseInt(data.page)) {
-        Fliplet.Native.Updates.checkForUpdates(Fliplet.Env.get('appId'), true, null, data);
-        return;
-      }
-      else {
-        Fliplet.Storage.set('fl_notification_update', data).then(function () {
-          if(delay){
-            setTimeout(function(){
-              Fliplet.Navigate.screen(data.page, data);
-            }, delay)
-          }
-          else{
-            Fliplet.Navigate.screen(data.page, data);
-          }
-        });
-      }
-    }
-  }
-
-  function bindLocalNotificationsClick() {
-    if (!Fliplet.Env.is('native')) {
-      return; // only native devices
-    }
-
-    if (typeof cordova.plugins.notification === 'undefined') {
-      return; // do nothing if native app hasn't got the plugin installed
-    }
-
-    cordova.plugins.notification.local.on('click', function (notification) {
-      /**
-       * customData will carry the data needed for deep-links, for example:
-       * "customData":{"options":{"hideAction":true},"action":"screen","page":"106","transition":"slide.left"}
-       */
-      if (notification && notification.data && notification.data.customData) {
-        handleNotificationPayload(notification.data.customData);
-      }
-    }, this);
-
-    if (cordova.plugins.notification.local.launchDetails) {
-      console.log('Launch details', launchDetails);
-    }
   }
 
   function handleForegroundNotification(data) {
@@ -251,9 +194,9 @@ Fliplet.Widget.register('PushNotifications', function () {
   }
 
   /**
-   * once this widget loads, 
-   * if it is has been configured properly, immediately ask for push permission
-   * with our custom popup
+   * Once this widget loads, given it is has been configured in the settings
+   * initialise the component. If it's marked for showing the popup automatically
+   * then also ask for push permission straight away .
    */
   if (isConfigured) {
     Fliplet().then(function () {
