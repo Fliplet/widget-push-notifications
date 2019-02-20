@@ -53,6 +53,10 @@ Fliplet.Widget.register('PushNotifications', function () {
 
       if (subscriptionId) {
         push.on('notification', function (data) {
+          /**
+           * This hook fires when a push notification is received while the app is open.
+           * Reject the hook to avoid displaying a local notification.
+           */
           Fliplet.Hooks.run('pushNotification', data).then(function () {
             if (data.additionalData) {
               if (data.additionalData.foreground) {
