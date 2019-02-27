@@ -206,12 +206,12 @@ function getPushNotifications() {
           switch (error) {
             case 'APNNotSet':
               var notSet = _.compact([
-                (!_.get(log, 'data.settings.apnAuthKey') ? 'The certificate has not been set.' : undefined),
-                (!_.get(log, 'data.settings.apnKeyId') ? 'The Key ID has not been set.' : undefined),
-                (!_.get(log, 'data.settings.apnTeamId') ? 'The Team ID has not been set.' : undefined)
+                (!_.get(log, 'data.settings.apnAuthKey') ? 'the certificate has not been set.' : undefined),
+                (!_.get(log, 'data.settings.apnKeyId') ? 'the Key ID has not been set.' : undefined),
+                (!_.get(log, 'data.settings.apnTeamId') ? 'the Team ID has not been set.' : undefined)
               ]);
 
-              return 'Settings for sending push notifications with Apple (iOS) have not been set: ' + notSet.join(' ');
+              return 'Settings for sending push notifications with Apple (iOS) have not been set: ' + notSet.join(', ') + '.';
             case 'GCMNotSet':
               return 'Settings for sending push notifications with Android (Google Firebase) have not been set.';
             case 'NoSubscriptions':
