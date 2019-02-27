@@ -363,10 +363,23 @@ body {
   transition: all 0.5s ease;
 }
 
+.report-errors {
+  display: none;
+  margin-top: 20px;
+}
+
+.report-errors p {
+  color: red;
+}
+
 .report-wrapper.show-more .report-other-details {
   opacity: 1;
   max-height: 50px;
   margin-top: 20px;
+}
+
+.report-wrapper.show-more .report-errors {
+  display: flex;
 }
 
 .report-recipients p,

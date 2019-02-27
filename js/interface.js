@@ -145,6 +145,7 @@ function getPushNotifications() {
         sentGoogle: 0,
         sentApple: 0,
         sentWindows: 0,
+        errorDescription: '',
         batchesCount: log.data.jobs && log.data.jobs.length,
         batchesSent: log.data.jobs && log.data.jobs.length // this get updated further down
       };
@@ -157,18 +158,34 @@ function getPushNotifications() {
       logData.title = log.data.payload && log.data.payload.title;
       logData.message = log.data.payload && log.data.payload.body;
 
+      var errors = [];
+
+      if (!log.data.subscriptionsCount) {
+        errors.push('NoSubscriptions');
+      }
+
       if (Array.isArray(log.data.result)) {
         logData.batchesSent = log.data.result.length;
 
         log.data.result.forEach(function(job) {
           if (Array.isArray(job.result)) {
             job.result.forEach(function (result) {
+              errors = errors.concat(_.map(result.message, 'error'));
+
               switch (result.method) {
                 case 'apn':
+                  if (!_.get(log, 'data.settings.apn')) {
+                    errors.push('APNNotSet');
+                  }
+
                   apnSuccess += result.success;
                   logData.sentApple += result.success + result.failure;
                   break;
                 case 'gcm':
+                  if (!_.get(log, 'data.settings.gcm')) {
+                    errors.push('GCMNotSet');
+                  }
+
                   gcmSuccess += result.success;
                   logData.sentGoogle += result.success + result.failure;
                   break;
@@ -180,6 +197,35 @@ function getPushNotifications() {
             });
           }
         });
+      }
+
+      errors = _.uniq(_.compact(errors));
+
+      if (errors.length) {
+        logData.errorsDescription = _.compact(errors.map(function (error) {
+          switch (error) {
+            case 'APNNotSet':
+              var notSet = _.compact([
+                (!_.get(log, 'data.settings.apnAuthKey') ? 'the certificate has not been set.' : undefined),
+                (!_.get(log, 'data.settings.apnKeyId') ? 'the Key ID has not been set.' : undefined),
+                (!_.get(log, 'data.settings.apnTeamId') ? 'the Team ID has not been set.' : undefined)
+              ]);
+
+              return 'Settings for sending push notifications with Apple (iOS) have not been set: ' + notSet.join(', ') + '.';
+            case 'GCMNotSet':
+              return 'Settings for sending push notifications with Android (Google Firebase) have not been set.';
+            case 'NoSubscriptions':
+              return 'There were no devices subscribed in the system to receive this push notification.'
+            case 'TopicDisallowed':
+              return 'The target bundle identifier (' + _.get(log, 'data.settings.apnTopic') + ') does not match with the one being used by the device. (Error: TopicDisallowed)';
+            case 'InvalidProviderToken':
+              return 'The APN Key ID, push certificate or Team ID are not valid. Please double check the settings you have set. (Error: InvalidProviderToken)';
+            case 'NotRegistered':
+              return 'Some of the devices subscribed have uninstalled the app. (Error: NotRegistered)';
+            default:
+              return error;
+          }
+        })).join('<br />');
       }
 
       logData.recipientsCount = log.data.subscriptionsCount;
