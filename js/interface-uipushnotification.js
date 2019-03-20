@@ -12,7 +12,7 @@ var UIPushNotification = (function() {
     options: {
       hideAction: true
     }
-  }; 
+  };
 
   // Constructor
   function UIPushNotification() {
@@ -427,7 +427,8 @@ var UIPushNotification = (function() {
     var data = {
       title: title,
       body: body,
-      badge: 1
+      badge: 1,
+      priority: 'high'
     };
 
     // Check if page is set for deep linking
