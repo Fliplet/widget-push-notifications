@@ -97,7 +97,9 @@ Fliplet.Widget.register('PushNotifications', function () {
     }, this, { skipPermission: true });
   }
 
-  function ask() {
+  function ask(options) {
+    options = options || {};
+
     if (!data || !isConfigured) {
       return Promise.reject({
         code: 0,
@@ -124,6 +126,13 @@ Fliplet.Widget.register('PushNotifications', function () {
     }
 
     askPromise = Fliplet.Storage.get(key).then(function (alreadyShown) {
+      // When forced by the UI we skip the popup and also mark it as seen
+      if (options.userInteraction) {
+        return markAsSeen('allow').then(function () {
+          return false;
+        });
+      }
+
       if (!alreadyShown || typeof alreadyShown !== 'string') {
         return true;
       }
