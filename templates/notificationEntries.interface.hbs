@@ -3,7 +3,7 @@
     <td><span title="\{{moment createdAt format="MMM Do YYYY, HH:mm"}}">\{{moment createdAt calendar=null}}</span></td>
     <td><strong>\{{data.title}}</strong>\{{#and data.title data.message}}<br>\{{/and}}\{{data.message}}</td>
     <td>\{{statusText}}</td>
-    <td class="hidden">\{{#or data.title data.message}}<i class="fa fa-fw fa-lg fa-check"></i>\{{/or}}</td>
+    <td>\{{#compare status "===" "published"}}<span title="\{{moment orderAt format="MMM Do YYYY, HH:mm"}}">\{{moment orderAt calendar=null}}</span>\{{else}}\{{/compare}}</td>
     \{{#if pushNotificationPayload}}
     <td class="hidden">\{{#or pushNotificationPayload.title pushNotificationPayload.message}}<i class="fa fa-fw fa-lg fa-check"></i>\{{/or}}</td>
     \{{else}}

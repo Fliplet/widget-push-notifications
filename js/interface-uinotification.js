@@ -469,6 +469,7 @@ var UINotification = (function() {
       title: title,
       message: message
     };
+    var isDraft = false;
 
     // Check if page is set for deep linking
     if ($('#show_link_provider').is(':checked') && _this.linkSavedData.action && _this.linkSavedData.action.page) {
@@ -476,6 +477,7 @@ var UINotification = (function() {
     }
 
     notification.data = _.cloneDeep(data);
+    isDraft = notification.status !== 'published';
 
     if ($('#send_push_notification').is(':checked')) {
       pushNotification = {
@@ -495,6 +497,9 @@ var UINotification = (function() {
 
     notification.pushNotification = _.cloneDeep(pushNotification);
     notification.status = $('[name="notification_status"]:checked').val();
+    if (isDraft && notification.status === 'published') {
+      notification.orderAt = moment().toISOString();
+    }
 
     // Reset progress bar
     $('.notification-summary-sending .progress-bar').width('0%');
