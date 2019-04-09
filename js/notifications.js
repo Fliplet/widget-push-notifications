@@ -6,6 +6,12 @@ Fliplet.Widget.register('PushNotifications', function () {
   var $popup = $('.popup-screen');
   var askPromise;
 
+  var waitForPageViewHooks = new Promise(function (resolve) {
+    // Once pageView hooks have successfully ran we can resolve our promise
+    // and the "ask()" method will start its execution.
+    Fliplet.Hooks.on('beforePageViewHooksSuccess', resolve);
+  });
+
   var isConfigured = data && (data.apn || data.gcm || data.wns);
 
   if (!data || !data.showOnceOnPortal) {
@@ -123,7 +129,11 @@ Fliplet.Widget.register('PushNotifications', function () {
       return askPromise;
     }
 
-    askPromise = Fliplet.Storage.get(key).then(function (alreadyShown) {
+    // Wait for pageView hooks before asking. This ensures that when pageView hooks navigate away
+    // from the page we don't display the push notifications popup.
+    askPromise = waitForPageViewHooks.then(function () {
+      return Fliplet.Storage.get(key);
+    }).then(function (alreadyShown) {
       if (!alreadyShown || typeof alreadyShown !== 'string') {
         return true;
       }
