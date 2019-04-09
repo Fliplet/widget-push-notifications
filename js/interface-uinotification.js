@@ -147,7 +147,7 @@ var UINotification = (function() {
       ? targetSubscriptionIDs.length
       : _this.subscriptionsCount);
 
-    if ($('#send_push_notification').is(':checked')) {
+    if ($('#send_push_notification').prop('checked') && $('[name="notification_status"]:checked').val() === 'published') {
       $('#notification-form .notifications-preview .push-notification-preview').removeClass('hidden');
     } else {
       $('#notification-form .notifications-preview .push-notification-preview').addClass('hidden');
