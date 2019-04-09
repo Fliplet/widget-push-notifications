@@ -7,8 +7,15 @@ Fliplet.Widget.register('PushNotifications', function () {
   var askPromise;
 
   var waitForPageViewHooks = new Promise(function (resolve) {
-    // Once pageView hooks have successfully ran we can resolve our promise
-    // and the "ask()" method will start its execution.
+    var appHooks = Fliplet.Env.get('appHooks') || [];
+    var hasPageHook = appHooks.some(function (hook) {
+      return hook.run && hook.run.indexOf('beforePageView') !== -1;
+    });
+
+    if (!hasPageHook) {
+      return resolve();
+    }
+
     Fliplet.Hooks.on('beforePageViewHooksSuccess', resolve);
   });
 
