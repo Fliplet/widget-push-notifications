@@ -14,6 +14,7 @@ var UINotification = (function() {
     }
   };
   var loadedNotification;
+  var loadedAsPublished = false;
 
   // Constructor
   function UINotification() {
@@ -288,7 +289,7 @@ var UINotification = (function() {
   };
 
   UINotification.prototype.onStatusUpdated = function() {
-    var loadedAsPublished = loadedNotification && (loadedNotification.status === 'published');
+    loadedAsPublished = loadedNotification && (loadedNotification.status === 'published');
     if ($('#notification_status_published').prop('checked') && !loadedAsPublished) {
       $('#push_notification_form_group').removeClass('hidden');
     } else {
@@ -469,7 +470,6 @@ var UINotification = (function() {
       title: title,
       message: message
     };
-    var isDraft = false;
 
     // Check if page is set for deep linking
     if ($('#show_link_provider').is(':checked') && _this.linkSavedData.action && _this.linkSavedData.action.page) {
@@ -477,9 +477,13 @@ var UINotification = (function() {
     }
 
     notification.data = _.cloneDeep(data);
-    isDraft = notification.status !== 'published';
 
-    if ($('#send_push_notification').is(':checked')) {
+    notification.status = $('[name="notification_status"]:checked').val();
+    if (!loadedAsPublished && notification.status === 'published') {
+      notification.orderAt = moment().toISOString();
+    }
+
+    if ($('#send_push_notification').prop('checked') && notification.status === 'published') {
       pushNotification = {
         payload: _.cloneDeep(data)
       };
@@ -496,11 +500,6 @@ var UINotification = (function() {
     }
 
     notification.pushNotification = _.cloneDeep(pushNotification);
-    notification.status = $('[name="notification_status"]:checked').val();
-    if (isDraft && notification.status === 'published') {
-      notification.orderAt = moment().toISOString();
-    }
-
     // Reset progress bar
     $('.notification-summary-sending .progress-bar').width('0%');
     $('#notification-form').attr('data-mode', 'sending');
