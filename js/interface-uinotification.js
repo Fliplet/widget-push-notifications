@@ -491,7 +491,7 @@ var UINotification = (function() {
       pushNotification.payload.body = pushNotification.payload.message;
       delete pushNotification.payload.message;
 
-      var targetSubscriptionIDs = _.compact(_.map($('#subscription-ids').val().split(','), function (id) {
+      var targetSubscriptionIDs = _.compact(_.map(($('#subscription-ids').val() || '').split(','), function (id) {
         return parseInt(id, 10);
       }));
       if (targetSubscriptionIDs.length) {
