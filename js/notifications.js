@@ -122,7 +122,7 @@ Fliplet.Widget.register('PushNotifications', function () {
       || (Fliplet.Env.is('web') && Fliplet.Env.get('mode') === 'preview')) {
       return Promise.reject({
         code: -1,
-        message: 'Push notifications are not supported on Fliplet Studio platform.'
+        message: 'Push notifications are not supported in Fliplet Studio.'
       });
     }
 
