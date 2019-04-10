@@ -6,6 +6,19 @@ Fliplet.Widget.register('PushNotifications', function () {
   var $popup = $('.popup-screen');
   var askPromise;
 
+  var waitForPageViewHooks = new Promise(function (resolve) {
+    var appHooks = Fliplet.Env.get('appHooks') || [];
+    var hasPageHook = appHooks.some(function (hook) {
+      return hook.run && hook.run.indexOf('beforePageView') !== -1;
+    });
+
+    if (!hasPageHook) {
+      return resolve();
+    }
+
+    Fliplet.Hooks.on('beforePageViewHooksSuccess', resolve);
+  });
+
   var isConfigured = data && (data.apn || data.gcm || data.wns);
 
   if (!data || !data.showOnceOnPortal) {
@@ -107,11 +120,12 @@ Fliplet.Widget.register('PushNotifications', function () {
       });
     }
 
-    // Push notifications are not enabled in Fliplet Studio.
-    // We just return a promise that is never fulfilled.
     if (Fliplet.Env.get('interact')
       || (Fliplet.Env.is('web') && Fliplet.Env.get('mode') === 'preview')) {
-      return new Promise(function () {});
+      return Promise.reject({
+        code: -1,
+        message: 'Push notifications are not supported in Fliplet Studio.'
+      });
     }
 
     if (Fliplet.Env.is('web') && Fliplet.Env.get('mode') === 'view') {
@@ -125,14 +139,17 @@ Fliplet.Widget.register('PushNotifications', function () {
       return askPromise;
     }
 
-    askPromise = Fliplet.Storage.get(key).then(function (alreadyShown) {
+    // Wait for pageView hooks before asking. This ensures that when pageView hooks navigate away
+    // from the page we don't display the push notifications popup.
+    askPromise = waitForPageViewHooks.then(function () {
+      return Fliplet.Storage.get(key);
+    }).then(function (alreadyShown) {
       // When forced by the UI we skip the popup and also mark it as seen
       if (options.userInteraction) {
         return markAsSeen('allow').then(function () {
           return false;
         });
       }
-
       if (!alreadyShown || typeof alreadyShown !== 'string') {
         return true;
       }

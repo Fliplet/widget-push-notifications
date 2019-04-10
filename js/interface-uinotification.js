@@ -14,6 +14,7 @@ var UINotification = (function() {
     }
   };
   var loadedNotification;
+  var loadedAsPublished = false;
 
   // Constructor
   function UINotification() {
@@ -146,7 +147,7 @@ var UINotification = (function() {
       ? targetSubscriptionIDs.length
       : _this.subscriptionsCount);
 
-    if ($('#send_push_notification').is(':checked')) {
+    if ($('#send_push_notification').prop('checked') && $('[name="notification_status"]:checked').val() === 'published') {
       $('#notification-form .notifications-preview .push-notification-preview').removeClass('hidden');
     } else {
       $('#notification-form .notifications-preview .push-notification-preview').addClass('hidden');
@@ -288,7 +289,7 @@ var UINotification = (function() {
   };
 
   UINotification.prototype.onStatusUpdated = function() {
-    var loadedAsPublished = loadedNotification && (loadedNotification.status === 'published');
+    loadedAsPublished = loadedNotification && (loadedNotification.status === 'published');
     if ($('#notification_status_published').prop('checked') && !loadedAsPublished) {
       $('#push_notification_form_group').removeClass('hidden');
     } else {
@@ -477,7 +478,12 @@ var UINotification = (function() {
 
     notification.data = _.cloneDeep(data);
 
-    if ($('#send_push_notification').is(':checked')) {
+    notification.status = $('[name="notification_status"]:checked').val();
+    if (!loadedAsPublished && notification.status === 'published') {
+      notification.orderAt = moment().toISOString();
+    }
+
+    if ($('#send_push_notification').prop('checked') && notification.status === 'published') {
       pushNotification = {
         payload: _.cloneDeep(data)
       };
@@ -494,8 +500,6 @@ var UINotification = (function() {
     }
 
     notification.pushNotification = _.cloneDeep(pushNotification);
-    notification.status = $('[name="notification_status"]:checked').val();
-
     // Reset progress bar
     $('.notification-summary-sending .progress-bar').width('0%');
     $('#notification-form').attr('data-mode', 'sending');
