@@ -130,7 +130,7 @@ var UIPushNotification = (function() {
   };
 
   UIPushNotification.prototype.showNotificationReviewModal = function() {
-    var targetSubscriptionIDs = _.compact(_.map($('#push-subscription-ids').val().split(','), function (id) {
+    var targetSubscriptionIDs = _.compact(_.map(($('#push-subscription-ids').val() || '').split(','), function (id) {
       return parseInt(id, 10);
     }));
 
