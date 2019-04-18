@@ -428,6 +428,7 @@ var UIPushNotification = (function() {
       title: title,
       body: body,
       badge: 1,
+      icon: 'icon_notification',
       priority: 'high'
     };
 
