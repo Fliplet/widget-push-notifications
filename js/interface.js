@@ -214,12 +214,14 @@ function getPushNotifications() {
             case 'GCMNotSet':
               return 'Settings for sending push notifications with Android (Google Firebase) have not been set.';
             case 'NoSubscriptions':
-              return 'There were no devices subscribed in the system to receive this push notification.'
+              return 'One or more devices are not subscribed to receive this push notification.'
             case 'TopicDisallowed':
             case 'DeviceTokenNotForTopic':
-              return 'The target bundle identifier (' + _.get(log, 'data.settings.apnTopic') + ') does not match with the one being used by the device. (Error: TopicDisallowed)';
+              return 'The target bundle identifier (' + _.get(log, 'data.settings.apnTopic') + ') does not match with the one being used by some of the subscribed devices. (Error: TopicDisallowed)';
             case 'InvalidProviderToken':
               return 'The APN Key ID, push certificate or Team ID are not valid. Please double check the settings you have set. (Error: InvalidProviderToken)';
+            case 'MismatchSenderId':
+              return 'The Android push notification settings for GCM incorrectly use the Project ID instead of the Sender ID (Error: MismatchSenderId)';
             case 'NotRegistered':
               return 'Some of the devices subscribed have uninstalled the app. (Error: NotRegistered)';
             default:
