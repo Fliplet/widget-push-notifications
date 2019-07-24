@@ -469,7 +469,8 @@ var UINotification = (function() {
     var data = {
       title: title,
       message: message,
-      icon: 'icon_notification'
+      icon: 'icon_notification',
+      badge: 1
     };
 
     // Check if page is set for deep linking
