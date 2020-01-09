@@ -97,7 +97,8 @@ function getNotifications() {
       order: 'createdAt',
       direction: 'DESC',
       limit: limit,
-      includeDeleted: true
+      includeDeleted: true,
+      includeScheduled: true
     }
   }).then(function (results) {
     return results.notifications || [];
