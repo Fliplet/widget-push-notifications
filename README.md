@@ -10,6 +10,7 @@ Run for local development with the [`fliplet-cli`](https://github.com/Fliplet/fl
 $ git clone https://github.com/Fliplet/fliplet-widget-push-notifications.git
 $ cd fliplet-widget-push-notifications
 
+$ npm install
 $ npm run watch
 $ fliplet run
 ```
