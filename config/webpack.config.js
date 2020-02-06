@@ -2,7 +2,6 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const webpackStream = require('webpack-stream');
 const { webpack } = webpackStream;
 const path = require('path');
-const projectRoot = path.resolve(__dirname, '../');
 
 module.exports = {
   mode: 'none',
