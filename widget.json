@@ -10,6 +10,7 @@
   "html_tag": "div",
   "interface": {
     "dependencies": [
+      "vue.js",
       "fliplet-core",
       "fliplet-studio-ui",
       "fliplet-notifications",
@@ -28,6 +29,8 @@
       "js/interface-uipushnotification.js",
       "js/interface.templates.js",
       "js/interface.js",
+      "dist/css/index.css",
+      "dist/app.js",
       "img/app-icon.png",
       "img/notifications_device_preview_empty.jpg",
       "img/notifications_device_preview_mock.jpg"

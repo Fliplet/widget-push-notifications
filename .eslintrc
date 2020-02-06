@@ -1,0 +1,13 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "fliplet",
+    "plugin:vue/essential"
+  ],
+  "globals": {
+    "Vue": true
+  },
+  "rules": {
+    "no-new": 0
+  }
+}
