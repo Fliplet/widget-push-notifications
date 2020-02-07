@@ -504,9 +504,9 @@ var UINotification = (function() {
 
     notification.pushNotification = _.cloneDeep(pushNotification);
 
-    if (notification.pushNotification.navigate) {
-      _.set(notification, 'pushNotification.custom.customData', notification.pushNotification.navigate);
-      delete notification.pushNotification.navigate;
+    if (_.get(notification, 'pushNotification.payload.navigate')) {
+      _.set(notification, 'pushNotification.payload.custom.customData', notification.pushNotification.payload.navigate);
+      delete notification.pushNotification.payload.navigate;
     }
 
     // Reset progress bar
