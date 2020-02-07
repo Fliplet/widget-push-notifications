@@ -503,6 +503,12 @@ var UINotification = (function() {
     }
 
     notification.pushNotification = _.cloneDeep(pushNotification);
+
+    if (notification.pushNotification.navigate) {
+      _.set(notification, 'pushNotification.custom.customData', notification.pushNotification.navigate);
+      delete notification.pushNotification.navigate;
+    }
+
     // Reset progress bar
     $('.notification-summary-sending .progress-bar').width('0%');
     $('#notification-form').attr('data-mode', 'sending');
