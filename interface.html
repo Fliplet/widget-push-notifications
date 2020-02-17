@@ -1,107 +1,72 @@
-<!-- VUE INIT HERE -->
-<div id="vue-init-here"></div>
-
 <div id="container" data-asset="{{asset ''}}">
-
-  <!-- Nav tabs -->
-  <ul class="nav nav-tabs">
-    <li class="active"><a href="#notifications-tab" data-toggle="tab">In-app notifications</a></li>
-    <li><a href="#push-notifications-tab" data-toggle="tab">Push notifications</a></li>
-    <li><a href="#settings-tab" data-toggle="tab">Permission popup</a></li>
-  </ul>
-
-  <!-- Tab panes -->
-  <div class="tab-content">
-    <div class="tab-pane active" id="notifications-tab" data-mode="list">
-      <div class="callout callout-info">
-        <h4>Send <strong>in-app notifications</strong> to a notification inbox in your app</h4>
-        <p>To see the in-app notifications in your app, add a <strong>notification inbox</strong> component to a screen. <a class="hidden" target="_blank" href="#">Find out more</a></p>
-      </div>
-      <div data-view="new"></div>
-      <div data-view="list" class="loading">
-        <div class="spinner-holder animated">
-          <div class="spinner-overlay">Loading...</div>
-          <p>Loading...</p>
-        </div>
-      </div>
-    </div>
-    <div class="tab-pane" id="push-notifications-tab" data-mode="list">
-      <div class="callout callout-info">
-        <h4>Send <strong>push notifications</strong> to devices as a reminder to revisit your app</h4>
-        <p>To learn how to configure and send push notifications for your app, visit <a target="_blank" href="https://help.fliplet.com/article/177">our support documentation</a>.</p>
-      </div>
-      <div data-view="new"></div>
-      <div data-view="list" class="loading">
-        <div class="spinner-holder animated">
-          <div class="spinner-overlay">Loading...</div>
-          <p>Loading...</p>
-        </div>
-      </div>
-    </div>
-    <div class="tab-pane" id="settings-tab">
-      <form id="configuration">
-      </form>
-      <h4 class="custom-h4">Instructions</h4>
-      <p>Push notifications require a user to subscribe. In order to subscribe a user to push notifications please configure the following settings. After updating these settings you will need to publish your app.</p>
-      <p><strong>Note:</strong> You cannot use or test this feature in Fliplet Viewer. It will only work in live apps with the relevant operating system push notification settings configured. Push does not work on web apps.</p>
-      <h4 class="custom-h4">Push request interface</h4>
-      <p>Configure the settings for the notification interface that will ask the user if they want to enable push notifications.</p>
-      <div style="overflow:hidden">
-        <div class="row">
-          <div class="form-group clearfix">
-            <div class="col-sm-12 control-label">
-              <label for="popup_title">Permission popup title</label>
-            </div>
-            <div class="col-sm-12">
-              <input type="text" name="popup_title" class="form-control" id="popup_title" placeholder="Enter a title" value="{{#if popupTitle}}{{popupTitle}}{{else}}App updates and notifications{{/if}}" />
-              <p class="help-block">The popup will only appear once for users that allow or reject push notifications.</p>
-            </div>
+  <div id="notifications-container"></div>
+  <div id="settings">
+    <p class="text-right"><a href="#" class="btn btn-default exit-settings">Back</a></p>
+    <h4 class="custom-h4">Instructions</h4>
+    <p>Push notifications require a user to subscribe. In order to subscribe a user to push notifications please configure the following settings. After updating these settings you will need to publish your app.</p>
+    <p><strong>Note:</strong> You cannot use or test this feature in Fliplet Viewer. It will only work in live apps with the relevant operating system push notification settings configured. Push does not work on web apps.</p>
+    <h4 class="custom-h4">Push request interface</h4>
+    <p>Configure the settings for the notification interface that will ask the user if they want to enable push notifications.</p>
+    <form id="configuration" style="overflow:hidden">
+      <div class="row">
+        <div class="form-group clearfix">
+          <div class="col-sm-12 control-label">
+            <label for="popup_title">Permission popup title</label>
           </div>
-          <div class="form-group clearfix">
-            <div class="col-sm-12 control-label">
-              <label for="popup_message">Permission popup message</label>
-            </div>
-            <div class="col-sm-12">
-              <textarea class="form-control" name="popup_message" id="popup_message" rows="4" placeholder="Enter a message">{{#if popupMessage}}{{popupMessage}}{{else}}Tap Allow Notifications below to be notified of app updates.{{/if}}</textarea>
-            </div>
+          <div class="col-sm-12">
+            <input type="text" name="popup_title" class="form-control" id="popup_title" placeholder="Enter a title" value="{{#if popupTitle}}{{popupTitle}}{{else}}App updates and notifications{{/if}}" />
+            <p class="help-block">The popup will only appear once for users that allow or reject push notifications.</p>
           </div>
-          <div class="form-group clearfix">
-            <div class="col-sm-12 control-label">
-              <label for="auto-popup">Do you want to show the push notification permission popup automatically on the first screen of the app?</label>
+        </div>
+        <div class="form-group clearfix">
+          <div class="col-sm-12 control-label">
+            <label for="popup_message">Permission popup message</label>
+          </div>
+          <div class="col-sm-12">
+            <textarea class="form-control" name="popup_message" id="popup_message" rows="4" placeholder="Enter a message">{{#if popupMessage}}{{popupMessage}}{{else}}Tap Allow Notifications below to be notified of app updates.{{/if}}</textarea>
+          </div>
+        </div>
+        <div class="form-group clearfix">
+          <div class="col-sm-12 control-label">
+            <label for="auto-popup">Do you want to show the push notification permission popup automatically on the first screen of the app?</label>
+          </div>
+          <div class="col-sm-12">
+            <div class="checkbox checkbox-icon">
+              <input type="checkbox" id="auto-popup" name="showAutomatically" value="1" {{#if showAutomatically}}checked{{/if}} />
+              <label for="auto-popup">
+                <span class="check"><i class="fa fa-check"></i></span> Show notification popup automatically
+              </label>
+              <p class="help-block">If you want to manually show the popup on a specific screen, please disable this option and copy the snippet of code below and paste it on the screen's JavaScript code editor, using the <a href="#" onclick="Fliplet.Studio.emit('navigate', { name: 'appEditDeveloper' })">Developer Options</a>.</p>
             </div>
-            <div class="col-sm-12">
-              <div class="checkbox checkbox-icon">
-                <input type="checkbox" id="auto-popup" name="showAutomatically" value="1" {{#if showAutomatically}}checked{{/if}} />
-                <label for="auto-popup">
-                  <span class="check"><i class="fa fa-check"></i></span> Show notification popup automatically
-                </label>
-                <p class="help-block">If you want to manually show the popup on a specific screen, please disable this option and copy the snippet of code below and paste it on the screen's JavaScript code editor, using the <a href="#" onclick="Fliplet.Studio.emit('navigate', { name: 'appEditDeveloper' })">Developer Options</a>.</p>
-              </div>
-              <pre><code>var pushWidget = Fliplet.Widget.get('PushNotifications');
+            <pre><code>var pushWidget = Fliplet.Widget.get('PushNotifications');
 
 pushWidget.ask().then(function (subscriptionId) {
-  // user pressed allow and has been registered
+// user pressed allow and has been registered
 }).catch(function (err) {
-  // contains code and message
+// contains code and message
 });</code></pre>
-            </div>
           </div>
+        </div>
 
-          <div class="form-group clearfix">
-            <div class="col-sm-12">
-              <div class="checkbox checkbox-icon">
-                <input type="checkbox" id="portal-popup" name="showOnceOnPortal" value="1" {{#if showOnceOnPortal}}checked{{/if}} />
-                <label for="portal-popup">
-                  <span class="check"><i class="fa fa-check"></i></span> Apps inside a portal shouldn't request users to subscribe to push notifications.
-                </label>
-              </div>
+        <div class="form-group clearfix">
+          <div class="col-sm-12">
+            <div class="checkbox checkbox-icon">
+              <input type="checkbox" id="portal-popup" name="showOnceOnPortal" value="1" {{#if showOnceOnPortal}}checked{{/if}} />
+              <label for="portal-popup">
+                <span class="check"><i class="fa fa-check"></i></span> Apps inside a portal shouldn't request users to subscribe to push notifications.
+              </label>
             </div>
           </div>
         </div>
+        <div class="form-group clearfix">
+          <div class="col-sm-12">
+            <p><button type="submit" class="btn btn-primary">Save</button> <button class="btn btn-default exit-settings">Back</button></p>
+          </div>
+        </div>
       </div>
-      <div class="settings-saved-app-msg fade-transition" style="display: none;">
-        Configuration saved.
-      </div>
+    </form>
+    <div class="settings-saved-app-msg fade-transition" style="display: none;">
+      Configuration saved.
     </div>
   </div>
 </div>

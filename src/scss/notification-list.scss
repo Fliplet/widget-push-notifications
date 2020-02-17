@@ -1,0 +1,122 @@
+.notifications-loading {
+  margin: 120px 0;
+}
+
+.notifications-empty {
+  text-align: center;
+  color: $brand-text-color-faded;
+  margin: 120px 0;
+}
+
+.notification-list {
+  border: none;
+
+  .list-col-content {
+    overflow: hidden;
+    overflow-wrap: break-word;
+  }
+
+  .list-col-notes {
+    width: 280px;
+    max-width: 280px;
+    overflow: hidden;
+    overflow-wrap: break-word;
+  }
+
+  .list-col-sent-to small {
+    width: 160px;
+    color: $brand-text-color-faded;
+  }
+
+  .list-col-actions {
+    width: 120px;
+  }
+
+  tr {
+    border-bottom: 1px solid $gray-lighter;
+
+    a {
+      color: $brand-text-color;
+    }
+
+    .notes-content {
+      color: $brand-text-color;
+    }
+
+    .notes-toolbar,
+    .notes-unsupported {
+      opacity: 0;
+    }
+
+    .notes-unsupported {
+      color: $brand-text-color-faded;
+    }
+
+    &:hover {
+      a {
+        color: $brand-primary;
+      }
+
+      .notes-toolbar,
+      .notes-unsupported {
+        opacity: 1;
+
+        > a + a {
+          margin-left: 5px;
+        }
+      }
+    }
+  }
+
+  th, td {
+    border: none;
+  }
+
+  .notification-channel .fa {
+    opacity: 0.8;
+  }
+
+  .popover {
+    max-width: 385px;
+    pointer-events: none;
+  }
+}
+
+.pagination {
+  display: block;
+
+  > li {
+    > a, > span {
+      color: $brand-primary;
+
+      &:hover, &:focus {
+        background-color: #fff;
+        color: darken($brand-primary, 15%);
+      }
+    }
+
+    &.active {
+      > a, > span {
+        color: $btn-primary-color;
+        background-color: $btn-primary-bg;
+        border-color: $btn-primary-border;
+
+        &:hover, &:focus {
+          color: $btn-primary-color;
+          background-color: $btn-primary-bg;
+          border-color: $btn-primary-border;
+        }
+      }
+    }
+  }
+
+  > .disabled {
+    > a, > span {
+      color: rgba($gray-light, 0.7);
+
+      &:hover, &:focus {
+        color: rgba($gray-light, 0.7);
+      }
+    }
+  }
+}

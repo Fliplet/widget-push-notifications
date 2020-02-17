@@ -1,19 +1,46 @@
 <template>
-  <div>
-    <h1>Your Vue.js application will be added here.</h1>
-    <First-Component></First-Component>
+  <div class="notifications-container">
+    <Notification-List v-show="view === 'list'"></Notification-List>
+    <Notification-Form v-if="view === 'form'"></Notification-Form>
   </div>
 </template>
 
 <script>
-import FirstComponent from './components/FirstComponent';
+import NotificationList from './components/NotificationList';
+import NotificationForm from './components/NotificationForm';
+import { setAssetRoot } from './store';
+import bus from './libs/bus';
 
 export default {
   data() {
-    return {};
+    return {
+      view: 'list'
+    };
+  },
+  props: {
+    assetRoot: String
+  },
+  created() {
+    setAssetRoot(this.assetRoot);
+    bus.$on('set-view', this.onSetView);
+    bus.$on('autosize', this.onAutosize);
+  },
+  destroyed() {
+    bus.$off('set-view', this.onSetView);
+    bus.$off('autosize', this.onAutosize);
   },
   components: {
-    FirstComponent
+    NotificationList,
+    NotificationForm
+  },
+  methods: {
+    onSetView(view) {
+      this.view = view;
+      Fliplet.Widget.autosize();
+    },
+    onAutosize() {
+      Fliplet.Widget.autosize();
+    }
   }
 };
 </script>
