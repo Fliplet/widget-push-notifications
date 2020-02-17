@@ -707,8 +707,11 @@ var render = function() {
                         ]
                       ),
                       _vm._v(" "),
-                      _vm.pageCount > 1
-                        ? _c("paginate", {
+                      _c(
+                        "div",
+                        { staticClass: "list-pagination clearfix" },
+                        [
+                          _c("paginate", {
                             attrs: {
                               "page-count": _vm.pageCount,
                               "click-handler": _vm.loadNotifications,
@@ -716,8 +719,61 @@ var render = function() {
                               "next-text": "Next",
                               "container-class": "pagination clearfix"
                             }
-                          })
-                        : _vm._e()
+                          }),
+                          _vm._v(" "),
+                          _c("span", { staticClass: "top-align" }, [
+                            _vm._v("Show rows:")
+                          ]),
+                          _vm._v(" "),
+                          _c("label", { staticClass: "select-proxy-display" }, [
+                            _c(
+                              "select",
+                              {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: _vm.batchSize,
+                                    expression: "batchSize"
+                                  }
+                                ],
+                                staticClass: "hidden-select form-control",
+                                on: {
+                                  change: function($event) {
+                                    var $$selectedVal = Array.prototype.filter
+                                      .call($event.target.options, function(o) {
+                                        return o.selected
+                                      })
+                                      .map(function(o) {
+                                        var val =
+                                          "_value" in o ? o._value : o.value
+                                        return val
+                                      })
+                                    _vm.batchSize = $event.target.multiple
+                                      ? $$selectedVal
+                                      : $$selectedVal[0]
+                                  }
+                                }
+                              },
+                              _vm._l(_vm.batchSizes, function(size, index) {
+                                return _c("option", {
+                                  key: index,
+                                  domProps: {
+                                    value: size,
+                                    innerHTML: _vm._s(size)
+                                  }
+                                })
+                              }),
+                              0
+                            ),
+                            _vm._v(" "),
+                            _c("span", {
+                              staticClass: "icon fa fa-chevron-down"
+                            })
+                          ])
+                        ],
+                        1
+                      )
                     ]
               ]
         ],
@@ -912,6 +968,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -930,8 +994,8 @@ __webpack_require__.r(__webpack_exports__);
       pageCount: 0,
       lastNotificationShown: false,
       showTimezone: Object(_store__WEBPACK_IMPORTED_MODULE_5__["getShowTimezone"])(),
-      batchSize: 25,
-      batchSizeOptions: [25, 50, 100]
+      batchSize: 10,
+      batchSizes: [10, 25, 50, 100, 250, 500]
     };
   },
   computed: {
@@ -950,6 +1014,9 @@ __webpack_require__.r(__webpack_exports__);
     },
     notifications: function notifications() {
       _libs_bus__WEBPACK_IMPORTED_MODULE_6__["default"].$emit('autosize');
+    },
+    batchSize: function batchSize() {
+      this.loadNotifications();
     }
   },
   components: {
@@ -1132,7 +1199,8 @@ __webpack_require__.r(__webpack_exports__);
 
       return this.instance.poll({
         includeLogs: true,
-        offset: pageNumber
+        offset: pageNumber,
+        limit: this.batchSize
       }).then(function (response) {
         if (!response.entries.length && pageNumber >= response.pageCount) {
           return _this3.loadNotifications(response.pageCount - 1);
@@ -1829,7 +1897,7 @@ var render = function() {
                                 }
                               }
                             },
-                            [_vm._v("Edit")]
+                            [_vm._v("Edit notes")]
                           )
                         ])
                       ]

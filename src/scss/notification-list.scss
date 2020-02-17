@@ -30,6 +30,7 @@
 
   .list-col-actions {
     width: 120px;
+    text-align: right;
   }
 
   tr {
@@ -68,8 +69,12 @@
     }
   }
 
+  thead th {
+    border-bottom-width: 2px;
+  }
+
   th, td {
-    border: none;
+    border: none !important;
   }
 
   .notification-channel .fa {
@@ -82,41 +87,65 @@
   }
 }
 
-.pagination {
-  display: block;
+.list-pagination {
+  margin: 20px 0;
+  line-height: 34px;
 
-  > li {
-    > a, > span {
-      color: $brand-primary;
+  .pagination {
+    display: block;
+    float: left;
+    margin-right: 10px;
+    margin-top: 0;
+    margin-bottom: 0;
 
-      &:hover, &:focus {
-        background-color: #fff;
-        color: darken($brand-primary, 15%);
-      }
-    }
-
-    &.active {
+    > li {
       > a, > span {
-        color: $btn-primary-color;
-        background-color: $btn-primary-bg;
-        border-color: $btn-primary-border;
+        color: $brand-primary;
 
         &:hover, &:focus {
+          background-color: #fff;
+          color: darken($brand-primary, 15%);
+        }
+      }
+
+      &.active {
+        > a, > span {
           color: $btn-primary-color;
           background-color: $btn-primary-bg;
           border-color: $btn-primary-border;
+
+          &:hover, &:focus {
+            color: $btn-primary-color;
+            background-color: $btn-primary-bg;
+            border-color: $btn-primary-border;
+          }
+        }
+      }
+    }
+
+    > .disabled {
+      > a, > span {
+        color: rgba($gray-light, 0.7);
+
+        &:hover, &:focus {
+          color: rgba($gray-light, 0.7);
         }
       }
     }
   }
 
-  > .disabled {
-    > a, > span {
-      color: rgba($gray-light, 0.7);
+  .top-align {
+    vertical-align: top;
+  }
 
-      &:hover, &:focus {
-        color: rgba($gray-light, 0.7);
-      }
+  > .select-proxy-display {
+    height: 34px;
+    line-height: 34px;
+    display: inline-block;
+    width: 100px;
+
+    > select {
+      height: 34px;
     }
   }
 }

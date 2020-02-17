@@ -5,7 +5,7 @@
       <template v-if="mode === 'view'">
         <template v-if="notes">
           <p class="notes-content" v-html="getNotes()"></p>
-          <p class="notes-toolbar"><button class="btn btn-sm btn-default" @click="edit()">Edit</button></p>
+          <p class="notes-toolbar"><button class="btn btn-sm btn-default" @click="edit()">Edit notes</button></p>
         </template>
         <template v-else>
           <p class="notes-toolbar"><button class="btn btn-sm btn-default" @click="edit()">Add notes</button></p>

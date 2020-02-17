@@ -77,14 +77,22 @@
                 </tr>
               </tbody>
             </table>
-            <paginate
-              v-if="pageCount > 1"
-              :page-count="pageCount"
-              :click-handler="loadNotifications"
-              :prev-text="'Prev'"
-              :next-text="'Next'"
-              :container-class="'pagination clearfix'">
-            </paginate>
+            <div class="list-pagination clearfix">
+              <paginate
+                :page-count="pageCount"
+                :click-handler="loadNotifications"
+                :prev-text="'Prev'"
+                :next-text="'Next'"
+                :container-class="'pagination clearfix'">
+              </paginate>
+              <span class="top-align">Show rows:</span>
+              <label class="select-proxy-display">
+                <select class="hidden-select form-control" v-model="batchSize">
+                  <option v-for="(size, index) in batchSizes" :key="index" :value="size" v-html="size"></option>
+                </select>
+                <span class="icon fa fa-chevron-down"></span>
+              </label>
+            </div>
           </template>
         </template>
       </div>
@@ -114,8 +122,8 @@ export default {
       pageCount: 0,
       lastNotificationShown: false,
       showTimezone: getShowTimezone(),
-      batchSize: 25,
-      batchSizeOptions: [25, 50, 100]
+      batchSize: 10,
+      batchSizes: [10, 25, 50, 100, 250, 500]
     };
   },
   computed: {
@@ -134,6 +142,9 @@ export default {
     },
     notifications() {
       bus.$emit('autosize');
+    },
+    batchSize() {
+      this.loadNotifications();
     }
   },
   components: {
@@ -317,7 +328,8 @@ export default {
 
       return this.instance.poll({
         includeLogs: true,
-        offset: pageNumber
+        offset: pageNumber,
+        limit: this.batchSize
       }).then((response) => {
         if (!response.entries.length && pageNumber >= response.pageCount) {
           return this.loadNotifications(response.pageCount - 1);
