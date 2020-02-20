@@ -97,7 +97,8 @@ function getNotifications() {
       order: 'createdAt',
       direction: 'DESC',
       limit: limit,
-      includeDeleted: true
+      includeDeleted: true,
+      includeAllScopes: true
     }
   }).then(function (results) {
     return results.notifications || [];
@@ -319,6 +320,30 @@ function attachObservers() {
     $(this).parents('.tab-pane').attr('data-mode', 'new');
     $('#notification-form .notification-send').html('Review &amp; send notification');
     Fliplet.Widget.autosize();
+  });
+
+  $(document).on('click', '[data-show-scope]', function onShowFiltersClick(e) {
+    e.preventDefault();
+
+    var id = $(this).parents('[data-id]').data('id');
+    var notification = _.find(allNotifications, { id: id });
+
+    if (!notification || !notification.scope) {
+      return;
+    }
+
+    if (!Array.isArray(notification.scope)) {
+      notification.scope = [notification.scope];
+    }
+
+    var scopesHtml = notification.scope.map(function (scope) {
+      return '<li><code>' + JSON.stringify(scope) + '</code></li>';
+    });
+
+    Fliplet.Modal.alert({
+      title: 'Custom filters',
+      message: '<p>The notification is sent to users whose preference is set to include any of the following:</p><ol>' + scopesHtml.join('') + '</ol>'
+    });
   });
 
   $reportHolder.on('click', '.reports-holder [data-load-more]', function (event) {
