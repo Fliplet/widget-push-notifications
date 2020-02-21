@@ -82,7 +82,6 @@
                         <option value="gte">Greater than or equal to</option>
                         <option value="lt">Less than</option>
                         <option value="lte">Less than or equal to</option>
-                        <option value="regex">Matches regex</option>
                       </select>
                       <span class="icon fa fa-chevron-down"></span>
                     </label>
@@ -223,7 +222,7 @@
         <div class="row" v-if="steps[step].name === 'confirmation'">
           <div class="col-md-10 col-md-offset-1">
             <h3>Confirmation</h3>
-            <h4 class="text-success">Your notification is saved!</h4>
+            <h4 class="text-success">{{ confirmationMessage }}</h4>
             <p class="text-center step-summary">
               <a class="btn btn-primary" href="#" @click.prevent="backToNotifications()">Back to notifications</a>
             </p>
@@ -255,6 +254,7 @@ const defaultFilter = {
 };
 const defaultAudience = '';
 const defaultScheduledAt = moment().add(2, 'hours');
+const defaultConfirmationMessage = 'Your notification is saved';
 
 export default {
   data() {
@@ -276,6 +276,7 @@ export default {
         { name: 'confirmation' }
       ],
       validateStep: '',
+      confirmationMessage: defaultConfirmationMessage,
       linkAction: getNotificationLinkAction(),
       schedule: 'now',
       scheduledAtDate: defaultScheduledAt.clone().startOf('day').toDate(),
@@ -371,7 +372,7 @@ export default {
 
       let scope = _.compact(_.map(this.filters, getFilterScope));
 
-      return scope.length ? { $or: _.compact(_.map(this.filters, getFilterScope)) } : {};
+      return scope.length ? { $and: _.compact(_.map(this.filters, getFilterScope)) } : {};
     },
     scheduledAtTimezoneOffset() {
       return getTimezoneOffset(this.scheduledAtTimezone, this.scheduledAtDate);
@@ -462,7 +463,7 @@ export default {
     },
     filters() {
       this.autosize();
-      _.debounce(this.getMatches, 3000, { leading: true })();
+      // _.debounce(this.getMatches, 3000, { leading: true })();
     },
     subscriptions() {
       _.debounce(this.getMatches, 1000, { leading: true })();
@@ -498,6 +499,9 @@ export default {
     },
     prevStep() {
       this.step = Math.max(0, this.step - 1);
+    },
+    goToStep(name) {
+      this.step = _.findIndex(this.steps, { name });
     },
     getAsset(path) {
       return `${this.assetRoot}/${path}`;
@@ -564,7 +568,6 @@ export default {
         case 'gte':
         case 'lt':
         case 'lte':
-        case 'regex':
         default:
           return 'text';
       }
@@ -577,8 +580,8 @@ export default {
       Vue.set(filter, 'path', '');
     },
     removeFilterPath(filter) {
-      filter.showPath = false;
-      delete filter.path;
+      Vue.set(filter, 'showPath', false);
+      Vue.delete(filter, 'path');
     },
     initializeProviders() {
       this.$refs.screenLinkProvider.innerHTML = '';
@@ -661,12 +664,36 @@ export default {
 
       this.save('published');
     },
+    getConfirmationMessage(from, to) {
+      // Returns a confirmation message based on the status
+      // the notification is going from and to
+      if (from === to) {
+        return defaultConfirmationMessage;
+      }
+
+      if (to === 'published') {
+        return 'Your notification is sent';
+      }
+
+      if (from === 'draft' && to === 'scheduled') {
+        return 'Your notification is scheduled';
+      }
+
+      if (from === 'scheduled' && to === 'draft') {
+        return 'Your notification is saved as draft';
+      }
+
+      return defaultConfirmationMessage;
+    },
     save(status) {
       let saveLinkProvider = Promise.resolve();
+      const statusFrom = this.notification.status || 'draft';
 
       if (typeof status === 'undefined') {
-        status = this.notification.status || 'draft';
+        status = statusFrom;
       }
+
+      const statusTo = status;
 
       switch (this.linkAction) {
         case 'screen':
@@ -766,7 +793,8 @@ export default {
         });
       }).then(() => {
         this.saving = false;
-        this.nextStep();
+        this.confirmationMessage = this.getConfirmationMessage(statusFrom, statusTo);
+        this.goToStep('confirmation');
       }).catch((error) => {
         this.saving = false;
         Fliplet.Modal.alert({

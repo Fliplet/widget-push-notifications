@@ -3497,12 +3497,6 @@ var render = function() {
                                                     "Less than or equal to"
                                                   )
                                                 ]
-                                              ),
-                                              _vm._v(" "),
-                                              _c(
-                                                "option",
-                                                { attrs: { value: "regex" } },
-                                                [_vm._v("Matches regex")]
                                               )
                                             ]
                                           ),
@@ -3616,6 +3610,62 @@ var render = function() {
                       _vm._v(" "),
                       _c("div", { staticClass: "col-xs-4 text-right" }, [
                         _c("p", [
+                          _c(
+                            "a",
+                            {
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  return _vm.fillFilters(false)
+                                }
+                              }
+                            },
+                            [_vm._v("Fill")]
+                          ),
+                          _c("br"),
+                          _c(
+                            "a",
+                            {
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  return _vm.fillFilters(true)
+                                }
+                              }
+                            },
+                            [_vm._v("Fill with path")]
+                          ),
+                          _c("br"),
+                          _c(
+                            "a",
+                            {
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  return _vm.clearFilters($event)
+                                }
+                              }
+                            },
+                            [_vm._v("Clear")]
+                          ),
+                          _c("br"),
+                          _c(
+                            "a",
+                            {
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  return _vm.logMatches($event)
+                                }
+                              }
+                            },
+                            [_vm._v("Log matches")]
+                          ),
+                          _vm._v(" "),
                           _c(
                             "span",
                             { staticClass: "recipient-count" },
@@ -4175,7 +4225,7 @@ var render = function() {
                   _c("h3", [_vm._v("Confirmation")]),
                   _vm._v(" "),
                   _c("h4", { staticClass: "text-success" }, [
-                    _vm._v("Your notification is saved!")
+                    _vm._v(_vm._s(_vm.confirmationMessage))
                   ]),
                   _vm._v(" "),
                   _c("p", { staticClass: "text-center step-summary" }, [
@@ -4500,7 +4550,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 
 
@@ -4517,6 +4566,7 @@ var defaultFilter = {
 };
 var defaultAudience = '';
 var defaultScheduledAt = moment().add(2, 'hours');
+var defaultConfirmationMessage = 'Your notification is saved';
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -4541,6 +4591,7 @@ var defaultScheduledAt = moment().add(2, 'hours');
         name: 'confirmation'
       }],
       validateStep: '',
+      confirmationMessage: defaultConfirmationMessage,
       linkAction: Object(_store__WEBPACK_IMPORTED_MODULE_2__["getNotificationLinkAction"])(),
       schedule: 'now',
       scheduledAtDate: defaultScheduledAt.clone().startOf('day').toDate(),
@@ -4643,7 +4694,7 @@ var defaultScheduledAt = moment().add(2, 'hours');
       var scope = _.compact(_.map(this.filters, _libs_scope__WEBPACK_IMPORTED_MODULE_1__["getFilterScope"]));
 
       return scope.length ? {
-        $or: _.compact(_.map(this.filters, _libs_scope__WEBPACK_IMPORTED_MODULE_1__["getFilterScope"]))
+        $and: _.compact(_.map(this.filters, _libs_scope__WEBPACK_IMPORTED_MODULE_1__["getFilterScope"]))
       } : {};
     },
     scheduledAtTimezoneOffset: function scheduledAtTimezoneOffset() {
@@ -4729,11 +4780,7 @@ var defaultScheduledAt = moment().add(2, 'hours');
       this.getMatches();
     },
     filters: function filters() {
-      this.autosize();
-
-      _.debounce(this.getMatches, 3000, {
-        leading: true
-      })();
+      this.autosize(); // _.debounce(this.getMatches, 3000, { leading: true })();
     },
     subscriptions: function subscriptions() {
       _.debounce(this.getMatches, 1000, {
@@ -4742,6 +4789,73 @@ var defaultScheduledAt = moment().add(2, 'hours');
     }
   },
   methods: {
+    logMatches: function logMatches() {
+      this.getMatches();
+    },
+    fillFilters: function fillFilters(addPath) {
+      var _this2 = this;
+
+      var path = 'user.companies[0].name';
+      var filters = [{
+        column: 'Foo',
+        condition: 'equals',
+        value: 'Bar'
+      }, {
+        column: 'Foo',
+        condition: 'notequal',
+        value: 'Bar'
+      }, {
+        column: 'Foo',
+        condition: 'oneof',
+        value: ['Bar', 'Baz']
+      }, {
+        column: 'Foo',
+        condition: 'notoneof',
+        value: ['Bar', 'Baz']
+      }, {
+        column: 'Foo',
+        condition: 'contains',
+        value: 'Bar'
+      }, {
+        column: 'Foo',
+        condition: 'notcontain',
+        value: 'Bar'
+      }, {
+        column: 'Foo',
+        condition: 'empty'
+      }, {
+        column: 'Foo',
+        condition: 'notempty'
+      }, {
+        column: 'Foo',
+        condition: 'gt',
+        value: 0
+      }, {
+        column: 'Foo',
+        condition: 'gte',
+        value: 1
+      }, {
+        column: 'Foo',
+        condition: 'lt',
+        value: 3
+      }, {
+        column: 'Foo',
+        condition: 'lte',
+        value: 2
+      }];
+
+      _.forEach(filters, function (filter) {
+        if (addPath) {
+          filter.path = path;
+        }
+
+        _this2.filters.push(filter); // Vue.set(this.filters, this.filters.length, filter);
+
+      });
+    },
+    clearFilters: function clearFilters() {
+      this.filters.splice(0, this.filters.length);
+    },
     cancel: function cancel() {
       _libs_bus__WEBPACK_IMPORTED_MODULE_0__["default"].$emit('set-view', 'list');
     },
@@ -4772,6 +4886,11 @@ var defaultScheduledAt = moment().add(2, 'hours');
     prevStep: function prevStep() {
       this.step = Math.max(0, this.step - 1);
     },
+    goToStep: function goToStep(name) {
+      this.step = _.findIndex(this.steps, {
+        name: name
+      });
+    },
     getAsset: function getAsset(path) {
       return "".concat(this.assetRoot, "/").concat(path);
     },
@@ -4792,7 +4911,7 @@ var defaultScheduledAt = moment().add(2, 'hours');
       }
     },
     getMatches: function getMatches() {
-      var _this2 = this;
+      var _this3 = this;
 
       if (!this.instance) {
         return Promise.resolve();
@@ -4810,7 +4929,7 @@ var defaultScheduledAt = moment().add(2, 'hours');
         console.log('Count', results.count);
         console.log('Matches', results.matches);
         console.groupEnd(timestamp);
-        _this2.matches = results;
+        _this3.matches = results;
       });
     },
     toggleNotificationChannel: function toggleNotificationChannel(channel, enable) {
@@ -4839,7 +4958,6 @@ var defaultScheduledAt = moment().add(2, 'hours');
         case 'gte':
         case 'lt':
         case 'lte':
-        case 'regex':
         default:
           return 'text';
       }
@@ -4852,8 +4970,8 @@ var defaultScheduledAt = moment().add(2, 'hours');
       Vue.set(filter, 'path', '');
     },
     removeFilterPath: function removeFilterPath(filter) {
-      filter.showPath = false;
-      delete filter.path;
+      Vue.set(filter, 'showPath', false);
+      Vue["delete"](filter, 'path');
     },
     initializeProviders: function initializeProviders() {
       this.$refs.screenLinkProvider.innerHTML = '';
@@ -4937,14 +5055,38 @@ var defaultScheduledAt = moment().add(2, 'hours');
 
       this.save('published');
     },
+    getConfirmationMessage: function getConfirmationMessage(from, to) {
+      // Returns a confirmation message based on the status
+      // the notification is going from and to
+      if (from === to) {
+        return defaultConfirmationMessage;
+      }
+
+      if (to === 'published') {
+        return 'Your notification is sent';
+      }
+
+      if (from === 'draft' && to === 'scheduled') {
+        return 'Your notification is scheduled';
+      }
+
+      if (from === 'scheduled' && to === 'draft') {
+        return 'Your notification is saved as draft';
+      }
+
+      return defaultConfirmationMessage;
+    },
     save: function save(status) {
-      var _this3 = this;
+      var _this4 = this;
 
       var saveLinkProvider = Promise.resolve();
+      var statusFrom = this.notification.status || 'draft';
 
       if (typeof status === 'undefined') {
-        status = this.notification.status || 'draft';
+        status = statusFrom;
       }
+
+      var statusTo = status;
 
       switch (this.linkAction) {
         case 'screen':
@@ -4963,91 +5105,92 @@ var defaultScheduledAt = moment().add(2, 'hours');
 
       return new Promise(function (resolve) {
         saveLinkProvider.then(function (results) {
-          _this3.notification.data.navigate = _.get(results, 'data', {});
+          _this4.notification.data.navigate = _.get(results, 'data', {});
 
-          switch (_this3.linkAction) {
+          switch (_this4.linkAction) {
             case 'screen':
-              _this3.screenLinkProvider = null;
+              _this4.screenLinkProvider = null;
               break;
 
             case 'url':
-              _this3.urlLinkProvider = null;
+              _this4.urlLinkProvider = null;
               break;
 
             default:
               break;
           }
 
-          _this3.initializeProviders();
+          _this4.initializeProviders();
 
-          if (_this3.showScreenPreview) {
-            _this3.showScreenPreview = false;
+          if (_this4.showScreenPreview) {
+            _this4.showScreenPreview = false;
 
-            _this3.openScreenPreview();
+            _this4.openScreenPreview();
 
             return;
           }
 
-          if (!_this3.stepIsValid()) {
+          if (!_this4.stepIsValid()) {
             return;
           }
 
-          _.remove(_this3.filters, function (filter) {
+          _.remove(_this4.filters, function (filter) {
             return !filter.column || !filter.value && ['empty', 'notempty'].indexOf(filter.condition) > -1;
           });
 
-          _.merge(_this3.notification, {
+          _.merge(_this4.notification, {
             status: status,
-            scope: _this3.scope,
-            type: _this3.type,
-            orderAt: _this3.orderAt,
+            scope: _this4.scope,
+            type: _this4.type,
+            orderAt: _this4.orderAt,
             data: {
-              scheduledAt: _this3.orderAt,
+              scheduledAt: _this4.orderAt,
               // @TODO Remove scheduledAt after API is refactored to only use orderAt
               _metadata: {
-                filters: _this3.audience !== 'subscriptions' ? _this3.filters : [],
-                subscriptions: _this3.subscriptions,
-                scheduledAtTimezone: _this3.scheduledAtTimezone,
-                scheduledAt: _this3.scheduledAt
+                filters: _this4.audience !== 'subscriptions' ? _this4.filters : [],
+                subscriptions: _this4.subscriptions,
+                scheduledAtTimezone: _this4.scheduledAtTimezone,
+                scheduledAt: _this4.scheduledAt
               }
             }
           });
 
           var pushNotification = {
             payload: {
-              title: _this3.notification.data.title,
-              body: _this3.notification.data.message,
+              title: _this4.notification.data.title,
+              body: _this4.notification.data.message,
               icon: 'icon_notification',
               badge: 1,
               priority: 'high',
               custom: {
-                customData: _this3.notification.data.navigate
+                customData: _this4.notification.data.navigate
               }
             }
           };
 
-          if (_this3.notificationHasChannel('push')) {
-            if (_this3.subscriptions.length) {
-              pushNotification.subscriptions = _this3.subscriptions;
+          if (_this4.notificationHasChannel('push')) {
+            if (_this4.subscriptions.length) {
+              pushNotification.subscriptions = _this4.subscriptions;
             }
 
-            _this3.notification.pushNotification = pushNotification;
+            _this4.notification.pushNotification = pushNotification;
           }
 
-          _this3.saving = true;
+          _this4.saving = true;
 
-          if (!_.get(_this3, 'notification.id')) {
-            return _this3.instance.insert(_this3.notification).then(resolve);
+          if (!_.get(_this4, 'notification.id')) {
+            return _this4.instance.insert(_this4.notification).then(resolve);
           }
 
-          return _this3.instance.update(_this3.notification.id, _.pick(_this3.notification, ['status', 'type', 'data', 'scope', 'orderAt', 'pushNotification'])).then(resolve);
+          return _this4.instance.update(_this4.notification.id, _.pick(_this4.notification, ['status', 'type', 'data', 'scope', 'orderAt', 'pushNotification'])).then(resolve);
         });
       }).then(function () {
-        _this3.saving = false;
+        _this4.saving = false;
+        _this4.confirmationMessage = _this4.getConfirmationMessage(statusFrom, statusTo);
 
-        _this3.nextStep();
+        _this4.goToStep('confirmation');
       })["catch"](function (error) {
-        _this3.saving = false;
+        _this4.saving = false;
         Fliplet.Modal.alert({
           title: 'Error saving notification',
           message: Fliplet.parseError(error)
@@ -5067,29 +5210,39 @@ __webpack_require__.r(__webpack_exports__);
 function getFilterScope(filter) {
   filter = filter || {};
   var column = filter.column;
-  var value = filter.value; // let path = filter.path;
-
+  var value = filter.value;
+  var path = filter.path;
   var scope = {};
-  var arrCond = {};
-  var strCond = {};
-  var cond = {};
+  var result = scope;
 
-  if (!column || !value && ['empty', 'notempty'].indexOf(filter.condition) > -1) {
+  if (!column || !value && ['empty', 'notempty'].indexOf(filter.condition) < 0) {
     return;
+  }
+
+  if (path) {
+    _.set(scope, column, {});
+
+    scope = result[column];
+  } else {
+    path = column;
+  }
+
+  if (['oneof', 'notoneof'].indexOf(filter.condition) < 0 && _.isArray(value)) {
+    value = value[0];
   }
 
   switch (filter.condition) {
     case 'equals':
       // Equals
-      _.set(scope, column, value);
+      _.setWith(scope, path, value, Object);
 
       break;
 
     case 'notequal':
       // Not equal
-      _.set(scope, column, {
+      _.setWith(scope, path, {
         $ne: value
-      });
+      }, Object);
 
       break;
 
@@ -5099,9 +5252,9 @@ function getFilterScope(filter) {
         value = [value];
       }
 
-      _.set(scope, column, {
+      _.setWith(scope, path, {
         $in: value
-      });
+      }, Object);
 
       break;
 
@@ -5111,108 +5264,93 @@ function getFilterScope(filter) {
         value = [value];
       }
 
-      _.set(scope, column, {
-        $nin: value
-      });
+      _.setWith(scope, path, {
+        $notIn: value
+      }, Object);
 
       break;
 
     case 'contains':
       // Contains
-      arrCond[column] = {
-        $contains: [value]
-      };
-      strCond[column] = {
-        $iLike: "%".concat(value, "%")
-      };
-
-      _.set(scope, '$or', [arrCond, strCond]);
+      _.setWith(scope, path, {
+        $or: [{
+          $iLike: {
+            $any: [value]
+          }
+        }, {
+          $iLike: "%".concat(value, "%")
+        }]
+      }, Object);
 
       break;
 
     case 'notcontain':
       // Does not contain
-      arrCond[column] = {
-        $contains: [value]
-      };
-      strCond[column] = {
-        $iLike: "%".concat(value, "%")
-      };
-
-      _.set(scope, '$and', [{
-        $not: arrCond
-      }, {
-        $not: strCond
-      }]);
+      _.setWith(scope, path, {
+        $and: [{
+          $notILike: {
+            $any: [value]
+          }
+        }, {
+          $notILike: "%".concat(value, "%")
+        }]
+      }, Object);
 
       break;
 
     case 'empty':
       // Is empty
-      // Column is undefined...
-      _.set(scope, '$or', [{
-        $exists: false
-      }]); // ...or an empty string or an empty array
+      _.setWith(scope, path, {
+        $or: [{
+          $eq: null
+        }, {
+          $in: ['', '[]']
+        }]
+      }, Object);
 
-
-      cond[column] = {
-        $in: ['', []]
-      };
-      scope.$or.push(cond);
       break;
 
     case 'notempty':
       // Is not empty
-      // Column is defined...
-      _.set(scope, '$and', [{
-        $exists: true
-      }]); // ...and is not an empty string or an empty array
+      _.setWith(scope, path, {
+        $and: [{
+          $ne: null
+        }, {
+          $notIn: ['', '[]']
+        }]
+      }, Object);
 
-
-      cond[column] = {
-        $nin: ['', []]
-      };
-      scope.$or.push(cond);
       break;
 
     case 'gt':
       // Greater than
-      _.set(scope, column, {
+      _.setWith(scope, path, {
         $gt: value
-      });
+      }, Object);
 
       break;
 
     case 'gte':
       // Greater than or equal to
-      _.set(scope, column, {
+      _.setWith(scope, path, {
         $gte: value
-      });
+      }, Object);
 
       break;
 
     case 'lt':
       // Less than
-      _.set(scope, column, {
+      _.setWith(scope, path, {
         $lt: value
-      });
+      }, Object);
 
       break;
 
     case 'lte':
       // Less than or equal to
-      _.set(scope, column, {
+      _.setWith(scope, path, {
         $lte: value
-      });
-
-      break;
-
-    case 'regex':
-      // Matches regex
-      _.set(scope, column, {
-        $regex: value,
-        $options: 'i'
-      });
+      }, Object);
 
       break;
 
@@ -5221,7 +5359,7 @@ function getFilterScope(filter) {
       break;
   }
 
-  return scope;
+  return result;
 }
 
 /***/ }),

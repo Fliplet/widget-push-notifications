@@ -188,7 +188,7 @@ h4 {
       .notification-list tr:hover .notes-toolbar > a + a,
       .notification-list tr:hover .notes-unsupported > a + a {
         margin-left: 5px; }
-  .notification-list thead th {
+  .notification-list thead tr {
     border-bottom-width: 2px; }
   .notification-list th, .notification-list td {
     border: none !important; }

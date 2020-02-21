@@ -3,90 +3,82 @@ export function getFilterScope(filter) {
 
   const column = filter.column;
   let value = filter.value;
-  // let path = filter.path;
+  let path = filter.path;
   let scope = {};
-  let arrCond = {};
-  let strCond = {};
-  let cond = {};
+  let result = scope;
 
-  if (!column || (!value && ['empty', 'notempty'].indexOf(filter.condition) > -1)) {
+  if (!column || (!value && ['empty', 'notempty'].indexOf(filter.condition) < 0)) {
     return;
+  }
+
+  if (path) {
+    _.set(scope, column, {});
+    scope = result[column];
+  } else {
+    path = column;
+  }
+
+  if (['oneof', 'notoneof'].indexOf(filter.condition) < 0 && _.isArray(value)) {
+    value = value[0];
   }
 
   switch (filter.condition) {
     case 'equals': // Equals
-      _.set(scope, column, value);
+      _.setWith(scope, path, value, Object);
       break;
     case 'notequal': // Not equal
-      _.set(scope, column, { $ne: value });
+      _.setWith(scope, path, { $ne: value }, Object);
       break;
     case 'oneof': // Is one of
       if (!_.isArray(value)) {
         value = [value];
       }
 
-      _.set(scope, column, { $in: value });
+      _.setWith(scope, path, { $in: value }, Object);
       break;
     case 'notoneof': // Is not one of
       if (!_.isArray(value)) {
         value = [value];
       }
 
-      _.set(scope, column, { $nin: value });
+      _.setWith(scope, path, { $notIn: value }, Object);
       break;
     case 'contains': // Contains
-      arrCond[column] = {
-        $contains: [value]
-      };
-      strCond[column] = {
-        $iLike: `%${value}%`
-      };
-      _.set(scope, '$or', [arrCond, strCond]);
+      _.setWith(scope, path, {
+        $or: [{ $iLike: { $any: [value] } }, { $iLike: `%${value}%` }]
+      }, Object);
       break;
     case 'notcontain': // Does not contain
-      arrCond[column] = {
-        $contains: [value]
-      };
-      strCond[column] = {
-        $iLike: `%${value}%`
-      };
-      _.set(scope, '$and', [{ $not: arrCond }, { $not: strCond }]);
+      _.setWith(scope, path, {
+        $and: [{ $notILike: { $any: [value] } }, { $notILike: `%${value}%` }]
+      }, Object);
       break;
     case 'empty': // Is empty
-      // Column is undefined...
-      _.set(scope, '$or', [{ $exists: false }]);
-
-      // ...or an empty string or an empty array
-      cond[column] = { $in: ['', []] };
-      scope.$or.push(cond);
+      _.setWith(scope, path, {
+        $or: [{ $eq: null }, { $in: ['', '[]'] }]
+      }, Object);
       break;
     case 'notempty': // Is not empty
-      // Column is defined...
-      _.set(scope, '$and', [{ $exists: true }]);
-
-      // ...and is not an empty string or an empty array
-      cond[column] = { $nin: ['', []] };
-      scope.$or.push(cond);
+      _.setWith(scope, path, {
+        $and: [{ $ne: null }, { $notIn: ['', '[]'] }]
+      }, Object);
       break;
     case 'gt': // Greater than
-      _.set(scope, column, { $gt: value });
+      _.setWith(scope, path, { $gt: value }, Object);
       break;
     case 'gte': // Greater than or equal to
-      _.set(scope, column, { $gte: value });
+      _.setWith(scope, path, { $gte: value }, Object);
       break;
     case 'lt': // Less than
-      _.set(scope, column, { $lt: value });
+      _.setWith(scope, path, { $lt: value }, Object);
       break;
     case 'lte': // Less than or equal to
-      _.set(scope, column, { $lte: value });
-      break;
-    case 'regex': // Matches regex
-      _.set(scope, column, { $regex: value, $options: 'i' });
+      _.setWith(scope, path, { $lte: value }, Object);
       break;
     default:
       scope = undefined;
       break;
   }
 
-  return scope;
+  return result;
 }
