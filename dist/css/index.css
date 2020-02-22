@@ -281,6 +281,12 @@ h4 {
     display: inline-block;
     line-height: 40px; }
 
+.notificaiton-form .filter-summary-items {
+  padding-left: 0; }
+  .notificaiton-form .filter-summary-items > li {
+    padding: 10px 0;
+    list-style: none; }
+
 .notificaiton-form .vdp-datepicker {
   text-align: center;
   margin-bottom: 10px; }
@@ -321,16 +327,18 @@ h4 {
   padding: 10px 0 0;
   margin-top: 20px;
   margin-bottom: 10px;
-  border-radius: 6px; }
+  border-radius: 6px;
+  text-align: center; }
   .notificaiton-form .step-summary .btn {
     margin-right: 5px;
     margin-bottom: 10px; }
 
-.push-notification-preview {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  padding-top: 10px;
-  border-top: 1px solid #eeeeee; }
+.notificaiton-form .notification-review {
+  text-align: center; }
+  .notificaiton-form .notification-review h4 {
+    padding-top: 20px;
+    border-top: 1px solid #eeeeee;
+    margin-top: 20px; }
 
 #notification-message-preview {
   position: relative;

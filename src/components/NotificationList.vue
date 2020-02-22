@@ -1,4 +1,4 @@
-<template>
+:key<template>
   <div class="container-fluid">
     <div class="row">
       <div class="col-xs-6"><p><a href="#" @click.prevent="createNotification" class="btn btn-primary"><i class="fa fa-fw fa-lg fa-plus"></i> Create new</a></p></div>
@@ -36,7 +36,7 @@
               <tbody>
                 <tr
                   v-for="notification in notifications"
-                  :key="notification.createdAt"
+                  :key="getNotificationKey(notification)"
                   :data-notification-id="notification.id"
                   :data-job-id="notification.job && notification.job.id">
                   <td class="list-col-content">
@@ -50,7 +50,7 @@
                     <p><strong>{{ notification.data.title }}</strong><br>{{ notification.data.message }}</p>
                     <Notification-Link :notification="notification"></Notification-Link>
                   </td>
-                  <td class="list-col-notes"><Notification-Notes :notification="notification"></Notification-Notes></td>
+                  <td class="list-col-notes"><Notification-Notes :notification.sync="notification"></Notification-Notes></td>
                   <td class="list-col-sent-to">
                     <p>
                       {{ notification.userCount }} user<template v-if="notification.userCount !== 1">s</template><br>
@@ -106,7 +106,9 @@ import NotificationNotes from './NotificationNotes';
 import Tooltip from './Tooltip';
 import Popover from './Popover';
 import Paginate from 'vuejs-paginate';
-import { setAppPages, setNotification, getPageNumber, setPageNumber, setShowTimezone, getShowTimezone } from '../store';
+import {
+  setAppPages, setNotification, getPageNumber, setPageNumber,
+  setShowTimezone, getShowTimezone } from '../store';
 import bus from '../libs/bus';
 import { formatDate } from '../libs/date';
 import {
@@ -140,8 +142,11 @@ export default {
     showTimezone(value) {
       setShowTimezone(!!value);
     },
-    notifications() {
-      bus.$emit('autosize');
+    notifications: {
+      deep: true,
+      handler() {
+        bus.$emit('autosize');
+      }
     },
     batchSize() {
       this.loadNotifications();
@@ -164,6 +169,18 @@ export default {
   methods: {
     doNothing() {
       return;
+    },
+    getNotificationKey(notification) {
+      let id = notification.id;
+
+      if (!id) {
+        id = `legacy-${_.get(notification, 'job.id')}`;
+      }
+
+      const createdAt = moment(notification.createdAt).unix();
+      const updatedAt = moment(notification.updatedAt).unix();
+
+      return `${id}-${createdAt}-${updatedAt}`;
     },
     initialize() {
       return Fliplet.Pages.get().then((pages) => {

@@ -1,3 +1,65 @@
+export const filterTypes = [
+  {
+    name: 'equals',
+    label: 'Equals',
+    labelVerbose: 'is equal to'
+  },
+  {
+    name: 'notequal',
+    label: 'Not equal',
+    labelVerbose: 'is not equal to'
+  },
+  {
+    name: 'oneof',
+    label: 'Is one of',
+    labelVerbose: 'is one of'
+  },
+  {
+    name: 'notoneof',
+    label: 'Is not one of',
+    labelVerbose: 'is not one of'
+  },
+  {
+    name: 'contains',
+    label: 'Contains',
+    labelVerbose: 'contains'
+  },
+  {
+    name: 'notcontain',
+    label: 'Does not contain',
+    labelVerbose: 'does not contain'
+  },
+  {
+    name: 'empty',
+    label: 'Is empty',
+    labelVerbose: 'is empty'
+  },
+  {
+    name: 'notempty',
+    label: 'Is not empty',
+    labelVerbose: 'is not empty'
+  },
+  {
+    name: 'gt',
+    label: 'Greater than',
+    labelVerbose: 'is greater than'
+  },
+  {
+    name: 'gte',
+    label: 'Greater than or equal to',
+    labelVerbose: 'is greater than or equal to'
+  },
+  {
+    name: 'lt',
+    label: 'Less than',
+    labelVerbose: 'is less than'
+  },
+  {
+    name: 'lte',
+    label: 'Less than or equal to',
+    labelVerbose: 'is less than or equal to'
+  }
+];
 export function getFilterScope(filter) {
   filter = filter || {};
 
@@ -81,4 +143,38 @@ export function getFilterScope(filter) {
   }
 
   return result;
+}
+
+export function getFilterVerbose(filter) {
+  filter = filter || {};
+
+  const condition = filter.condition;
+  let column = filter.column;
+  const path = filter.path;
+  let value = filter.value;
+  let verbose = '';
+
+  if (!column || (!value && ['empty', 'notempty'].indexOf(filter.condition) < 0)) {
+    return;
+  }
+
+  if (_.map(filterTypes, 'name').indexOf(condition) < 0) {
+    return;
+  }
+
+  if (path) {
+    column = `${column} (${path})`;
+  }
+
+  if (_.isArray(value)) {
+    value = value.join(', ');
+  }
+
+  verbose = `${column} ${_.find(filterTypes, { name: condition }).labelVerbose}`;
+
+  if (['empty', 'notempty'].indexOf(filter.condition) < 0) {
+    verbose += ` ${value}`;
+  }
+
+  return verbose;
 }

@@ -6,7 +6,7 @@ const COOKIE = {
 const COOKIE_EXPIRE_DAYS = 30;
 
 // Define here the initial state of the app
-function getDefaultNotification() {
+export function getDefaultNotification() {
   return {
     data: {
       title: '',
@@ -17,6 +17,7 @@ function getDefaultNotification() {
         audience: '',
         filters: [],
         subscriptions: [],
+        schedule: 'now',
         notes: ''
       }
     }
@@ -53,7 +54,7 @@ export function setView(view) {
 }
 
 export function setNotification(notification) {
-  state.notification = _.merge(getDefaultNotification(), notification);
+  state.notification = _.defaultsDeep(notification, getDefaultNotification());
 }
 
 export function getNotification() {

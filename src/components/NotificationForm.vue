@@ -34,7 +34,7 @@
                 <div class="text-danger" v-if="errors.urlLink">{{ errors.urlLink }}</div>
               </div>
             </div>
-            <p class="text-center step-summary">
+            <p class="step-summary">
               <a class="btn btn-default" :class="{ 'disabled': saving }" href="#" @click.prevent="cancel">Cancel</a>
               <a class="btn btn-primary" :class="{ 'disabled': saving }" href="#" @click.prevent="nextStep">Select recipients</a><br>
               <a class="btn btn-link" :class="{ 'disabled': saving }" href="#" @click.prevent="save('draft')">Save as draft</a>
@@ -70,18 +70,7 @@
                   <div class="col-xs-3">
                     <label class="select-proxy-display">
                       <select class="hidden-select form-control" v-model="filter.condition">
-                        <option value="equals">Equals</option>
-                        <option value="notequal">Not equal</option>
-                        <option value="oneof">Is one of</option>
-                        <option value="notoneof">Is not one of</option>
-                        <option value="contains">Contains</option>
-                        <option value="notcontain">Does not contain</option>
-                        <option value="empty">Is empty</option>
-                        <option value="notempty">Is not empty</option>
-                        <option value="gt">Greater than</option>
-                        <option value="gte">Greater than or equal to</option>
-                        <option value="lt">Less than</option>
-                        <option value="lte">Less than or equal to</option>
+                        <option v-for="type in filterTypes" :key="type.name" :value="type.name" v-html="type.label"></option>
                       </select>
                       <span class="icon fa fa-chevron-down"></span>
                     </label>
@@ -97,20 +86,30 @@
               <p class="text-center">To test push notifications with individual devices, enter subscription IDs for each device.</p>
               <p><Token-Field :value.sync="subscriptions" placeholder="Separate multiple IDs with commas"></Token-Field></p>
               <p class="help-block text-center">You can find your subscription ID by going to <strong>About this app</strong> in the app on your device.</p>
+              <p class="text-center text-danger" v-if="errors.subscriptions">{{ errors.subscriptions }}</p>
             </template>
             <div class="col-xs-12 filter-summary">
               <div class="col-xs-8">
                 <p v-if="audience !== 'subscriptions'"><a href="#" class="btn btn-default" @click.prevent="addFilter"><i class="fa fa-fw fa-plus"></i> Add filter</a> <a href="#" target="_blank" class="filter-help">How to add data for filtering users</a></p>
               </div>
               <div class="col-xs-4 text-right">
-                <p><span class="recipient-count">Estimated: {{ matches.count }} user<template v-if="matches.count !== 1">s</template> <tooltip title="This is an approximation and will depend on the user preference at the time of publish."><i class="fa fa-info-circle"></i></tooltip></span></p>
+                <p>
+                  <span class="recipient-count">
+                    <template v-if="loadingMatches">
+                      Estimating...
+                    </template>
+                    <template v-else>
+                    Estimated: {{ matches.count }} user<template v-if="matches.count !== 1">s</template> <tooltip title="This is an approximation and will depend on the user preference at the time of publish."><i class="fa fa-info-circle"></i></tooltip>
+                    </template>
+                  </span>
+                </p>
               </div>
             </div>
             <div class="form-group">
               <h3>Notes</h3>
               <textarea class="form-control" rows="4" v-model="notes" placeholder="(Optional) Add some notes to this notification. Your users will not see this."></textarea>
             </div>
-            <p class="text-center step-summary">
+            <p class="step-summary">
               <a class="btn btn-default" :class="{ 'disabled': saving }" href="#" @click.prevent="prevStep">Back</a>
               <a class="btn btn-primary" :class="{ 'disabled': saving }" href="#" @click.prevent="nextStep">Prepare for send</a><br>
               <a class="btn btn-link" :class="{ 'disabled': saving }" href="#" @click.prevent="save('draft')">Save as draft</a>
@@ -126,8 +125,8 @@
           <div class="row">
             <div class="col-md-8 col-md-offset-2">
               <div class="tab-selection">
-                <span class="tab" :class="{ 'active': schedule === 'now' }" @click="setSchedule('now')">Now</span>
-                <span class="tab" :class="{ 'active': schedule === 'scheduled' }" @click="setSchedule('scheduled')">Later</span>
+                <span class="tab" :class="{ 'active': schedule === 'now' }" @click="schedule = 'now'">Now</span>
+                <span class="tab" :class="{ 'active': schedule === 'scheduled' }" @click="schedule = 'scheduled'">Later</span>
               </div>
             </div>
           </div>
@@ -163,7 +162,7 @@
           </div>
           <div class="row">
             <div class="col-md-8 col-md-offset-2">
-              <p class="text-center step-summary">
+              <p class="step-summary">
                 <a class="btn btn-default" :class="{ 'disabled': saving }" href="#" @click.prevent="prevStep">Back</a>
                 <a class="btn btn-primary" :class="{ 'disabled': saving }" href="#" @click.prevent="nextStep">Review and send</a><br>
                 <a class="btn btn-link" :class="{ 'disabled': saving }" href="#" @click.prevent="save('draft')">Save as draft</a>
@@ -171,17 +170,17 @@
             </div>
           </div>
         </template>
-        <div class="row" v-show="steps[step].name === 'review'">
+        <div class="row notification-review" v-show="steps[step].name === 'review'">
           <div class="col-md-10 col-md-offset-1">
             <h3>Your notification</h3>
             <template v-if="notificationHasChannel('in-app')">
-              <div class="text-center notification-message">
+              <div class="notification-message">
                 <strong>{{ notification.data.title }}</strong><br>{{ notification.data.message }}
               </div>
             </template>
             <div class="push-notification-preview" v-if="notificationHasChannel('push')">
               <h4 v-if="notificationHasChannel('in-app')">A push notification will also be sent</h4>
-              <p class="text-center"><small class="text-info">Appearance of the notification is subject to users' device, preference and accepting to receive notifications.</small></p>
+              <p><small class="text-info">Appearance of the notification is subject to users' device, preference and accepting to receive notifications.</small></p>
               <div class="visible-sm-block visible-md-block visible-lg-block" id="notification-message-preview">
                 <img :src="getAsset('img/notifications_device_preview_empty.jpg')">
                 <div id="notification-preview-home">
@@ -210,21 +209,18 @@
                   </span>
                 </div>
               </div>
-              <p class="visible-xs-block"><img :src="getAsset('img/notifications_device_preview_mock.jpg')"></p>
             </div>
-            <h4>Notifications will be sent to <strong>{{ matches.count }}</strong> user<template v-if="matches.count !== 1">s</template></h4>
-            <p class="text-center step-summary">
+            <h4>Sending to <strong>{{ matches.count }}</strong> {{ audienceVerbose }} user<template v-if="matches.count !== 1">s</template> <template v-if="filters.length">matching all of the following</template></h4>
+            <template v-if="filters.length">
+              <ul class="filter-summary-items">
+                <li v-for="(filter, index) in filters" :key="index" v-html="getFilterVerbose(filter)"></li>
+              </ul>
+            </template>
+            <h4>Send the notification {{ scheduleVerbose }}</h4>
+            <p v-if="schedule === 'scheduled'" v-html="notificationDate"></p>
+            <p class="step-summary">
               <a class="btn btn-default" :class="{ 'disabled': saving }" href="#" @click.prevent="prevStep">Back</a>
               <a class="btn btn-primary" :class="{ 'disabled': saving }" href="#" @click.prevent="send()">Send</a>
-            </p>
-          </div>
-        </div>
-        <div class="row" v-if="steps[step].name === 'confirmation'">
-          <div class="col-md-10 col-md-offset-1">
-            <h3>Confirmation</h3>
-            <h4 class="text-success">{{ confirmationMessage }}</h4>
-            <p class="text-center step-summary">
-              <a class="btn btn-primary" href="#" @click.prevent="backToNotifications()">Back to notifications</a>
             </p>
           </div>
         </div>
@@ -234,18 +230,20 @@
 </template>
 
 <script>
+import { getAssetRoot, getNotification, getNotificationLinkAction, getShowTimezone, getDefaultNotification } from '../store';
 import bus from '../libs/bus';
-import { getFilterScope } from '../libs/scope';
-import { getAssetRoot, getNotification, getNotificationLinkAction } from '../store';
+import { filterTypes, getFilterScope, getFilterVerbose } from '../libs/scope';
+import { formatDate } from '../libs/date';
+import {
+  validate as validateTimezone,
+  getOffset as getTimezoneOffset,
+  getOffsetString as getTimezoneOffsetString
+} from '../libs/timezones';
 import Tooltip from './Tooltip';
 import FilterValue from './FilterValue';
 import Timepicker from './Timepicker';
 import TokenField from './TokenField';
 import Datepicker from 'vuejs-datepicker';
-import {
-  validate as validateTimezone,
-  getOffset as getTimezoneOffset
-} from '../libs/timezones';
 
 const defaultFilter = {
   column: '',
@@ -253,13 +251,15 @@ const defaultFilter = {
   value: ''
 };
 const defaultAudience = '';
+const defaultSchedule = 'now';
 const defaultScheduledAt = moment().add(2, 'hours');
-const defaultConfirmationMessage = 'Your notification is saved';
+const defaultConfirmationMessage = 'Your notification is saved.';
 
 export default {
   data() {
     return {
       saving: false,
+      showTimezone: getShowTimezone(),
       appName: Fliplet.Env.get('appName'),
       appIcon: this.getAsset('img/app-icon.png'),
       notification: getNotification(),
@@ -272,13 +272,11 @@ export default {
         { name: 'configure' },
         { name: 'recipients' },
         { name: 'schedule' },
-        { name: 'review' },
-        { name: 'confirmation' }
+        { name: 'review' }
       ],
-      validateStep: '',
-      confirmationMessage: defaultConfirmationMessage,
+      filterTypes,
+      subscriptions: [],
       linkAction: getNotificationLinkAction(),
-      schedule: 'now',
       scheduledAtDate: defaultScheduledAt.clone().startOf('day').toDate(),
       scheduledAtHour: defaultScheduledAt.get('hour'),
       scheduledAtMinute: defaultScheduledAt.get('minute'),
@@ -293,7 +291,11 @@ export default {
       matches: {
         count: 0,
         subscriptions: 0
-      }
+      },
+      debouncedGetMatches: _.debounce(this.getMatches, 1500),
+      matchQuery: null,
+      loadingMatches: true,
+      errors: {}
     };
   },
   components: {
@@ -304,9 +306,24 @@ export default {
     TokenField
   },
   mounted() {
+    this.notification = _.defaultsDeep(this.notification, getDefaultNotification());
     this.instance = Fliplet.Notifications.init();
     this.getMatches();
     this.initializeProviders();
+
+    if (this.schedule === 'scheduled') {
+      let date = moment.unix(_.get(this.notification, 'data._metadata.scheduledAt'));
+
+      if (!date.isValid()) {
+        date = moment();
+      }
+
+      this.scheduledAtDate = date.clone().startOf('day').toDate();
+      this.scheduledAtHour = date.get('hour');
+      this.scheduledAtMinute = date.get('minute');
+    }
+
+
     Fliplet.Apps.get().then((apps) => {
       const app = _.find(apps, { id: Fliplet.Env.get('appId') });
 
@@ -324,6 +341,20 @@ export default {
     messageCharactersRemaining() {
       return this.messageCharacterLimit - this.notification.data.message.length;
     },
+    schedule: {
+      get() {
+        const schedule = _.get(this.notification, 'data._metadata.schedule');
+
+        if (!schedule) {
+          return defaultSchedule;
+        }
+
+        return ['now', 'scheduled'].indexOf(schedule) > -1 ? schedule : defaultSchedule;
+      },
+      set(schedule) {
+        return _.set(this.notification, 'data._metadata.schedule', schedule);
+      }
+    },
     audience: {
       get() {
         const audience = _.get(this.notification, 'data._metadata.audience', defaultAudience);
@@ -332,7 +363,7 @@ export default {
           return defaultAudience;
         }
 
-        return audience;
+        return ['loggedIn', 'subscriptions'].indexOf(audience) > -1 ? audience : defaultAudience;
       },
       set(audience) {
         if (['loggedIn', 'subscriptions'].indexOf(audience) < 0) {
@@ -342,37 +373,45 @@ export default {
         _.set(this.notification, 'data._metadata.audience', audience);
       }
     },
+    audienceVerbose() {
+      switch (this.audience) {
+        case 'loggedIn':
+          return 'signed in';
+        case 'subscriptions':
+          return 'test device';
+        default:
+          return '';
+      }
+    },
+    scheduleVerbose() {
+      switch (this.schedule) {
+        case 'scheduled':
+          return 'later';
+        default:
+        case 'now':
+          return 'now';
+      }
+    },
     filters() {
       return _.get(this.notification, 'data._metadata.filters', []) || [];
     },
-    subscriptions: {
+    notes: {
       get() {
-        return _.get(this.notification, 'data._metadata.subscriptions', []) || [];
+        return _.get(this.notification, 'data._metadata.notes', '') || '';
       },
-      set(subscriptions) {
-        if (typeof subscriptions === 'string') {
-          subscriptions = subscriptions.split(',');
-        }
-
-        if (!_.isArray(subscriptions)) {
-          subscriptions = [subscriptions];
-        }
-
-        subscriptions = _.compact(_.map(subscriptions, (id) => {
-          return parseInt(id, 10);
-        }));
-
-        _.set(this.notification, 'data._metadata.subscriptions', subscriptions);
+      set(notes) {
+        return _.set(this.notification, 'data._metadata.notes', notes);
       }
+    },
+    filterScopes() {
+      return _.compact(_.map(this.filters, getFilterScope));
     },
     scope() {
       if (this.audience === 'subscriptions') {
-        return { flPushSubscriptionId: this.subscriptions || [] };
+        return { flPushSubscriptionId: this.validateSubscriptions(this.subscriptions) || [] };
       }
 
-      let scope = _.compact(_.map(this.filters, getFilterScope));
-
-      return scope.length ? { $and: _.compact(_.map(this.filters, getFilterScope)) } : {};
+      return this.filterScopes.length ? { $and: this.filterScopes } : {};
     },
     scheduledAtTimezoneOffset() {
       return getTimezoneOffset(this.scheduledAtTimezone, this.scheduledAtDate);
@@ -395,50 +434,20 @@ export default {
 
       return this.scheduledAt;
     },
+    notificationTimezone() {
+      const date = moment.unix(this.orderAt).toDate();
+
+      return getTimezoneOffsetString(this.scheduledAtTimezone, date);
+    },
+    notificationDate() {
+      return `${formatDate(moment.unix(this.orderAt), this.scheduledAtTimezone)} ${this.notificationTimezone}`;
+    },
     type() {
       if (this.notificationHasChannel('in-app') || !this.notificationHasChannel('push')) {
         return 'in-app';
       }
 
       return 'push';
-    },
-    errors() {
-      let errors = {};
-
-      if (this.steps[this.step].name !== this.validateStep) {
-        return errors;
-      }
-
-      switch (this.steps[this.step].name) {
-        case 'configure':
-          if (!this.notification.data.title) {
-            errors.title = 'Please enter a title';
-          }
-
-          if (!this.titleCharactersRemaining < 0) {
-            errors.title = `Title must be no longer than ${this.titleCharacterLimit} characters`;
-          }
-
-          if (!this.notification.data.message) {
-            errors.message = 'Please enter a message';
-          }
-
-          if (!this.messageCharactersRemaining < 0) {
-            errors.message = `Message must be no longer than ${this.messageCharacterLimit} characters`;
-          }
-
-          break;
-        case 'schedule':
-          if (!this.channels.length) {
-            errors.channels = 'Please select one or more notification types';
-          }
-
-          break;
-        default:
-          break;
-      }
-
-      return errors;
     }
   },
   watch: {
@@ -461,15 +470,19 @@ export default {
       this.autosize();
       this.getMatches();
     },
-    filters() {
-      this.autosize();
-      // _.debounce(this.getMatches, 3000, { leading: true })();
+    filters: {
+      deep: true,
+      handler() {
+        this.autosize();
+        this.debouncedGetMatches();
+      }
     },
     subscriptions() {
-      _.debounce(this.getMatches, 1000, { leading: true })();
+      this.getMatches();
     }
   },
   methods: {
+    getFilterVerbose,
     cancel() {
       bus.$emit('set-view', 'list');
     },
@@ -480,15 +493,48 @@ export default {
     autosize() {
       bus.$emit('autosize');
     },
-    stepIsValid() {
-      this.validateStep = this.steps[this.step].name;
+    getErrors() {
+      this.errors = {};
 
-      if (!_.isEmpty(this.errors)) {
-        return false;
+      switch (this.steps[this.step].name) {
+        case 'configure':
+          if (!_.get(this.notification, 'data.title')) {
+            Vue.set(this.errors, 'title', 'Please enter a title');
+          }
+
+          if (!this.titleCharactersRemaining < 0) {
+            Vue.set(this.errors, 'title', `Title must be no longer than ${this.titleCharacterLimit} characters`);
+          }
+
+          if (!_.get(this.notification, 'data.message')) {
+            Vue.set(this.errors, 'message', 'Please enter a message');
+          }
+
+          if (!this.messageCharactersRemaining < 0) {
+            Vue.set(this.errors, 'message', `Message must be no longer than ${this.messageCharacterLimit} characters`);
+          }
+
+          break;
+        case 'recipients':
+          if (this.audience === 'subscriptions' && !this.subscriptions.length) {
+            Vue.set(this.errors, 'subscriptions', 'Please enter one or more subscrption IDs');
+          }
+
+          break;
+        case 'schedule':
+          if (!this.channels.length) {
+            Vue.set(this.errors, 'channels', 'Please select one or more notification types');
+          }
+
+          break;
+        default:
+          break;
       }
+    },
+    stepIsValid() {
+      this.getErrors();
 
-      this.validateStep = '';
-      return true;
+      return _.isEmpty(this.errors);
     },
     nextStep() {
       if (!this.stepIsValid()) {
@@ -503,18 +549,29 @@ export default {
     goToStep(name) {
       this.step = _.findIndex(this.steps, { name });
     },
+    validateSubscriptions(subscriptions) {
+      if (typeof subscriptions === 'string') {
+        subscriptions = subscriptions.split(',');
+      }
+
+      if (!_.isArray(subscriptions)) {
+        subscriptions = [subscriptions];
+      }
+
+      subscriptions = _.compact(_.map(subscriptions, (id) => {
+        return parseInt(id, 10);
+      }));
+      return subscriptions;
+    },
     getAsset(path) {
       return `${this.assetRoot}/${path}`;
-    },
-    setSchedule(schedule) {
-      this.schedule = schedule;
     },
     notificationHasChannel(channel) {
       return _.includes(this.channels, channel);
     },
     addNotificationChannel(channel) {
       if (this.channels.indexOf(channel) === -1) {
-        Vue.set(this.channels, this.channels.length, channel);
+        this.channels.push(channel);
       }
     },
     removeNotificationChannel(channel) {
@@ -527,21 +584,31 @@ export default {
         return Promise.resolve();
       }
 
-      var timestamp = new Date().getTime();
-
-      console.groupCollapsed(timestamp);
-      console.log('Filters', this.filters);
-      console.log('Scope', this.scope);
-
-      return this.instance.getMatches({
+      const matchQuery = {
         audience: this.audience,
         scope: this.scope,
         includeMatches: true
-      }).then((results) => {
-        console.log('Count', results.count);
-        console.log('Matches', results.matches);
-        console.groupEnd(timestamp);
+      };
+
+      if (this.matchQuery !== null && _.isEqual(matchQuery, this.matchQuery)) {
+        return Promise.resolve();
+      }
+
+      // const timestamp = new Date().getTime();
+      // console.groupCollapsed(timestamp);
+      // console.log('Filters', JSON.stringify(this.filters, null, 2));
+      // console.log('Scope', JSON.stringify(this.scope, null, 2));
+      this.matchQuery = matchQuery;
+      this.loadingMatches = true;
+
+      return this.instance.getMatches(matchQuery).then((results) => {
+        // console.log('Count', results.count);
+        // console.log('Matches', results.matches);
+        // console.groupEnd(timestamp);
+        this.loadingMatches = false;
         this.matches = results;
+      }).catch(() => {
+        this.loadingMatches = false;
       });
     },
     toggleNotificationChannel(channel, enable) {
@@ -616,7 +683,10 @@ export default {
       });
     },
     addFilter() {
-      this.filters.push(_.clone(defaultFilter));
+      this.filters.push({});
+      _.forIn(defaultFilter, (value, key) => {
+        Vue.set(this.filters[this.filters.length - 1], key, value);
+      });
     },
     removeFilter(index) {
       this.filters.splice(index, 1);
@@ -672,15 +742,15 @@ export default {
       }
 
       if (to === 'published') {
-        return 'Your notification is sent';
+        return 'Your notification is sent.';
       }
 
       if (from === 'draft' && to === 'scheduled') {
-        return 'Your notification is scheduled';
+        return 'Your notification is scheduled.';
       }
 
       if (from === 'scheduled' && to === 'draft') {
-        return 'Your notification is saved as draft';
+        return 'Your notification is saved as draft.';
       }
 
       return defaultConfirmationMessage;
@@ -736,7 +806,7 @@ export default {
           }
 
           _.remove(this.filters, (filter) => {
-            return !filter.column || (!filter.value && ['empty', 'notempty'].indexOf(filter.condition) > -1);
+            return !filter.column || (!filter.value && ['empty', 'notempty'].indexOf(filter.condition) < 0);
           });
 
           _.merge(this.notification, {
@@ -747,13 +817,25 @@ export default {
             data: {
               scheduledAt: this.orderAt, // @TODO Remove scheduledAt after API is refactored to only use orderAt
               _metadata: {
+                audience: this.audience,
                 filters: this.audience !== 'subscriptions' ? this.filters : [],
-                subscriptions: this.subscriptions,
+                subscriptions: this.validateSubscriptions(this.subscriptions),
                 scheduledAtTimezone: this.scheduledAtTimezone,
-                scheduledAt: this.scheduledAt
+                scheduledAt: this.scheduledAt,
+                schedule: this.schedule,
+                notes: this.notes
               }
             }
           });
+
+          if (_.isEmpty(this.notification.scope)) {
+            delete this.notification.scope;
+          }
+
+          if (status !== 'scheduled') {
+            delete this.notification.orderAt;
+            delete this.notification.scheduledAt; // @TODO Remove scheduledAt after API is refactored to only use orderAt
+          }
 
           let pushNotification = {
             payload: {
@@ -770,7 +852,7 @@ export default {
 
           if (this.notificationHasChannel('push')) {
             if (this.subscriptions.length) {
-              pushNotification.subscriptions = this.subscriptions;
+              pushNotification.subscriptions = this.validateSubscriptions(this.subscriptions);
             }
 
             this.notification.pushNotification = pushNotification;
@@ -792,9 +874,11 @@ export default {
           ])).then(resolve);
         });
       }).then(() => {
-        this.saving = false;
-        this.confirmationMessage = this.getConfirmationMessage(statusFrom, statusTo);
-        this.goToStep('confirmation');
+        Fliplet.Modal.alert({
+          title: 'Success!',
+          message: this.getConfirmationMessage(statusFrom, statusTo)
+        });
+        this.backToNotifications();
       }).catch((error) => {
         this.saving = false;
         Fliplet.Modal.alert({

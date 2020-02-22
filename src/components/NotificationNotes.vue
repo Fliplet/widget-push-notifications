@@ -73,7 +73,9 @@ export default {
       ])).then(() => {
         this.cachedNotes = '';
         this.mode = 'view';
+        this.$emit('update:notification', this.notification);
       }).catch((error) => {
+        _.set(this.notification, 'data._metadata.notes', this.cachedNotes);
         Fliplet.Modal.alert({
           title: 'Error updating notes',
           message: Fliplet.parseError(error)

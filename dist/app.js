@@ -412,7 +412,7 @@ var render = function() {
                               return _c(
                                 "tr",
                                 {
-                                  key: notification.createdAt,
+                                  key: _vm.getNotificationKey(notification),
                                   attrs: {
                                     "data-notification-id": notification.id,
                                     "data-job-id":
@@ -502,7 +502,14 @@ var render = function() {
                                     { staticClass: "list-col-notes" },
                                     [
                                       _c("Notification-Notes", {
-                                        attrs: { notification: notification }
+                                        attrs: { notification: notification },
+                                        on: {
+                                          "update:notification": function(
+                                            $event
+                                          ) {
+                                            notification = $event
+                                          }
+                                        }
                                       })
                                     ],
                                     1
@@ -1012,8 +1019,11 @@ __webpack_require__.r(__webpack_exports__);
     showTimezone: function showTimezone(value) {
       Object(_store__WEBPACK_IMPORTED_MODULE_5__["setShowTimezone"])(!!value);
     },
-    notifications: function notifications() {
-      _libs_bus__WEBPACK_IMPORTED_MODULE_6__["default"].$emit('autosize');
+    notifications: {
+      deep: true,
+      handler: function handler() {
+        _libs_bus__WEBPACK_IMPORTED_MODULE_6__["default"].$emit('autosize');
+      }
     },
     batchSize: function batchSize() {
       this.loadNotifications();
@@ -1036,6 +1046,17 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     doNothing: function doNothing() {
       return;
+    },
+    getNotificationKey: function getNotificationKey(notification) {
+      var id = notification.id;
+
+      if (!id) {
+        id = "legacy-".concat(_.get(notification, 'job.id'));
+      }
+
+      var createdAt = moment(notification.createdAt).unix();
+      var updatedAt = moment(notification.updatedAt).unix();
+      return "".concat(id, "-").concat(createdAt, "-").concat(updatedAt);
     },
     initialize: function initialize() {
       var _this = this;
@@ -1443,6 +1464,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getDefaultNotification", function() { return getDefaultNotification; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "state", function() { return state; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setAppPages", function() { return setAppPages; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getAppPages", function() { return getAppPages; });
@@ -1476,12 +1498,12 @@ function getDefaultNotification() {
         audience: '',
         filters: [],
         subscriptions: [],
+        schedule: 'now',
         notes: ''
       }
     }
   };
 }
-
 var state = {
   appPages: [],
   view: 'list',
@@ -1507,7 +1529,7 @@ function setView(view) {
   state.view = view;
 }
 function setNotification(notification) {
-  state.notification = _.merge(getDefaultNotification(), notification);
+  state.notification = _.defaultsDeep(notification, getDefaultNotification());
 }
 function getNotification() {
   return state.notification;
@@ -2075,7 +2097,11 @@ __webpack_require__.r(__webpack_exports__);
       return this.instance.update(this.notification.id, _.pick(this.notification, ['status', 'type', 'data', 'scope', 'orderAt', 'pushNotification'])).then(function () {
         _this.cachedNotes = '';
         _this.mode = 'view';
+
+        _this.$emit('update:notification', _this.notification);
       })["catch"](function (error) {
+        _.set(_this.notification, 'data._metadata.notes', _this.cachedNotes);
+
         Fliplet.Modal.alert({
           title: 'Error updating notes',
           message: Fliplet.parseError(error)
@@ -3098,7 +3124,7 @@ var render = function() {
                   ]
                 ),
                 _vm._v(" "),
-                _c("p", { staticClass: "text-center step-summary" }, [
+                _c("p", { staticClass: "step-summary" }, [
                   _c(
                     "a",
                     {
@@ -3408,97 +3434,18 @@ var render = function() {
                                                 }
                                               }
                                             },
-                                            [
-                                              _c(
-                                                "option",
-                                                { attrs: { value: "equals" } },
-                                                [_vm._v("Equals")]
-                                              ),
-                                              _vm._v(" "),
-                                              _c(
-                                                "option",
-                                                {
-                                                  attrs: { value: "notequal" }
-                                                },
-                                                [_vm._v("Not equal")]
-                                              ),
-                                              _vm._v(" "),
-                                              _c(
-                                                "option",
-                                                { attrs: { value: "oneof" } },
-                                                [_vm._v("Is one of")]
-                                              ),
-                                              _vm._v(" "),
-                                              _c(
-                                                "option",
-                                                {
-                                                  attrs: { value: "notoneof" }
-                                                },
-                                                [_vm._v("Is not one of")]
-                                              ),
-                                              _vm._v(" "),
-                                              _c(
-                                                "option",
-                                                {
-                                                  attrs: { value: "contains" }
-                                                },
-                                                [_vm._v("Contains")]
-                                              ),
-                                              _vm._v(" "),
-                                              _c(
-                                                "option",
-                                                {
-                                                  attrs: { value: "notcontain" }
-                                                },
-                                                [_vm._v("Does not contain")]
-                                              ),
-                                              _vm._v(" "),
-                                              _c(
-                                                "option",
-                                                { attrs: { value: "empty" } },
-                                                [_vm._v("Is empty")]
-                                              ),
-                                              _vm._v(" "),
-                                              _c(
-                                                "option",
-                                                {
-                                                  attrs: { value: "notempty" }
-                                                },
-                                                [_vm._v("Is not empty")]
-                                              ),
-                                              _vm._v(" "),
-                                              _c(
-                                                "option",
-                                                { attrs: { value: "gt" } },
-                                                [_vm._v("Greater than")]
-                                              ),
-                                              _vm._v(" "),
-                                              _c(
-                                                "option",
-                                                { attrs: { value: "gte" } },
-                                                [
-                                                  _vm._v(
-                                                    "Greater than or equal to"
-                                                  )
-                                                ]
-                                              ),
-                                              _vm._v(" "),
-                                              _c(
-                                                "option",
-                                                { attrs: { value: "lt" } },
-                                                [_vm._v("Less than")]
-                                              ),
-                                              _vm._v(" "),
-                                              _c(
-                                                "option",
-                                                { attrs: { value: "lte" } },
-                                                [
-                                                  _vm._v(
-                                                    "Less than or equal to"
-                                                  )
-                                                ]
-                                              )
-                                            ]
+                                            _vm._l(_vm.filterTypes, function(
+                                              type
+                                            ) {
+                                              return _c("option", {
+                                                key: type.name,
+                                                domProps: {
+                                                  value: type.name,
+                                                  innerHTML: _vm._s(type.label)
+                                                }
+                                              })
+                                            }),
+                                            0
                                           ),
                                           _vm._v(" "),
                                           _c("span", {
@@ -3570,7 +3517,15 @@ var render = function() {
                             1
                           ),
                           _vm._v(" "),
-                          _vm._m(0)
+                          _vm._m(0),
+                          _vm._v(" "),
+                          _vm.errors.subscriptions
+                            ? _c(
+                                "p",
+                                { staticClass: "text-center text-danger" },
+                                [_vm._v(_vm._s(_vm.errors.subscriptions))]
+                              )
+                            : _vm._e()
                         ]
                       : _vm._e(),
                     _vm._v(" "),
@@ -3652,6 +3607,7 @@ var render = function() {
                             [_vm._v("Clear")]
                           ),
                           _c("br"),
+                          _vm._v(" "),
                           _c(
                             "a",
                             {
@@ -3670,25 +3626,37 @@ var render = function() {
                             "span",
                             { staticClass: "recipient-count" },
                             [
-                              _vm._v(
-                                "Estimated: " +
-                                  _vm._s(_vm.matches.count) +
-                                  " user"
-                              ),
-                              _vm.matches.count !== 1
-                                ? [_vm._v("s")]
-                                : _vm._e(),
-                              _vm._v(" "),
-                              _c(
-                                "tooltip",
-                                {
-                                  attrs: {
-                                    title:
-                                      "This is an approximation and will depend on the user preference at the time of publish."
-                                  }
-                                },
-                                [_c("i", { staticClass: "fa fa-info-circle" })]
-                              )
+                              _vm.loadingMatches
+                                ? [
+                                    _vm._v(
+                                      "\n                    Estimating...\n                  "
+                                    )
+                                  ]
+                                : [
+                                    _vm._v(
+                                      "\n                  Estimated: " +
+                                        _vm._s(_vm.matches.count) +
+                                        " user"
+                                    ),
+                                    _vm.matches.count !== 1
+                                      ? [_vm._v("s")]
+                                      : _vm._e(),
+                                    _vm._v(" "),
+                                    _c(
+                                      "tooltip",
+                                      {
+                                        attrs: {
+                                          title:
+                                            "This is an approximation and will depend on the user preference at the time of publish."
+                                        }
+                                      },
+                                      [
+                                        _c("i", {
+                                          staticClass: "fa fa-info-circle"
+                                        })
+                                      ]
+                                    )
+                                  ]
                             ],
                             2
                           )
@@ -3726,7 +3694,7 @@ var render = function() {
                       })
                     ]),
                     _vm._v(" "),
-                    _c("p", { staticClass: "text-center step-summary" }, [
+                    _c("p", { staticClass: "step-summary" }, [
                       _c(
                         "a",
                         {
@@ -3796,7 +3764,7 @@ var render = function() {
                           class: { active: _vm.schedule === "now" },
                           on: {
                             click: function($event) {
-                              return _vm.setSchedule("now")
+                              _vm.schedule = "now"
                             }
                           }
                         },
@@ -3810,7 +3778,7 @@ var render = function() {
                           class: { active: _vm.schedule === "scheduled" },
                           on: {
                             click: function($event) {
-                              return _vm.setSchedule("scheduled")
+                              _vm.schedule = "scheduled"
                             }
                           }
                         },
@@ -3918,7 +3886,7 @@ var render = function() {
                 _vm._v(" "),
                 _c("div", { staticClass: "row" }, [
                   _c("div", { staticClass: "col-md-8 col-md-offset-2" }, [
-                    _c("p", { staticClass: "text-center step-summary" }, [
+                    _c("p", { staticClass: "step-summary" }, [
                       _c(
                         "a",
                         {
@@ -3984,7 +3952,7 @@ var render = function() {
                   expression: "steps[step].name === 'review'"
                 }
               ],
-              staticClass: "row"
+              staticClass: "row notification-review"
             },
             [
               _c(
@@ -3995,20 +3963,16 @@ var render = function() {
                   _vm._v(" "),
                   _vm.notificationHasChannel("in-app")
                     ? [
-                        _c(
-                          "div",
-                          { staticClass: "text-center notification-message" },
-                          [
-                            _c("strong", [
-                              _vm._v(_vm._s(_vm.notification.data.title))
-                            ]),
-                            _c("br"),
-                            _vm._v(
-                              _vm._s(_vm.notification.data.message) +
-                                "\n            "
-                            )
-                          ]
-                        )
+                        _c("div", { staticClass: "notification-message" }, [
+                          _c("strong", [
+                            _vm._v(_vm._s(_vm.notification.data.title))
+                          ]),
+                          _c("br"),
+                          _vm._v(
+                            _vm._s(_vm.notification.data.message) +
+                              "\n            "
+                          )
+                        ])
                       ]
                     : _vm._e(),
                   _vm._v(" "),
@@ -4155,32 +4119,56 @@ var render = function() {
                               ]
                             )
                           ]
-                        ),
-                        _vm._v(" "),
-                        _c("p", { staticClass: "visible-xs-block" }, [
-                          _c("img", {
-                            attrs: {
-                              src: _vm.getAsset(
-                                "img/notifications_device_preview_mock.jpg"
-                              )
-                            }
-                          })
-                        ])
+                        )
                       ])
                     : _vm._e(),
                   _vm._v(" "),
                   _c(
                     "h4",
                     [
-                      _vm._v("Notifications will be sent to "),
+                      _vm._v("Sending to "),
                       _c("strong", [_vm._v(_vm._s(_vm.matches.count))]),
-                      _vm._v(" user"),
-                      _vm.matches.count !== 1 ? [_vm._v("s")] : _vm._e()
+                      _vm._v(" " + _vm._s(_vm.audienceVerbose) + " user"),
+                      _vm.matches.count !== 1 ? [_vm._v("s")] : _vm._e(),
+                      _vm._v(" "),
+                      _vm.filters.length
+                        ? [_vm._v("matching all of the following")]
+                        : _vm._e()
                     ],
                     2
                   ),
                   _vm._v(" "),
-                  _c("p", { staticClass: "text-center step-summary" }, [
+                  _vm.filters.length
+                    ? [
+                        _c(
+                          "ul",
+                          { staticClass: "filter-summary-items" },
+                          _vm._l(_vm.filters, function(filter, index) {
+                            return _c("li", {
+                              key: index,
+                              domProps: {
+                                innerHTML: _vm._s(_vm.getFilterVerbose(filter))
+                              }
+                            })
+                          }),
+                          0
+                        )
+                      ]
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c("h4", [
+                    _vm._v(
+                      "Send the notification " + _vm._s(_vm.scheduleVerbose)
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _vm.schedule === "scheduled"
+                    ? _c("p", {
+                        domProps: { innerHTML: _vm._s(_vm.notificationDate) }
+                      })
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c("p", { staticClass: "step-summary" }, [
                     _c(
                       "a",
                       {
@@ -4217,36 +4205,7 @@ var render = function() {
                 2
               )
             ]
-          ),
-          _vm._v(" "),
-          _vm.steps[_vm.step].name === "confirmation"
-            ? _c("div", { staticClass: "row" }, [
-                _c("div", { staticClass: "col-md-10 col-md-offset-1" }, [
-                  _c("h3", [_vm._v("Confirmation")]),
-                  _vm._v(" "),
-                  _c("h4", { staticClass: "text-success" }, [
-                    _vm._v(_vm._s(_vm.confirmationMessage))
-                  ]),
-                  _vm._v(" "),
-                  _c("p", { staticClass: "text-center step-summary" }, [
-                    _c(
-                      "a",
-                      {
-                        staticClass: "btn btn-primary",
-                        attrs: { href: "#" },
-                        on: {
-                          click: function($event) {
-                            $event.preventDefault()
-                            return _vm.backToNotifications()
-                          }
-                        }
-                      },
-                      [_vm._v("Back to notifications")]
-                    )
-                  ])
-                ])
-              ])
-            : _vm._e()
+          )
         ],
         2
       )
@@ -4278,7 +4237,7 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("p", { staticClass: "text-center" }, [
+    return _c("p", [
       _c("small", { staticClass: "text-info" }, [
         _vm._v(
           "Appearance of the notification is subject to users' device, preference and accepting to receive notifications."
@@ -4306,15 +4265,16 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _libs_bus__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(25);
-/* harmony import */ var _libs_scope__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(44);
-/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(16);
-/* harmony import */ var _Tooltip__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(26);
-/* harmony import */ var _FilterValue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(45);
-/* harmony import */ var _Timepicker__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(55);
-/* harmony import */ var _TokenField__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(50);
-/* harmony import */ var vuejs_datepicker__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(60);
-/* harmony import */ var _libs_timezones__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(38);
+/* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(16);
+/* harmony import */ var _libs_bus__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(25);
+/* harmony import */ var _libs_scope__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(44);
+/* harmony import */ var _libs_date__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(37);
+/* harmony import */ var _libs_timezones__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(38);
+/* harmony import */ var _Tooltip__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(26);
+/* harmony import */ var _FilterValue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(45);
+/* harmony import */ var _Timepicker__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(55);
+/* harmony import */ var _TokenField__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(50);
+/* harmony import */ var vuejs_datepicker__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(60);
 //
 //
 //
@@ -4548,8 +4508,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
+
 
 
 
@@ -4565,19 +4524,21 @@ var defaultFilter = {
   value: ''
 };
 var defaultAudience = '';
+var defaultSchedule = 'now';
 var defaultScheduledAt = moment().add(2, 'hours');
-var defaultConfirmationMessage = 'Your notification is saved';
+var defaultConfirmationMessage = 'Your notification is saved.';
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       saving: false,
+      showTimezone: Object(_store__WEBPACK_IMPORTED_MODULE_0__["getShowTimezone"])(),
       appName: Fliplet.Env.get('appName'),
       appIcon: this.getAsset('img/app-icon.png'),
-      notification: Object(_store__WEBPACK_IMPORTED_MODULE_2__["getNotification"])(),
+      notification: Object(_store__WEBPACK_IMPORTED_MODULE_0__["getNotification"])(),
       titleCharacterLimit: 50,
       messageCharacterLimit: 250,
       instance: null,
-      assetRoot: Object(_store__WEBPACK_IMPORTED_MODULE_2__["getAssetRoot"])(),
+      assetRoot: Object(_store__WEBPACK_IMPORTED_MODULE_0__["getAssetRoot"])(),
       step: 0,
       steps: [{
         name: 'configure'
@@ -4587,17 +4548,14 @@ var defaultConfirmationMessage = 'Your notification is saved';
         name: 'schedule'
       }, {
         name: 'review'
-      }, {
-        name: 'confirmation'
       }],
-      validateStep: '',
-      confirmationMessage: defaultConfirmationMessage,
-      linkAction: Object(_store__WEBPACK_IMPORTED_MODULE_2__["getNotificationLinkAction"])(),
-      schedule: 'now',
+      filterTypes: _libs_scope__WEBPACK_IMPORTED_MODULE_2__["filterTypes"],
+      subscriptions: [],
+      linkAction: Object(_store__WEBPACK_IMPORTED_MODULE_0__["getNotificationLinkAction"])(),
       scheduledAtDate: defaultScheduledAt.clone().startOf('day').toDate(),
       scheduledAtHour: defaultScheduledAt.get('hour'),
       scheduledAtMinute: defaultScheduledAt.get('minute'),
-      scheduledAtTimezone: Object(_libs_timezones__WEBPACK_IMPORTED_MODULE_8__["validate"])(moment.tz.guess()),
+      scheduledAtTimezone: Object(_libs_timezones__WEBPACK_IMPORTED_MODULE_4__["validate"])(moment.tz.guess()),
       disabledDates: {
         to: moment().subtract(1, 'days').toDate()
       },
@@ -4608,22 +4566,40 @@ var defaultConfirmationMessage = 'Your notification is saved';
       matches: {
         count: 0,
         subscriptions: 0
-      }
+      },
+      debouncedGetMatches: _.debounce(this.getMatches, 1500),
+      matchQuery: null,
+      loadingMatches: true,
+      errors: {}
     };
   },
   components: {
-    Tooltip: _Tooltip__WEBPACK_IMPORTED_MODULE_3__["default"],
-    FilterValue: _FilterValue__WEBPACK_IMPORTED_MODULE_4__["default"],
-    Datepicker: vuejs_datepicker__WEBPACK_IMPORTED_MODULE_7__["default"],
-    Timepicker: _Timepicker__WEBPACK_IMPORTED_MODULE_5__["default"],
-    TokenField: _TokenField__WEBPACK_IMPORTED_MODULE_6__["default"]
+    Tooltip: _Tooltip__WEBPACK_IMPORTED_MODULE_5__["default"],
+    FilterValue: _FilterValue__WEBPACK_IMPORTED_MODULE_6__["default"],
+    Datepicker: vuejs_datepicker__WEBPACK_IMPORTED_MODULE_9__["default"],
+    Timepicker: _Timepicker__WEBPACK_IMPORTED_MODULE_7__["default"],
+    TokenField: _TokenField__WEBPACK_IMPORTED_MODULE_8__["default"]
   },
   mounted: function mounted() {
     var _this = this;
 
+    this.notification = _.defaultsDeep(this.notification, Object(_store__WEBPACK_IMPORTED_MODULE_0__["getDefaultNotification"])());
     this.instance = Fliplet.Notifications.init();
     this.getMatches();
     this.initializeProviders();
+
+    if (this.schedule === 'scheduled') {
+      var date = moment.unix(_.get(this.notification, 'data._metadata.scheduledAt'));
+
+      if (!date.isValid()) {
+        date = moment();
+      }
+
+      this.scheduledAtDate = date.clone().startOf('day').toDate();
+      this.scheduledAtHour = date.get('hour');
+      this.scheduledAtMinute = date.get('minute');
+    }
+
     Fliplet.Apps.get().then(function (apps) {
       var app = _.find(apps, {
         id: Fliplet.Env.get('appId')
@@ -4643,6 +4619,20 @@ var defaultConfirmationMessage = 'Your notification is saved';
     messageCharactersRemaining: function messageCharactersRemaining() {
       return this.messageCharacterLimit - this.notification.data.message.length;
     },
+    schedule: {
+      get: function get() {
+        var schedule = _.get(this.notification, 'data._metadata.schedule');
+
+        if (!schedule) {
+          return defaultSchedule;
+        }
+
+        return ['now', 'scheduled'].indexOf(schedule) > -1 ? schedule : defaultSchedule;
+      },
+      set: function set(schedule) {
+        return _.set(this.notification, 'data._metadata.schedule', schedule);
+      }
+    },
     audience: {
       get: function get() {
         var audience = _.get(this.notification, 'data._metadata.audience', defaultAudience);
@@ -4651,7 +4641,7 @@ var defaultConfirmationMessage = 'Your notification is saved';
           return defaultAudience;
         }
 
-        return audience;
+        return ['loggedIn', 'subscriptions'].indexOf(audience) > -1 ? audience : defaultAudience;
       },
       set: function set(audience) {
         if (['loggedIn', 'subscriptions'].indexOf(audience) < 0) {
@@ -4661,44 +4651,55 @@ var defaultConfirmationMessage = 'Your notification is saved';
         _.set(this.notification, 'data._metadata.audience', audience);
       }
     },
+    audienceVerbose: function audienceVerbose() {
+      switch (this.audience) {
+        case 'loggedIn':
+          return 'signed in';
+
+        case 'subscriptions':
+          return 'test device';
+
+        default:
+          return '';
+      }
+    },
+    scheduleVerbose: function scheduleVerbose() {
+      switch (this.schedule) {
+        case 'scheduled':
+          return 'later';
+
+        default:
+        case 'now':
+          return 'now';
+      }
+    },
     filters: function filters() {
       return _.get(this.notification, 'data._metadata.filters', []) || [];
     },
-    subscriptions: {
+    notes: {
       get: function get() {
-        return _.get(this.notification, 'data._metadata.subscriptions', []) || [];
+        return _.get(this.notification, 'data._metadata.notes', '') || '';
       },
-      set: function set(subscriptions) {
-        if (typeof subscriptions === 'string') {
-          subscriptions = subscriptions.split(',');
-        }
-
-        if (!_.isArray(subscriptions)) {
-          subscriptions = [subscriptions];
-        }
-
-        subscriptions = _.compact(_.map(subscriptions, function (id) {
-          return parseInt(id, 10);
-        }));
-
-        _.set(this.notification, 'data._metadata.subscriptions', subscriptions);
+      set: function set(notes) {
+        return _.set(this.notification, 'data._metadata.notes', notes);
       }
+    },
+    filterScopes: function filterScopes() {
+      return _.compact(_.map(this.filters, _libs_scope__WEBPACK_IMPORTED_MODULE_2__["getFilterScope"]));
     },
     scope: function scope() {
       if (this.audience === 'subscriptions') {
         return {
-          flPushSubscriptionId: this.subscriptions || []
+          flPushSubscriptionId: this.validateSubscriptions(this.subscriptions) || []
         };
       }
 
-      var scope = _.compact(_.map(this.filters, _libs_scope__WEBPACK_IMPORTED_MODULE_1__["getFilterScope"]));
-
-      return scope.length ? {
-        $and: _.compact(_.map(this.filters, _libs_scope__WEBPACK_IMPORTED_MODULE_1__["getFilterScope"]))
+      return this.filterScopes.length ? {
+        $and: this.filterScopes
       } : {};
     },
     scheduledAtTimezoneOffset: function scheduledAtTimezoneOffset() {
-      return Object(_libs_timezones__WEBPACK_IMPORTED_MODULE_8__["getOffset"])(this.scheduledAtTimezone, this.scheduledAtDate);
+      return Object(_libs_timezones__WEBPACK_IMPORTED_MODULE_4__["getOffset"])(this.scheduledAtTimezone, this.scheduledAtDate);
     },
     scheduledAt: function scheduledAt() {
       var timestamp = new Date(this.scheduledAtDate.getFullYear(), this.scheduledAtDate.getMonth(), this.scheduledAtDate.getDate(), this.scheduledAtHour, this.scheduledAtMinute);
@@ -4711,52 +4712,19 @@ var defaultConfirmationMessage = 'Your notification is saved';
 
       return this.scheduledAt;
     },
+    notificationTimezone: function notificationTimezone() {
+      var date = moment.unix(this.orderAt).toDate();
+      return Object(_libs_timezones__WEBPACK_IMPORTED_MODULE_4__["getOffsetString"])(this.scheduledAtTimezone, date);
+    },
+    notificationDate: function notificationDate() {
+      return "".concat(Object(_libs_date__WEBPACK_IMPORTED_MODULE_3__["formatDate"])(moment.unix(this.orderAt), this.scheduledAtTimezone), " ").concat(this.notificationTimezone);
+    },
     type: function type() {
       if (this.notificationHasChannel('in-app') || !this.notificationHasChannel('push')) {
         return 'in-app';
       }
 
       return 'push';
-    },
-    errors: function errors() {
-      var errors = {};
-
-      if (this.steps[this.step].name !== this.validateStep) {
-        return errors;
-      }
-
-      switch (this.steps[this.step].name) {
-        case 'configure':
-          if (!this.notification.data.title) {
-            errors.title = 'Please enter a title';
-          }
-
-          if (!this.titleCharactersRemaining < 0) {
-            errors.title = "Title must be no longer than ".concat(this.titleCharacterLimit, " characters");
-          }
-
-          if (!this.notification.data.message) {
-            errors.message = 'Please enter a message';
-          }
-
-          if (!this.messageCharactersRemaining < 0) {
-            errors.message = "Message must be no longer than ".concat(this.messageCharacterLimit, " characters");
-          }
-
-          break;
-
-        case 'schedule':
-          if (!this.channels.length) {
-            errors.channels = 'Please select one or more notification types';
-          }
-
-          break;
-
-        default:
-          break;
-      }
-
-      return errors;
     }
   },
   watch: {
@@ -4779,13 +4747,15 @@ var defaultConfirmationMessage = 'Your notification is saved';
       this.autosize();
       this.getMatches();
     },
-    filters: function filters() {
-      this.autosize(); // _.debounce(this.getMatches, 3000, { leading: true })();
+    filters: {
+      deep: true,
+      handler: function handler() {
+        this.autosize();
+        this.debouncedGetMatches();
+      }
     },
     subscriptions: function subscriptions() {
-      _.debounce(this.getMatches, 1000, {
-        leading: true
-      })();
+      this.getMatches();
     }
   },
   methods: {
@@ -4849,32 +4819,67 @@ var defaultConfirmationMessage = 'Your notification is saved';
           filter.path = path;
         }
 
-        _this2.filters.push(filter); // Vue.set(this.filters, this.filters.length, filter);
-
+        _this2.filters.push(filter);
       });
     },
     clearFilters: function clearFilters() {
       this.filters.splice(0, this.filters.length);
     },
+    getFilterVerbose: _libs_scope__WEBPACK_IMPORTED_MODULE_2__["getFilterVerbose"],
     cancel: function cancel() {
-      _libs_bus__WEBPACK_IMPORTED_MODULE_0__["default"].$emit('set-view', 'list');
+      _libs_bus__WEBPACK_IMPORTED_MODULE_1__["default"].$emit('set-view', 'list');
     },
     backToNotifications: function backToNotifications() {
-      _libs_bus__WEBPACK_IMPORTED_MODULE_0__["default"].$emit('set-view', 'list');
-      _libs_bus__WEBPACK_IMPORTED_MODULE_0__["default"].$emit('refresh-list');
+      _libs_bus__WEBPACK_IMPORTED_MODULE_1__["default"].$emit('set-view', 'list');
+      _libs_bus__WEBPACK_IMPORTED_MODULE_1__["default"].$emit('refresh-list');
     },
     autosize: function autosize() {
-      _libs_bus__WEBPACK_IMPORTED_MODULE_0__["default"].$emit('autosize');
+      _libs_bus__WEBPACK_IMPORTED_MODULE_1__["default"].$emit('autosize');
+    },
+    getErrors: function getErrors() {
+      this.errors = {};
+
+      switch (this.steps[this.step].name) {
+        case 'configure':
+          if (!_.get(this.notification, 'data.title')) {
+            Vue.set(this.errors, 'title', 'Please enter a title');
+          }
+
+          if (!this.titleCharactersRemaining < 0) {
+            Vue.set(this.errors, 'title', "Title must be no longer than ".concat(this.titleCharacterLimit, " characters"));
+          }
+
+          if (!_.get(this.notification, 'data.message')) {
+            Vue.set(this.errors, 'message', 'Please enter a message');
+          }
+
+          if (!this.messageCharactersRemaining < 0) {
+            Vue.set(this.errors, 'message', "Message must be no longer than ".concat(this.messageCharacterLimit, " characters"));
+          }
+
+          break;
+
+        case 'recipients':
+          if (this.audience === 'subscriptions' && !this.subscriptions.length) {
+            Vue.set(this.errors, 'subscriptions', 'Please enter one or more subscrption IDs');
+          }
+
+          break;
+
+        case 'schedule':
+          if (!this.channels.length) {
+            Vue.set(this.errors, 'channels', 'Please select one or more notification types');
+          }
+
+          break;
+
+        default:
+          break;
+      }
     },
     stepIsValid: function stepIsValid() {
-      this.validateStep = this.steps[this.step].name;
-
-      if (!_.isEmpty(this.errors)) {
-        return false;
-      }
-
-      this.validateStep = '';
-      return true;
+      this.getErrors();
+      return _.isEmpty(this.errors);
     },
     nextStep: function nextStep() {
       if (!this.stepIsValid()) {
@@ -4891,18 +4896,29 @@ var defaultConfirmationMessage = 'Your notification is saved';
         name: name
       });
     },
+    validateSubscriptions: function validateSubscriptions(subscriptions) {
+      if (typeof subscriptions === 'string') {
+        subscriptions = subscriptions.split(',');
+      }
+
+      if (!_.isArray(subscriptions)) {
+        subscriptions = [subscriptions];
+      }
+
+      subscriptions = _.compact(_.map(subscriptions, function (id) {
+        return parseInt(id, 10);
+      }));
+      return subscriptions;
+    },
     getAsset: function getAsset(path) {
       return "".concat(this.assetRoot, "/").concat(path);
-    },
-    setSchedule: function setSchedule(schedule) {
-      this.schedule = schedule;
     },
     notificationHasChannel: function notificationHasChannel(channel) {
       return _.includes(this.channels, channel);
     },
     addNotificationChannel: function addNotificationChannel(channel) {
       if (this.channels.indexOf(channel) === -1) {
-        Vue.set(this.channels, this.channels.length, channel);
+        this.channels.push(channel);
       }
     },
     removeNotificationChannel: function removeNotificationChannel(channel) {
@@ -4917,19 +4933,30 @@ var defaultConfirmationMessage = 'Your notification is saved';
         return Promise.resolve();
       }
 
-      var timestamp = new Date().getTime();
-      console.groupCollapsed(timestamp);
-      console.log('Filters', this.filters);
-      console.log('Scope', this.scope);
-      return this.instance.getMatches({
+      var matchQuery = {
         audience: this.audience,
         scope: this.scope,
         includeMatches: true
-      }).then(function (results) {
-        console.log('Count', results.count);
-        console.log('Matches', results.matches);
-        console.groupEnd(timestamp);
+      };
+
+      if (this.matchQuery !== null && _.isEqual(matchQuery, this.matchQuery)) {
+        return Promise.resolve();
+      } // const timestamp = new Date().getTime();
+      // console.groupCollapsed(timestamp);
+      // console.log('Filters', JSON.stringify(this.filters, null, 2));
+      // console.log('Scope', JSON.stringify(this.scope, null, 2));
+
+
+      this.matchQuery = matchQuery;
+      this.loadingMatches = true;
+      return this.instance.getMatches(matchQuery).then(function (results) {
+        // console.log('Count', results.count);
+        // console.log('Matches', results.matches);
+        // console.groupEnd(timestamp);
+        _this3.loadingMatches = false;
         _this3.matches = results;
+      })["catch"](function () {
+        _this3.loadingMatches = false;
       });
     },
     toggleNotificationChannel: function toggleNotificationChannel(channel, enable) {
@@ -5006,7 +5033,13 @@ var defaultConfirmationMessage = 'Your notification is saved';
       });
     },
     addFilter: function addFilter() {
-      this.filters.push(_.clone(defaultFilter));
+      var _this4 = this;
+
+      this.filters.push({});
+
+      _.forIn(defaultFilter, function (value, key) {
+        Vue.set(_this4.filters[_this4.filters.length - 1], key, value);
+      });
     },
     removeFilter: function removeFilter(index) {
       this.filters.splice(index, 1);
@@ -5063,21 +5096,21 @@ var defaultConfirmationMessage = 'Your notification is saved';
       }
 
       if (to === 'published') {
-        return 'Your notification is sent';
+        return 'Your notification is sent.';
       }
 
       if (from === 'draft' && to === 'scheduled') {
-        return 'Your notification is scheduled';
+        return 'Your notification is scheduled.';
       }
 
       if (from === 'scheduled' && to === 'draft') {
-        return 'Your notification is saved as draft';
+        return 'Your notification is saved as draft.';
       }
 
       return defaultConfirmationMessage;
     },
     save: function save(status) {
-      var _this4 = this;
+      var _this5 = this;
 
       var saveLinkProvider = Promise.resolve();
       var statusFrom = this.notification.status || 'draft';
@@ -5105,92 +5138,106 @@ var defaultConfirmationMessage = 'Your notification is saved';
 
       return new Promise(function (resolve) {
         saveLinkProvider.then(function (results) {
-          _this4.notification.data.navigate = _.get(results, 'data', {});
+          _this5.notification.data.navigate = _.get(results, 'data', {});
 
-          switch (_this4.linkAction) {
+          switch (_this5.linkAction) {
             case 'screen':
-              _this4.screenLinkProvider = null;
+              _this5.screenLinkProvider = null;
               break;
 
             case 'url':
-              _this4.urlLinkProvider = null;
+              _this5.urlLinkProvider = null;
               break;
 
             default:
               break;
           }
 
-          _this4.initializeProviders();
+          _this5.initializeProviders();
 
-          if (_this4.showScreenPreview) {
-            _this4.showScreenPreview = false;
+          if (_this5.showScreenPreview) {
+            _this5.showScreenPreview = false;
 
-            _this4.openScreenPreview();
+            _this5.openScreenPreview();
 
             return;
           }
 
-          if (!_this4.stepIsValid()) {
+          if (!_this5.stepIsValid()) {
             return;
           }
 
-          _.remove(_this4.filters, function (filter) {
-            return !filter.column || !filter.value && ['empty', 'notempty'].indexOf(filter.condition) > -1;
+          _.remove(_this5.filters, function (filter) {
+            return !filter.column || !filter.value && ['empty', 'notempty'].indexOf(filter.condition) < 0;
           });
 
-          _.merge(_this4.notification, {
+          _.merge(_this5.notification, {
             status: status,
-            scope: _this4.scope,
-            type: _this4.type,
-            orderAt: _this4.orderAt,
+            scope: _this5.scope,
+            type: _this5.type,
+            orderAt: _this5.orderAt,
             data: {
-              scheduledAt: _this4.orderAt,
+              scheduledAt: _this5.orderAt,
               // @TODO Remove scheduledAt after API is refactored to only use orderAt
               _metadata: {
-                filters: _this4.audience !== 'subscriptions' ? _this4.filters : [],
-                subscriptions: _this4.subscriptions,
-                scheduledAtTimezone: _this4.scheduledAtTimezone,
-                scheduledAt: _this4.scheduledAt
+                audience: _this5.audience,
+                filters: _this5.audience !== 'subscriptions' ? _this5.filters : [],
+                subscriptions: _this5.validateSubscriptions(_this5.subscriptions),
+                scheduledAtTimezone: _this5.scheduledAtTimezone,
+                scheduledAt: _this5.scheduledAt,
+                schedule: _this5.schedule,
+                notes: _this5.notes
               }
             }
           });
 
+          if (_.isEmpty(_this5.notification.scope)) {
+            delete _this5.notification.scope;
+          }
+
+          if (status !== 'scheduled') {
+            delete _this5.notification.orderAt;
+            delete _this5.notification.scheduledAt; // @TODO Remove scheduledAt after API is refactored to only use orderAt
+          }
+
           var pushNotification = {
             payload: {
-              title: _this4.notification.data.title,
-              body: _this4.notification.data.message,
+              title: _this5.notification.data.title,
+              body: _this5.notification.data.message,
               icon: 'icon_notification',
               badge: 1,
               priority: 'high',
               custom: {
-                customData: _this4.notification.data.navigate
+                customData: _this5.notification.data.navigate
               }
             }
           };
 
-          if (_this4.notificationHasChannel('push')) {
-            if (_this4.subscriptions.length) {
-              pushNotification.subscriptions = _this4.subscriptions;
+          if (_this5.notificationHasChannel('push')) {
+            if (_this5.subscriptions.length) {
+              pushNotification.subscriptions = _this5.validateSubscriptions(_this5.subscriptions);
             }
 
-            _this4.notification.pushNotification = pushNotification;
+            _this5.notification.pushNotification = pushNotification;
           }
 
-          _this4.saving = true;
+          _this5.saving = true;
 
-          if (!_.get(_this4, 'notification.id')) {
-            return _this4.instance.insert(_this4.notification).then(resolve);
+          if (!_.get(_this5, 'notification.id')) {
+            return _this5.instance.insert(_this5.notification).then(resolve);
           }
 
-          return _this4.instance.update(_this4.notification.id, _.pick(_this4.notification, ['status', 'type', 'data', 'scope', 'orderAt', 'pushNotification'])).then(resolve);
+          return _this5.instance.update(_this5.notification.id, _.pick(_this5.notification, ['status', 'type', 'data', 'scope', 'orderAt', 'pushNotification'])).then(resolve);
         });
       }).then(function () {
-        _this4.saving = false;
-        _this4.confirmationMessage = _this4.getConfirmationMessage(statusFrom, statusTo);
+        Fliplet.Modal.alert({
+          title: 'Success!',
+          message: _this5.getConfirmationMessage(statusFrom, statusTo)
+        });
 
-        _this4.goToStep('confirmation');
+        _this5.backToNotifications();
       })["catch"](function (error) {
-        _this4.saving = false;
+        _this5.saving = false;
         Fliplet.Modal.alert({
           title: 'Error saving notification',
           message: Fliplet.parseError(error)
@@ -5206,7 +5253,58 @@ var defaultConfirmationMessage = 'Your notification is saved';
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "filterTypes", function() { return filterTypes; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getFilterScope", function() { return getFilterScope; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getFilterVerbose", function() { return getFilterVerbose; });
+var filterTypes = [{
+  name: 'equals',
+  label: 'Equals',
+  labelVerbose: 'is equal to'
+}, {
+  name: 'notequal',
+  label: 'Not equal',
+  labelVerbose: 'is not equal to'
+}, {
+  name: 'oneof',
+  label: 'Is one of',
+  labelVerbose: 'is one of'
+}, {
+  name: 'notoneof',
+  label: 'Is not one of',
+  labelVerbose: 'is not one of'
+}, {
+  name: 'contains',
+  label: 'Contains',
+  labelVerbose: 'contains'
+}, {
+  name: 'notcontain',
+  label: 'Does not contain',
+  labelVerbose: 'does not contain'
+}, {
+  name: 'empty',
+  label: 'Is empty',
+  labelVerbose: 'is empty'
+}, {
+  name: 'notempty',
+  label: 'Is not empty',
+  labelVerbose: 'is not empty'
+}, {
+  name: 'gt',
+  label: 'Greater than',
+  labelVerbose: 'is greater than'
+}, {
+  name: 'gte',
+  label: 'Greater than or equal to',
+  labelVerbose: 'is greater than or equal to'
+}, {
+  name: 'lt',
+  label: 'Less than',
+  labelVerbose: 'is less than'
+}, {
+  name: 'lte',
+  label: 'Less than or equal to',
+  labelVerbose: 'is less than or equal to'
+}];
 function getFilterScope(filter) {
   filter = filter || {};
   var column = filter.column;
@@ -5360,6 +5458,40 @@ function getFilterScope(filter) {
   }
 
   return result;
+}
+function getFilterVerbose(filter) {
+  filter = filter || {};
+  var condition = filter.condition;
+  var column = filter.column;
+  var path = filter.path;
+  var value = filter.value;
+  var verbose = '';
+
+  if (!column || !value && ['empty', 'notempty'].indexOf(filter.condition) < 0) {
+    return;
+  }
+
+  if (_.map(filterTypes, 'name').indexOf(condition) < 0) {
+    return;
+  }
+
+  if (path) {
+    column = "".concat(column, " (").concat(path, ")");
+  }
+
+  if (_.isArray(value)) {
+    value = value.join(', ');
+  }
+
+  verbose = "".concat(column, " ").concat(_.find(filterTypes, {
+    name: condition
+  }).labelVerbose);
+
+  if (['empty', 'notempty'].indexOf(filter.condition) < 0) {
+    verbose += " ".concat(value);
+  }
+
+  return verbose;
 }
 
 /***/ }),
