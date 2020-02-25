@@ -1200,7 +1200,8 @@ __webpack_require__.r(__webpack_exports__);
       return this.instance.poll({
         includeLogs: true,
         offset: pageNumber,
-        limit: this.batchSize
+        limit: this.batchSize,
+        includeAllScopes: true
       }).then(function (response) {
         if (!response.entries.length && pageNumber >= response.pageCount) {
           return _this3.loadNotifications(response.pageCount - 1);

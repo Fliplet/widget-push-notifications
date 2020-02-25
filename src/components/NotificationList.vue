@@ -325,7 +325,8 @@ export default {
       return this.instance.poll({
         includeLogs: true,
         offset: pageNumber,
-        limit: this.batchSize
+        limit: this.batchSize,
+        includeAllScopes: true
       }).then((response) => {
         if (!response.entries.length && pageNumber >= response.pageCount) {
           return this.loadNotifications(response.pageCount - 1);
