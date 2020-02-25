@@ -124,8 +124,13 @@ h4 {
     .tab-selection .tab.active {
       border-color: transparent;
       background-color: #474974;
-      color: #fff;
-      cursor: default; }
+      color: #fff; }
+    .tab-selection .tab.disabled {
+      opacity: 0.8;
+      pointer-events: none; }
+    .tab-selection .tab.not-allowed {
+      opacity: 0.8;
+      cursor: not-allowed; }
     .tab-selection .tab.tab-checked {
       padding-left: 34px; }
       .tab-selection .tab.tab-checked.active {
@@ -234,63 +239,81 @@ h4 {
     .list-pagination > .select-proxy-display > select {
       height: 34px; }
 
-.notificaiton-form h2, .notificaiton-form h3, .notificaiton-form h4 {
+.notification-form h2, .notification-form h3, .notification-form h4 {
   text-align: center; }
 
-.notificaiton-form .filters [class*="col-xs-"] {
+.notification-form .steps-holder {
+  width: 100%;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+  align-items: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  margin-bottom: 15px; }
+  .notification-form .steps-holder .step {
+    width: 8px;
+    height: 8px;
+    border-radius: 8px;
+    background-color: #eae9ec;
+    margin-right: 6px; }
+    .notification-form .steps-holder .step.active {
+      background-color: #00abd1; }
+
+.notification-form .filters [class*="col-xs-"] {
   padding-left: 5px;
   padding-right: 5px; }
 
-.notificaiton-form .filters .btn-circle.btn-default {
+.notification-form .filters .btn-circle.btn-default {
   opacity: 0.5; }
 
-.notificaiton-form .filters .add-path {
+.notification-form .filters .add-path {
   color: rgba(141, 142, 165, 0.8); }
-  .notificaiton-form .filters .add-path:hover, .notificaiton-form .filters .add-path:focus {
+  .notification-form .filters .add-path:hover, .notification-form .filters .add-path:focus {
     color: #00abd1; }
 
-.notificaiton-form .filters .filter-path .form-group {
+.notification-form .filters .filter-path .form-group {
   display: flex;
   align-items: center; }
-  .notificaiton-form .filters .filter-path .form-group .filter-path-label {
+  .notification-form .filters .filter-path .form-group .filter-path-label {
     font-size: 0.8em;
     font-weight: 400;
     margin-bottom: 0; }
-  .notificaiton-form .filters .filter-path .form-group .fa {
+  .notification-form .filters .filter-path .form-group .fa {
     opacity: 0.5;
     cursor: pointer; }
-  .notificaiton-form .filters .filter-path .form-group .form-control {
+  .notification-form .filters .filter-path .form-group .form-control {
     flex: 1;
     margin: 0 5px; }
 
-.notificaiton-form .filter-summary {
+.notification-form .filter-summary {
   border-top: 1px solid #dcdae0;
   padding-top: 10px;
   padding-left: 0;
   padding-right: 0;
   margin-bottom: 10px; }
-  .notificaiton-form .filter-summary .filter-help {
+  .notification-form .filter-summary .filter-help {
     display: inline-block;
     color: rgba(141, 142, 165, 0.8);
     margin-left: 5px;
     font-size: 0.85em; }
-    .notificaiton-form .filter-summary .filter-help:hover, .notificaiton-form .filter-summary .filter-help:focus {
+    .notification-form .filter-summary .filter-help:hover, .notification-form .filter-summary .filter-help:focus {
       color: #00abd1; }
-  .notificaiton-form .filter-summary .recipient-count {
+  .notification-form .filter-summary .recipient-count {
     font-weight: bold;
     display: inline-block;
     line-height: 40px; }
 
-.notificaiton-form .filter-summary-items {
+.notification-form .filter-summary-items {
   padding-left: 0; }
-  .notificaiton-form .filter-summary-items > li {
+  .notification-form .filter-summary-items > li {
     padding: 10px 0;
     list-style: none; }
 
-.notificaiton-form .vdp-datepicker {
+.notification-form .vdp-datepicker {
   text-align: center;
   margin-bottom: 10px; }
-  .notificaiton-form .vdp-datepicker .vdp-datepicker__calendar {
+  .notification-form .vdp-datepicker .vdp-datepicker__calendar {
     display: inline-block;
     text-align: left;
     border-radius: 6px;
@@ -299,43 +322,43 @@ h4 {
     margin-left: 5px;
     margin-right: 5px;
     padding: 10px; }
-    .notificaiton-form .vdp-datepicker .vdp-datepicker__calendar header {
+    .notification-form .vdp-datepicker .vdp-datepicker__calendar header {
       border: none;
       margin: inherit;
       padding: inherit; }
-    .notificaiton-form .vdp-datepicker .vdp-datepicker__calendar .cell {
+    .notification-form .vdp-datepicker .vdp-datepicker__calendar .cell {
       border-radius: 100px; }
-      .notificaiton-form .vdp-datepicker .vdp-datepicker__calendar .cell:not(.selected):not(.blank):not(.disabled).day:hover, .notificaiton-form .vdp-datepicker .vdp-datepicker__calendar .cell:not(.selected):not(.blank):not(.disabled).month:hover, .notificaiton-form .vdp-datepicker .vdp-datepicker__calendar .cell:not(.selected):not(.blank):not(.disabled).year:hover {
+      .notification-form .vdp-datepicker .vdp-datepicker__calendar .cell:not(.selected):not(.blank):not(.disabled).day:hover, .notification-form .vdp-datepicker .vdp-datepicker__calendar .cell:not(.selected):not(.blank):not(.disabled).month:hover, .notification-form .vdp-datepicker .vdp-datepicker__calendar .cell:not(.selected):not(.blank):not(.disabled).year:hover {
         background-color: transparent;
         color: #474974;
         border-color: transparent; }
-      .notificaiton-form .vdp-datepicker .vdp-datepicker__calendar .cell.selected {
+      .notification-form .vdp-datepicker .vdp-datepicker__calendar .cell.selected {
         border-color: #474974;
         background-color: #474974;
         color: #fff; }
-        .notificaiton-form .vdp-datepicker .vdp-datepicker__calendar .cell.selected.day:hover, .notificaiton-form .vdp-datepicker .vdp-datepicker__calendar .cell.selected.month:hover, .notificaiton-form .vdp-datepicker .vdp-datepicker__calendar .cell.selected.year:hover {
+        .notification-form .vdp-datepicker .vdp-datepicker__calendar .cell.selected.day:hover, .notification-form .vdp-datepicker .vdp-datepicker__calendar .cell.selected.month:hover, .notification-form .vdp-datepicker .vdp-datepicker__calendar .cell.selected.year:hover {
           border-color: #474974;
           background-color: #474974;
           color: #fff; }
 
-.notificaiton-form .time-picker [class*="col-xs-"] {
+.notification-form .time-picker [class*="col-xs-"] {
   padding-left: 5px;
   padding-right: 5px; }
 
-.notificaiton-form .step-summary {
+.notification-form .step-summary {
   background-color: #f8f6f7;
   padding: 10px 0 0;
   margin-top: 20px;
   margin-bottom: 10px;
   border-radius: 6px;
   text-align: center; }
-  .notificaiton-form .step-summary .btn {
+  .notification-form .step-summary .btn {
     margin-right: 5px;
     margin-bottom: 10px; }
 
-.notificaiton-form .notification-review {
+.notification-form .notification-review {
   text-align: center; }
-  .notificaiton-form .notification-review h4 {
+  .notification-form .notification-review h4 {
     padding-top: 20px;
     border-top: 1px solid #eeeeee;
     margin-top: 20px; }

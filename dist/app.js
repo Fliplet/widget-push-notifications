@@ -1098,28 +1098,7 @@ __webpack_require__.r(__webpack_exports__);
           failed: 0,
           errors: {}
         }
-      }, notification.pushResult, {
-        android: {
-          count: 11,
-          success: 7,
-          failed: 4,
-          errors: {
-            NotRegistered: 2,
-            Unregistered: 1,
-            DeviceTokenNotForTopic: 1
-          }
-        },
-        ios: {
-          count: 11,
-          success: 7,
-          failed: 4,
-          errors: {
-            NotRegistered: 2,
-            Unregistered: 1,
-            DeviceTokenNotForTopic: 1
-          }
-        }
-      });
+      }, notification.pushResult);
 
       var allErrors = _.reduce(_.map(_.values(data), 'errors'), function (summary, platformErrors) {
         _.forIn(platformErrors, function (count, type) {
@@ -1493,9 +1472,8 @@ function getDefaultNotification() {
       title: '',
       message: '',
       navigate: {},
-      scope: {},
+      audience: '',
       _metadata: {
-        audience: '',
         filters: [],
         subscriptions: [],
         schedule: 'now',
@@ -2855,11 +2833,24 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _c("div", { staticClass: "notificaiton-form" }, [
+    _c("div", { staticClass: "notification-form" }, [
       _c(
         "div",
         { staticClass: "container-fluid" },
         [
+          _c(
+            "div",
+            { staticClass: "steps-holder" },
+            _vm._l(_vm.steps, function(stepObj, index) {
+              return _c("div", {
+                key: stepObj.name,
+                staticClass: "step",
+                class: { active: index === _vm.step }
+              })
+            }),
+            0
+          ),
+          _vm._v(" "),
           _c(
             "div",
             {
@@ -3579,6 +3570,7 @@ var render = function() {
                             [_vm._v("Fill")]
                           ),
                           _c("br"),
+                          _vm._v(" "),
                           _c(
                             "a",
                             {
@@ -3593,6 +3585,7 @@ var render = function() {
                             [_vm._v("Fill with path")]
                           ),
                           _c("br"),
+                          _vm._v(" "),
                           _c(
                             "a",
                             {
@@ -3615,7 +3608,7 @@ var render = function() {
                               on: {
                                 click: function($event) {
                                   $event.preventDefault()
-                                  return _vm.logMatches($event)
+                                  return _vm.getMatches($event)
                                 }
                               }
                             },
@@ -3865,7 +3858,12 @@ var render = function() {
                         "span",
                         {
                           staticClass: "tab tab-checked",
-                          class: { active: _vm.notificationHasChannel("push") },
+                          class: {
+                            active:
+                              _vm.notificationHasChannel("push") &&
+                              _vm.pushIsConfigured,
+                            "not-allowed": !_vm.pushIsConfigured
+                          },
                           on: {
                             click: function($event) {
                               return _vm.toggleNotificationChannel("push")
@@ -3874,14 +3872,46 @@ var render = function() {
                         },
                         [_vm._v("Push notification")]
                       )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _vm.errors.channels
-                    ? _c("p", { staticClass: "text-center text-danger" }, [
-                        _vm._v(_vm._s(_vm.errors.channels))
-                      ])
-                    : _vm._e()
+                    ]),
+                    _vm._v(" "),
+                    !_vm.pushIsConfigured
+                      ? _c("div", { staticClass: "alert alert-warning" }, [
+                          _vm._v(
+                            "To send push notifications, you must configure push notifications for your native app on "
+                          ),
+                          _c(
+                            "a",
+                            {
+                              attrs: {
+                                href:
+                                  "https://help.fliplet.com/article/23-configure-push-notifications-for-ios",
+                                target: "_blank"
+                              }
+                            },
+                            [_vm._v("iOS")]
+                          ),
+                          _vm._v(" and "),
+                          _c(
+                            "a",
+                            {
+                              attrs: {
+                                href:
+                                  "https://help.fliplet.com/article/40-configure-push-notifications-for-android",
+                                target: "_blank"
+                              }
+                            },
+                            [_vm._v("Android")]
+                          ),
+                          _vm._v(".")
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.errors.channels
+                      ? _c("p", { staticClass: "text-center text-danger" }, [
+                          _vm._v(_vm._s(_vm.errors.channels))
+                        ])
+                      : _vm._e()
+                  ])
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "row" }, [
@@ -4508,6 +4538,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
@@ -4562,7 +4598,7 @@ var defaultConfirmationMessage = 'Your notification is saved.';
       showScreenPreview: false,
       screenLinkProvider: null,
       urlLinkProvider: null,
-      channels: ['in-app', 'push'],
+      channels: ['in-app'],
       matches: {
         count: 0,
         subscriptions: 0
@@ -4570,7 +4606,8 @@ var defaultConfirmationMessage = 'Your notification is saved.';
       debouncedGetMatches: _.debounce(this.getMatches, 1500),
       matchQuery: null,
       loadingMatches: true,
-      errors: {}
+      errors: {},
+      widgetData: Fliplet.Widget.getData()
     };
   },
   components: {
@@ -4584,6 +4621,11 @@ var defaultConfirmationMessage = 'Your notification is saved.';
     var _this = this;
 
     this.notification = _.defaultsDeep(this.notification, Object(_store__WEBPACK_IMPORTED_MODULE_0__["getDefaultNotification"])());
+
+    if (this.pushIsConfigured) {
+      this.addNotificationChannel('push');
+    }
+
     this.instance = Fliplet.Notifications.init();
     this.getMatches();
     this.initializeProviders();
@@ -4619,6 +4661,9 @@ var defaultConfirmationMessage = 'Your notification is saved.';
     messageCharactersRemaining: function messageCharactersRemaining() {
       return this.messageCharacterLimit - this.notification.data.message.length;
     },
+    pushIsConfigured: function pushIsConfigured() {
+      return this.widgetData && (this.widgetData.apn || this.widgetData.gcm || this.widgetData.wns);
+    },
     schedule: {
       get: function get() {
         var schedule = _.get(this.notification, 'data._metadata.schedule');
@@ -4635,7 +4680,7 @@ var defaultConfirmationMessage = 'Your notification is saved.';
     },
     audience: {
       get: function get() {
-        var audience = _.get(this.notification, 'data._metadata.audience', defaultAudience);
+        var audience = _.get(this.notification, 'data.audience', defaultAudience);
 
         if (!audience) {
           return defaultAudience;
@@ -4648,7 +4693,7 @@ var defaultConfirmationMessage = 'Your notification is saved.';
           audience = defaultAudience;
         }
 
-        _.set(this.notification, 'data._metadata.audience', audience);
+        _.set(this.notification, 'data.audience', audience);
       }
     },
     audienceVerbose: function audienceVerbose() {
@@ -4759,9 +4804,6 @@ var defaultConfirmationMessage = 'Your notification is saved.';
     }
   },
   methods: {
-    logMatches: function logMatches() {
-      this.getMatches();
-    },
     fillFilters: function fillFilters(addPath) {
       var _this2 = this;
 
@@ -4917,6 +4959,10 @@ var defaultConfirmationMessage = 'Your notification is saved.';
       return _.includes(this.channels, channel);
     },
     addNotificationChannel: function addNotificationChannel(channel) {
+      if (channel === 'push' && !this.pushIsConfigured) {
+        return;
+      }
+
       if (this.channels.indexOf(channel) === -1) {
         this.channels.push(channel);
       }
@@ -4941,18 +4987,11 @@ var defaultConfirmationMessage = 'Your notification is saved.';
 
       if (this.matchQuery !== null && _.isEqual(matchQuery, this.matchQuery)) {
         return Promise.resolve();
-      } // const timestamp = new Date().getTime();
-      // console.groupCollapsed(timestamp);
-      // console.log('Filters', JSON.stringify(this.filters, null, 2));
-      // console.log('Scope', JSON.stringify(this.scope, null, 2));
-
+      }
 
       this.matchQuery = matchQuery;
       this.loadingMatches = true;
       return this.instance.getMatches(matchQuery).then(function (results) {
-        // console.log('Count', results.count);
-        // console.log('Matches', results.matches);
-        // console.groupEnd(timestamp);
         _this3.loadingMatches = false;
         _this3.matches = results;
       })["catch"](function () {
@@ -5179,8 +5218,8 @@ var defaultConfirmationMessage = 'Your notification is saved.';
             data: {
               scheduledAt: _this5.orderAt,
               // @TODO Remove scheduledAt after API is refactored to only use orderAt
+              audience: _this5.audience,
               _metadata: {
-                audience: _this5.audience,
                 filters: _this5.audience !== 'subscriptions' ? _this5.filters : [],
                 subscriptions: _this5.validateSubscriptions(_this5.subscriptions),
                 scheduledAtTimezone: _this5.scheduledAtTimezone,
@@ -5195,6 +5234,10 @@ var defaultConfirmationMessage = 'Your notification is saved.';
             delete _this5.notification.scope;
           }
 
+          if (_.get(_this5.notification, 'data.navigate') && _.isEmpty(_this5.notification.data.navigate)) {
+            delete _this5.notification.data.navigate;
+          }
+
           if (status !== 'scheduled') {
             delete _this5.notification.orderAt;
             delete _this5.notification.scheduledAt; // @TODO Remove scheduledAt after API is refactored to only use orderAt
@@ -5206,14 +5249,15 @@ var defaultConfirmationMessage = 'Your notification is saved.';
               body: _this5.notification.data.message,
               icon: 'icon_notification',
               badge: 1,
-              priority: 'high',
-              custom: {
-                customData: _this5.notification.data.navigate
-              }
+              priority: 'high'
             }
           };
 
-          if (_this5.notificationHasChannel('push')) {
+          if (_this5.notification.data.navigate) {
+            _.set(pushNotification, 'custom.customData', _this5.notification.data.navigate);
+          }
+
+          if (_this5.notificationHasChannel('push') && _this5.pushIsConfigured) {
             if (_this5.subscriptions.length) {
               pushNotification.subscriptions = _this5.validateSubscriptions(_this5.subscriptions);
             }
@@ -5317,6 +5361,10 @@ function getFilterScope(filter) {
     return;
   }
 
+  if (['oneof', 'notoneof'].indexOf(filter.condition) > -1 && _.isEmpty(value)) {
+    return;
+  }
+
   if (path) {
     _.set(scope, column, {});
 
@@ -5339,7 +5387,13 @@ function getFilterScope(filter) {
     case 'notequal':
       // Not equal
       _.setWith(scope, path, {
-        $ne: value
+        $or: [{
+          $eq: null
+        }, {
+          $in: ['', '[]']
+        }, {
+          $ne: value
+        }]
       }, Object);
 
       break;
@@ -5363,7 +5417,13 @@ function getFilterScope(filter) {
       }
 
       _.setWith(scope, path, {
-        $notIn: value
+        $or: [{
+          $eq: null
+        }, {
+          $in: ['', '[]']
+        }, {
+          $notIn: value
+        }]
       }, Object);
 
       break;
@@ -5385,12 +5445,18 @@ function getFilterScope(filter) {
     case 'notcontain':
       // Does not contain
       _.setWith(scope, path, {
-        $and: [{
-          $notILike: {
-            $any: [value]
-          }
+        $or: [{
+          $eq: null
         }, {
-          $notILike: "%".concat(value, "%")
+          $in: ['', '[]']
+        }, {
+          $and: [{
+            $notILike: {
+              $any: [value]
+            }
+          }, {
+            $notILike: "%".concat(value, "%")
+          }]
         }]
       }, Object);
 

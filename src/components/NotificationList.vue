@@ -220,28 +220,7 @@ export default {
           failed: 0,
           errors: {}
         }
-      }, notification.pushResult, {
-        android: {
-          count: 11,
-          success: 7,
-          failed: 4,
-          errors: {
-            NotRegistered: 2,
-            Unregistered: 1,
-            DeviceTokenNotForTopic: 1
-          }
-        },
-        ios: {
-          count: 11,
-          success: 7,
-          failed: 4,
-          errors: {
-            NotRegistered: 2,
-            Unregistered: 1,
-            DeviceTokenNotForTopic: 1
-          }
-        }
-      });
+      }, notification.pushResult);
 
       const allErrors = _.reduce(_.map(_.values(data), 'errors'), (summary, platformErrors) => {
         _.forIn(platformErrors, (count, type) => {

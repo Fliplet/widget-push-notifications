@@ -76,7 +76,16 @@
       border-color: transparent;
       background-color: $btn-default-color;
       color: #fff;
-      cursor: default;
+    }
+
+    &.disabled {
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    &.not-allowed {
+      opacity: 0.8;
+      cursor: not-allowed;
     }
 
     &.tab-checked {

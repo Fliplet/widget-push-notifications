@@ -1,6 +1,29 @@
-.notificaiton-form {
+.notification-form {
   h2, h3, h4 {
     text-align: center;
+  }
+
+  .steps-holder {
+    width: 100%;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    margin-bottom: 15px;
+
+    .step {
+      width: 8px;
+      height: 8px;
+      border-radius: 8px;
+      background-color: $brand-lighter-background-highlight;
+      margin-right: 6px;
+
+      &.active {
+        background-color: $brand-primary;
+      }
+    }
   }
 
   .filters {

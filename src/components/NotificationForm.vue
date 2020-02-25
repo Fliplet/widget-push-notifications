@@ -1,7 +1,10 @@
 <template>
   <div>
-    <div class="notificaiton-form">
+    <div class="notification-form">
       <div class="container-fluid">
+        <div class="steps-holder">
+          <div v-for="(stepObj, index) in steps" :key="stepObj.name" class="step" :class="{ 'active': index === step }"></div>
+        </div>
         <div class="row" v-show="steps[step].name === 'configure'">
           <div class="col-md-8 col-md-offset-2">
             <h3>Configure your notification</h3>
@@ -155,10 +158,11 @@
             <div class="col-md-8 col-md-offset-2">
               <div class="tab-selection">
                 <span class="tab tab-checked" :class="{ 'active': notificationHasChannel('in-app') }" @click="toggleNotificationChannel('in-app')">In-app notification</span>
-                <span class="tab tab-checked" :class="{ 'active': notificationHasChannel('push') }" @click="toggleNotificationChannel('push')">Push notification</span>
+                <span class="tab tab-checked" :class="{ 'active': notificationHasChannel('push') && pushIsConfigured, 'not-allowed': !pushIsConfigured }" @click="toggleNotificationChannel('push')">Push notification</span>
               </div>
+              <div class="alert alert-warning" v-if="!pushIsConfigured">To send push notifications, you must configure push notifications for your native app on <a href="https://help.fliplet.com/article/23-configure-push-notifications-for-ios" target="_blank">iOS</a> and <a href="https://help.fliplet.com/article/40-configure-push-notifications-for-android" target="_blank">Android</a>.</div>
+              <p class="text-center text-danger" v-if="errors.channels">{{ errors.channels }}</p>
             </div>
-            <p class="text-center text-danger" v-if="errors.channels">{{ errors.channels }}</p>
           </div>
           <div class="row">
             <div class="col-md-8 col-md-offset-2">
@@ -287,7 +291,7 @@ export default {
       showScreenPreview: false,
       screenLinkProvider: null,
       urlLinkProvider: null,
-      channels: ['in-app', 'push'],
+      channels: ['in-app'],
       matches: {
         count: 0,
         subscriptions: 0
@@ -295,7 +299,8 @@ export default {
       debouncedGetMatches: _.debounce(this.getMatches, 1500),
       matchQuery: null,
       loadingMatches: true,
-      errors: {}
+      errors: {},
+      widgetData: Fliplet.Widget.getData()
     };
   },
   components: {
@@ -307,6 +312,11 @@ export default {
   },
   mounted() {
     this.notification = _.defaultsDeep(this.notification, getDefaultNotification());
+
+    if (this.pushIsConfigured) {
+      this.addNotificationChannel('push');
+    }
+
     this.instance = Fliplet.Notifications.init();
     this.getMatches();
     this.initializeProviders();
@@ -340,6 +350,9 @@ export default {
     },
     messageCharactersRemaining() {
       return this.messageCharacterLimit - this.notification.data.message.length;
+    },
+    pushIsConfigured() {
+      return this.widgetData && (this.widgetData.apn || this.widgetData.gcm || this.widgetData.wns);
     },
     schedule: {
       get() {
@@ -570,6 +583,10 @@ export default {
       return _.includes(this.channels, channel);
     },
     addNotificationChannel(channel) {
+      if (channel === 'push' && !this.pushIsConfigured) {
+        return;
+      }
+
       if (this.channels.indexOf(channel) === -1) {
         this.channels.push(channel);
       }
@@ -848,7 +865,7 @@ export default {
             _.set(pushNotification, 'custom.customData', this.notification.data.navigate);
           }
 
-          if (this.notificationHasChannel('push')) {
+          if (this.notificationHasChannel('push') && this.pushIsConfigured) {
             if (this.subscriptions.length) {
               pushNotification.subscriptions = this.validateSubscriptions(this.subscriptions);
             }
