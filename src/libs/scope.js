@@ -73,6 +73,10 @@ export function getFilterScope(filter) {
     return;
   }
 
+  if (['oneof', 'notoneof'].indexOf(filter.condition) > -1 && _.isEmpty(value)) {
+    return;
+  }
+
   if (path) {
     _.set(scope, column, {});
     scope = result[column];
@@ -89,7 +93,11 @@ export function getFilterScope(filter) {
       _.setWith(scope, path, value, Object);
       break;
     case 'notequal': // Not equal
-      _.setWith(scope, path, { $ne: value }, Object);
+      _.setWith(scope, path, { $or: [
+        { $eq: null },
+        { $in: ['', '[]'] },
+        { $ne: value }
+      ] }, Object);
       break;
     case 'oneof': // Is one of
       if (!_.isArray(value)) {
@@ -103,26 +111,48 @@ export function getFilterScope(filter) {
         value = [value];
       }
 
-      _.setWith(scope, path, { $notIn: value }, Object);
+      _.setWith(scope, path, { $or: [
+        { $eq: null },
+        { $in: ['', '[]'] },
+        { $notIn: value }
+      ] }, Object);
       break;
     case 'contains': // Contains
       _.setWith(scope, path, {
-        $or: [{ $iLike: { $any: [value] } }, { $iLike: `%${value}%` }]
+        $or: [
+          { $iLike: { $any: [value] } },
+          { $iLike: `%${value}%` }
+        ]
       }, Object);
       break;
     case 'notcontain': // Does not contain
       _.setWith(scope, path, {
-        $and: [{ $notILike: { $any: [value] } }, { $notILike: `%${value}%` }]
+        $or: [
+          { $eq: null },
+          { $in: ['', '[]'] },
+          {
+            $and: [
+              { $notILike: { $any: [value] } },
+              { $notILike: `%${value}%` }
+            ]
+          }
+        ]
       }, Object);
       break;
     case 'empty': // Is empty
       _.setWith(scope, path, {
-        $or: [{ $eq: null }, { $in: ['', '[]'] }]
+        $or: [
+          { $eq: null },
+          { $in: ['', '[]'] }
+        ]
       }, Object);
       break;
     case 'notempty': // Is not empty
       _.setWith(scope, path, {
-        $and: [{ $ne: null }, { $notIn: ['', '[]'] }]
+        $and: [
+          { $ne: null },
+          { $notIn: ['', '[]'] }
+        ]
       }, Object);
       break;
     case 'gt': // Greater than

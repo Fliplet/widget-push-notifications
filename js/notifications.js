@@ -150,6 +150,7 @@ Fliplet.Widget.register('PushNotifications', function () {
           return false;
         });
       }
+
       if (!alreadyShown || typeof alreadyShown !== 'string') {
         return true;
       }

@@ -12,9 +12,8 @@ export function getDefaultNotification() {
       title: '',
       message: '',
       navigate: {},
-      scope: {},
+      audience: '',
       _metadata: {
-        audience: '',
         filters: [],
         subscriptions: [],
         schedule: 'now',

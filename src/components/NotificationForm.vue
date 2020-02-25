@@ -357,7 +357,7 @@ export default {
     },
     audience: {
       get() {
-        const audience = _.get(this.notification, 'data._metadata.audience', defaultAudience);
+        const audience = _.get(this.notification, 'data.audience', defaultAudience);
 
         if (!audience) {
           return defaultAudience;
@@ -370,7 +370,7 @@ export default {
           audience = defaultAudience;
         }
 
-        _.set(this.notification, 'data._metadata.audience', audience);
+        _.set(this.notification, 'data.audience', audience);
       }
     },
     audienceVerbose() {
@@ -594,17 +594,10 @@ export default {
         return Promise.resolve();
       }
 
-      // const timestamp = new Date().getTime();
-      // console.groupCollapsed(timestamp);
-      // console.log('Filters', JSON.stringify(this.filters, null, 2));
-      // console.log('Scope', JSON.stringify(this.scope, null, 2));
       this.matchQuery = matchQuery;
       this.loadingMatches = true;
 
       return this.instance.getMatches(matchQuery).then((results) => {
-        // console.log('Count', results.count);
-        // console.log('Matches', results.matches);
-        // console.groupEnd(timestamp);
         this.loadingMatches = false;
         this.matches = results;
       }).catch(() => {
@@ -816,8 +809,8 @@ export default {
             orderAt: this.orderAt,
             data: {
               scheduledAt: this.orderAt, // @TODO Remove scheduledAt after API is refactored to only use orderAt
+              audience: this.audience,
               _metadata: {
-                audience: this.audience,
                 filters: this.audience !== 'subscriptions' ? this.filters : [],
                 subscriptions: this.validateSubscriptions(this.subscriptions),
                 scheduledAtTimezone: this.scheduledAtTimezone,
@@ -832,6 +825,10 @@ export default {
             delete this.notification.scope;
           }
 
+          if (_.get(this.notification, 'data.navigate') && _.isEmpty(this.notification.data.navigate)) {
+            delete this.notification.data.navigate;
+          }
+
           if (status !== 'scheduled') {
             delete this.notification.orderAt;
             delete this.notification.scheduledAt; // @TODO Remove scheduledAt after API is refactored to only use orderAt
@@ -843,12 +840,13 @@ export default {
               body: this.notification.data.message,
               icon: 'icon_notification',
               badge: 1,
-              priority: 'high',
-              custom: {
-                customData: this.notification.data.navigate
-              }
+              priority: 'high'
             }
           };
+
+          if (this.notification.data.navigate) {
+            _.set(pushNotification, 'custom.customData', this.notification.data.navigate);
+          }
 
           if (this.notificationHasChannel('push')) {
             if (this.subscriptions.length) {
