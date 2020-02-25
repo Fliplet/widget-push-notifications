@@ -3210,10 +3210,10 @@ var render = function() {
                         "span",
                         {
                           staticClass: "tab",
-                          class: { active: _vm.audience === "subscriptions" },
+                          class: { active: _vm.audience === "sessions" },
                           on: {
                             click: function($event) {
-                              _vm.audience = "subscriptions"
+                              _vm.audience = "sessions"
                             }
                           }
                         },
@@ -3221,7 +3221,7 @@ var render = function() {
                       )
                     ]),
                     _vm._v(" "),
-                    _vm.audience !== "subscriptions" && _vm.filters.length
+                    _vm.audience !== "sessions" && _vm.filters.length
                       ? [
                           _c("h4", [
                             _vm._v("Recipients must match all of the following")
@@ -3479,13 +3479,13 @@ var render = function() {
                         ]
                       : _vm._e(),
                     _vm._v(" "),
-                    _vm.audience === "subscriptions"
+                    _vm.audience === "sessions"
                       ? [
-                          _c("h4", [_vm._v("Subscription IDs")]),
+                          _c("h4", [_vm._v("Device IDs")]),
                           _vm._v(" "),
                           _c("p", { staticClass: "text-center" }, [
                             _vm._v(
-                              "To test push notifications with individual devices, enter subscription IDs for each device."
+                              "To test notifications with individual devices, enter the device ID for each device."
                             )
                           ]),
                           _vm._v(" "),
@@ -3494,13 +3494,13 @@ var render = function() {
                             [
                               _c("Token-Field", {
                                 attrs: {
-                                  value: _vm.subscriptions,
+                                  value: _vm.sessions,
                                   placeholder:
                                     "Separate multiple IDs with commas"
                                 },
                                 on: {
                                   "update:value": function($event) {
-                                    _vm.subscriptions = $event
+                                    _vm.sessions = $event
                                   }
                                 }
                               })
@@ -3510,11 +3510,11 @@ var render = function() {
                           _vm._v(" "),
                           _vm._m(0),
                           _vm._v(" "),
-                          _vm.errors.subscriptions
+                          _vm.errors.sessions
                             ? _c(
                                 "p",
                                 { staticClass: "text-center text-danger" },
-                                [_vm._v(_vm._s(_vm.errors.subscriptions))]
+                                [_vm._v(_vm._s(_vm.errors.sessions))]
                               )
                             : _vm._e()
                         ]
@@ -3522,7 +3522,7 @@ var render = function() {
                     _vm._v(" "),
                     _c("div", { staticClass: "col-xs-12 filter-summary" }, [
                       _c("div", { staticClass: "col-xs-8" }, [
-                        _vm.audience !== "subscriptions"
+                        _vm.audience !== "sessions"
                           ? _c("p", [
                               _c(
                                 "a",
@@ -3556,65 +3556,6 @@ var render = function() {
                       _vm._v(" "),
                       _c("div", { staticClass: "col-xs-4 text-right" }, [
                         _c("p", [
-                          _c(
-                            "a",
-                            {
-                              attrs: { href: "#" },
-                              on: {
-                                click: function($event) {
-                                  $event.preventDefault()
-                                  return _vm.fillFilters(false)
-                                }
-                              }
-                            },
-                            [_vm._v("Fill")]
-                          ),
-                          _c("br"),
-                          _vm._v(" "),
-                          _c(
-                            "a",
-                            {
-                              attrs: { href: "#" },
-                              on: {
-                                click: function($event) {
-                                  $event.preventDefault()
-                                  return _vm.fillFilters(true)
-                                }
-                              }
-                            },
-                            [_vm._v("Fill with path")]
-                          ),
-                          _c("br"),
-                          _vm._v(" "),
-                          _c(
-                            "a",
-                            {
-                              attrs: { href: "#" },
-                              on: {
-                                click: function($event) {
-                                  $event.preventDefault()
-                                  return _vm.clearFilters($event)
-                                }
-                              }
-                            },
-                            [_vm._v("Clear")]
-                          ),
-                          _c("br"),
-                          _vm._v(" "),
-                          _c(
-                            "a",
-                            {
-                              attrs: { href: "#" },
-                              on: {
-                                click: function($event) {
-                                  $event.preventDefault()
-                                  return _vm.getMatches($event)
-                                }
-                              }
-                            },
-                            [_vm._v("Log matches")]
-                          ),
-                          _vm._v(" "),
                           _c(
                             "span",
                             { staticClass: "recipient-count" },
@@ -4248,7 +4189,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("p", { staticClass: "help-block text-center" }, [
-      _vm._v("You can find your subscription ID by going to "),
+      _vm._v("You can find your device ID by going to "),
       _c("strong", [_vm._v("About this app")]),
       _vm._v(" in the app on your device.")
     ])
@@ -4540,10 +4481,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
 
 
 
@@ -4586,7 +4523,7 @@ var defaultConfirmationMessage = 'Your notification is saved.';
         name: 'review'
       }],
       filterTypes: _libs_scope__WEBPACK_IMPORTED_MODULE_2__["filterTypes"],
-      subscriptions: [],
+      sessions: [],
       linkAction: Object(_store__WEBPACK_IMPORTED_MODULE_0__["getNotificationLinkAction"])(),
       scheduledAtDate: defaultScheduledAt.clone().startOf('day').toDate(),
       scheduledAtHour: defaultScheduledAt.get('hour'),
@@ -4601,7 +4538,11 @@ var defaultConfirmationMessage = 'Your notification is saved.';
       channels: ['in-app'],
       matches: {
         count: 0,
-        subscriptions: 0
+        subscriptions: 0,
+        matches: {
+          entries: [],
+          sessions: []
+        }
       },
       debouncedGetMatches: _.debounce(this.getMatches, 1500),
       matchQuery: null,
@@ -4686,10 +4627,10 @@ var defaultConfirmationMessage = 'Your notification is saved.';
           return defaultAudience;
         }
 
-        return ['loggedIn', 'subscriptions'].indexOf(audience) > -1 ? audience : defaultAudience;
+        return ['loggedIn', 'sessions'].indexOf(audience) > -1 ? audience : defaultAudience;
       },
       set: function set(audience) {
-        if (['loggedIn', 'subscriptions'].indexOf(audience) < 0) {
+        if (['loggedIn', 'sessions'].indexOf(audience) < 0) {
           audience = defaultAudience;
         }
 
@@ -4701,7 +4642,7 @@ var defaultConfirmationMessage = 'Your notification is saved.';
         case 'loggedIn':
           return 'signed in';
 
-        case 'subscriptions':
+        case 'sessions':
           return 'test device';
 
         default:
@@ -4733,9 +4674,9 @@ var defaultConfirmationMessage = 'Your notification is saved.';
       return _.compact(_.map(this.filters, _libs_scope__WEBPACK_IMPORTED_MODULE_2__["getFilterScope"]));
     },
     scope: function scope() {
-      if (this.audience === 'subscriptions') {
+      if (this.audience === 'sessions') {
         return {
-          flPushSubscriptionId: this.validateSubscriptions(this.subscriptions) || []
+          flPushSubscriptionId: this.validateSessions(this.sessions) || []
         };
       }
 
@@ -4799,74 +4740,11 @@ var defaultConfirmationMessage = 'Your notification is saved.';
         this.debouncedGetMatches();
       }
     },
-    subscriptions: function subscriptions() {
+    sessions: function sessions() {
       this.getMatches();
     }
   },
   methods: {
-    fillFilters: function fillFilters(addPath) {
-      var _this2 = this;
-
-      var path = 'user.companies[0].name';
-      var filters = [{
-        column: 'Foo',
-        condition: 'equals',
-        value: 'Bar'
-      }, {
-        column: 'Foo',
-        condition: 'notequal',
-        value: 'Bar'
-      }, {
-        column: 'Foo',
-        condition: 'oneof',
-        value: ['Bar', 'Baz']
-      }, {
-        column: 'Foo',
-        condition: 'notoneof',
-        value: ['Bar', 'Baz']
-      }, {
-        column: 'Foo',
-        condition: 'contains',
-        value: 'Bar'
-      }, {
-        column: 'Foo',
-        condition: 'notcontain',
-        value: 'Bar'
-      }, {
-        column: 'Foo',
-        condition: 'empty'
-      }, {
-        column: 'Foo',
-        condition: 'notempty'
-      }, {
-        column: 'Foo',
-        condition: 'gt',
-        value: 0
-      }, {
-        column: 'Foo',
-        condition: 'gte',
-        value: 1
-      }, {
-        column: 'Foo',
-        condition: 'lt',
-        value: 3
-      }, {
-        column: 'Foo',
-        condition: 'lte',
-        value: 2
-      }];
-
-      _.forEach(filters, function (filter) {
-        if (addPath) {
-          filter.path = path;
-        }
-
-        _this2.filters.push(filter);
-      });
-    },
-    clearFilters: function clearFilters() {
-      this.filters.splice(0, this.filters.length);
-    },
     getFilterVerbose: _libs_scope__WEBPACK_IMPORTED_MODULE_2__["getFilterVerbose"],
     cancel: function cancel() {
       _libs_bus__WEBPACK_IMPORTED_MODULE_1__["default"].$emit('set-view', 'list');
@@ -4902,8 +4780,8 @@ var defaultConfirmationMessage = 'Your notification is saved.';
           break;
 
         case 'recipients':
-          if (this.audience === 'subscriptions' && !this.subscriptions.length) {
-            Vue.set(this.errors, 'subscriptions', 'Please enter one or more subscrption IDs');
+          if (this.audience === 'sessions' && !this.sessions.length) {
+            Vue.set(this.errors, 'sessions', 'Please enter one or more device IDs');
           }
 
           break;
@@ -4938,19 +4816,19 @@ var defaultConfirmationMessage = 'Your notification is saved.';
         name: name
       });
     },
-    validateSubscriptions: function validateSubscriptions(subscriptions) {
-      if (typeof subscriptions === 'string') {
-        subscriptions = subscriptions.split(',');
+    validateSessions: function validateSessions(sessions) {
+      if (typeof sessions === 'string') {
+        sessions = sessions.split(',');
       }
 
-      if (!_.isArray(subscriptions)) {
-        subscriptions = [subscriptions];
+      if (!_.isArray(sessions)) {
+        sessions = [sessions];
       }
 
-      subscriptions = _.compact(_.map(subscriptions, function (id) {
+      sessions = _.compact(_.map(sessions, function (id) {
         return parseInt(id, 10);
       }));
-      return subscriptions;
+      return sessions;
     },
     getAsset: function getAsset(path) {
       return "".concat(this.assetRoot, "/").concat(path);
@@ -4973,7 +4851,7 @@ var defaultConfirmationMessage = 'Your notification is saved.';
       }
     },
     getMatches: function getMatches() {
-      var _this3 = this;
+      var _this2 = this;
 
       if (!this.instance) {
         return Promise.resolve();
@@ -4992,10 +4870,10 @@ var defaultConfirmationMessage = 'Your notification is saved.';
       this.matchQuery = matchQuery;
       this.loadingMatches = true;
       return this.instance.getMatches(matchQuery).then(function (results) {
-        _this3.loadingMatches = false;
-        _this3.matches = results;
+        _this2.loadingMatches = false;
+        _this2.matches = results;
       })["catch"](function () {
-        _this3.loadingMatches = false;
+        _this2.loadingMatches = false;
       });
     },
     toggleNotificationChannel: function toggleNotificationChannel(channel, enable) {
@@ -5072,12 +4950,12 @@ var defaultConfirmationMessage = 'Your notification is saved.';
       });
     },
     addFilter: function addFilter() {
-      var _this4 = this;
+      var _this3 = this;
 
       this.filters.push({});
 
       _.forIn(defaultFilter, function (value, key) {
-        Vue.set(_this4.filters[_this4.filters.length - 1], key, value);
+        Vue.set(_this3.filters[_this3.filters.length - 1], key, value);
       });
     },
     removeFilter: function removeFilter(index) {
@@ -5149,7 +5027,7 @@ var defaultConfirmationMessage = 'Your notification is saved.';
       return defaultConfirmationMessage;
     },
     save: function save(status) {
-      var _this5 = this;
+      var _this4 = this;
 
       var saveLinkProvider = Promise.resolve();
       var statusFrom = this.notification.status || 'draft';
@@ -5177,111 +5055,112 @@ var defaultConfirmationMessage = 'Your notification is saved.';
 
       return new Promise(function (resolve) {
         saveLinkProvider.then(function (results) {
-          _this5.notification.data.navigate = _.get(results, 'data', {});
+          _this4.notification.data.navigate = _.get(results, 'data', {});
 
-          switch (_this5.linkAction) {
+          switch (_this4.linkAction) {
             case 'screen':
-              _this5.screenLinkProvider = null;
+              _this4.screenLinkProvider = null;
               break;
 
             case 'url':
-              _this5.urlLinkProvider = null;
+              _this4.urlLinkProvider = null;
               break;
 
             default:
               break;
           }
 
-          _this5.initializeProviders();
+          _this4.initializeProviders();
 
-          if (_this5.showScreenPreview) {
-            _this5.showScreenPreview = false;
+          if (_this4.showScreenPreview) {
+            _this4.showScreenPreview = false;
 
-            _this5.openScreenPreview();
+            _this4.openScreenPreview();
 
             return;
           }
 
-          if (!_this5.stepIsValid()) {
+          if (!_this4.stepIsValid()) {
             return;
           }
 
-          _.remove(_this5.filters, function (filter) {
+          _.remove(_this4.filters, function (filter) {
             return !filter.column || !filter.value && ['empty', 'notempty'].indexOf(filter.condition) < 0;
           });
 
-          _.merge(_this5.notification, {
+          _.merge(_this4.notification, {
             status: status,
-            scope: _this5.scope,
-            type: _this5.type,
-            orderAt: _this5.orderAt,
+            scope: _this4.scope,
+            type: _this4.type,
+            orderAt: _this4.orderAt,
             data: {
-              scheduledAt: _this5.orderAt,
+              scheduledAt: _this4.orderAt,
               // @TODO Remove scheduledAt after API is refactored to only use orderAt
-              audience: _this5.audience,
+              audience: _this4.audience,
               _metadata: {
-                filters: _this5.audience !== 'subscriptions' ? _this5.filters : [],
-                subscriptions: _this5.validateSubscriptions(_this5.subscriptions),
-                scheduledAtTimezone: _this5.scheduledAtTimezone,
-                scheduledAt: _this5.scheduledAt,
-                schedule: _this5.schedule,
-                notes: _this5.notes
+                filters: _this4.audience !== 'sessions' ? _this4.filters : [],
+                sessions: _this4.validateSessions(_this4.sessions),
+                scheduledAtTimezone: _this4.scheduledAtTimezone,
+                scheduledAt: _this4.scheduledAt,
+                schedule: _this4.schedule,
+                notes: _this4.notes
               }
             }
           });
 
-          if (_.isEmpty(_this5.notification.scope)) {
-            delete _this5.notification.scope;
+          if (_.isEmpty(_this4.notification.scope)) {
+            delete _this4.notification.scope;
           }
 
-          if (_.get(_this5.notification, 'data.navigate') && _.isEmpty(_this5.notification.data.navigate)) {
-            delete _this5.notification.data.navigate;
+          if (_.get(_this4.notification, 'data.navigate') && _.isEmpty(_this4.notification.data.navigate)) {
+            delete _this4.notification.data.navigate;
           }
 
           if (status !== 'scheduled') {
-            delete _this5.notification.orderAt;
-            delete _this5.notification.scheduledAt; // @TODO Remove scheduledAt after API is refactored to only use orderAt
+            delete _this4.notification.orderAt;
+            delete _this4.notification.scheduledAt; // @TODO Remove scheduledAt after API is refactored to only use orderAt
           }
 
           var pushNotification = {
             payload: {
-              title: _this5.notification.data.title,
-              body: _this5.notification.data.message,
+              title: _this4.notification.data.title,
+              body: _this4.notification.data.message,
               icon: 'icon_notification',
               badge: 1,
               priority: 'high'
             }
           };
 
-          if (_this5.notification.data.navigate) {
-            _.set(pushNotification, 'custom.customData', _this5.notification.data.navigate);
+          if (_this4.notification.data.navigate) {
+            _.set(pushNotification, 'custom.customData', _this4.notification.data.navigate);
           }
 
-          if (_this5.notificationHasChannel('push') && _this5.pushIsConfigured) {
-            if (_this5.subscriptions.length) {
-              pushNotification.subscriptions = _this5.validateSubscriptions(_this5.subscriptions);
+          if (_this4.notificationHasChannel('push') && _this4.pushIsConfigured) {
+            if (_this4.sessions.length) {
+              // @QUESTION Will push notification payload support sessions as an attribute?
+              pushNotification.sessions = _this4.validateSessions(_this4.sessions);
             }
 
-            _this5.notification.pushNotification = pushNotification;
+            _this4.notification.pushNotification = pushNotification;
           }
 
-          _this5.saving = true;
+          _this4.saving = true;
 
-          if (!_.get(_this5, 'notification.id')) {
-            return _this5.instance.insert(_this5.notification).then(resolve);
+          if (!_.get(_this4, 'notification.id')) {
+            return _this4.instance.insert(_this4.notification).then(resolve);
           }
 
-          return _this5.instance.update(_this5.notification.id, _.pick(_this5.notification, ['status', 'type', 'data', 'scope', 'orderAt', 'pushNotification'])).then(resolve);
+          return _this4.instance.update(_this4.notification.id, _.pick(_this4.notification, ['status', 'type', 'data', 'scope', 'orderAt', 'pushNotification'])).then(resolve);
         });
       }).then(function () {
         Fliplet.Modal.alert({
           title: 'Success!',
-          message: _this5.getConfirmationMessage(statusFrom, statusTo)
+          message: _this4.getConfirmationMessage(statusFrom, statusTo)
         });
 
-        _this5.backToNotifications();
+        _this4.backToNotifications();
       })["catch"](function (error) {
-        _this5.saving = false;
+        _this4.saving = false;
         Fliplet.Modal.alert({
           title: 'Error saving notification',
           message: Fliplet.parseError(error)

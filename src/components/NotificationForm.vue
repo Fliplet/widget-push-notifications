@@ -50,9 +50,9 @@
             <div class="tab-selection">
               <span class="tab" :class="{ 'active': audience === '' }" @click="audience = ''">All users</span>
               <span class="tab" :class="{ 'active': audience === 'loggedIn' }" @click="audience = 'loggedIn'">Signed in users</span>
-              <span class="tab" :class="{ 'active': audience === 'subscriptions' }" @click="audience = 'subscriptions'">Test devices</span>
+              <span class="tab" :class="{ 'active': audience === 'sessions' }" @click="audience = 'sessions'">Test devices</span>
             </div>
-            <template v-if="audience !== 'subscriptions' && filters.length">
+            <template v-if="audience !== 'sessions' && filters.length">
               <h4>Recipients must match all of the following</h4>
               <div class="filters" v-for="(filter, index) in filters" :key="index">
                 <div class="form-group clearfix">
@@ -84,16 +84,16 @@
                 </div>
               </div>
             </template>
-            <template v-if="audience === 'subscriptions'">
-              <h4>Subscription IDs</h4>
-              <p class="text-center">To test push notifications with individual devices, enter subscription IDs for each device.</p>
-              <p><Token-Field :value.sync="subscriptions" placeholder="Separate multiple IDs with commas"></Token-Field></p>
-              <p class="help-block text-center">You can find your subscription ID by going to <strong>About this app</strong> in the app on your device.</p>
-              <p class="text-center text-danger" v-if="errors.subscriptions">{{ errors.subscriptions }}</p>
+            <template v-if="audience === 'sessions'">
+              <h4>Device IDs</h4>
+              <p class="text-center">To test notifications with individual devices, enter the device ID for each device.</p>
+              <p><Token-Field :value.sync="sessions" placeholder="Separate multiple IDs with commas"></Token-Field></p>
+              <p class="help-block text-center">You can find your device ID by going to <strong>About this app</strong> in the app on your device.</p>
+              <p class="text-center text-danger" v-if="errors.sessions">{{ errors.sessions }}</p>
             </template>
             <div class="col-xs-12 filter-summary">
               <div class="col-xs-8">
-                <p v-if="audience !== 'subscriptions'"><a href="#" class="btn btn-default" @click.prevent="addFilter"><i class="fa fa-fw fa-plus"></i> Add filter</a> <a href="#" target="_blank" class="filter-help">How to add data for filtering users</a></p>
+                <p v-if="audience !== 'sessions'"><a href="#" class="btn btn-default" @click.prevent="addFilter"><i class="fa fa-fw fa-plus"></i> Add filter</a> <a href="#" target="_blank" class="filter-help">How to add data for filtering users</a></p>
               </div>
               <div class="col-xs-4 text-right">
                 <p>
@@ -279,7 +279,7 @@ export default {
         { name: 'review' }
       ],
       filterTypes,
-      subscriptions: [],
+      sessions: [],
       linkAction: getNotificationLinkAction(),
       scheduledAtDate: defaultScheduledAt.clone().startOf('day').toDate(),
       scheduledAtHour: defaultScheduledAt.get('hour'),
@@ -294,7 +294,11 @@ export default {
       channels: ['in-app'],
       matches: {
         count: 0,
-        subscriptions: 0
+        subscriptions: 0,
+        matches: {
+          entries: [],
+          sessions: []
+        }
       },
       debouncedGetMatches: _.debounce(this.getMatches, 1500),
       matchQuery: null,
@@ -376,10 +380,10 @@ export default {
           return defaultAudience;
         }
 
-        return ['loggedIn', 'subscriptions'].indexOf(audience) > -1 ? audience : defaultAudience;
+        return ['loggedIn', 'sessions'].indexOf(audience) > -1 ? audience : defaultAudience;
       },
       set(audience) {
-        if (['loggedIn', 'subscriptions'].indexOf(audience) < 0) {
+        if (['loggedIn', 'sessions'].indexOf(audience) < 0) {
           audience = defaultAudience;
         }
 
@@ -390,7 +394,7 @@ export default {
       switch (this.audience) {
         case 'loggedIn':
           return 'signed in';
-        case 'subscriptions':
+        case 'sessions':
           return 'test device';
         default:
           return '';
@@ -420,8 +424,8 @@ export default {
       return _.compact(_.map(this.filters, getFilterScope));
     },
     scope() {
-      if (this.audience === 'subscriptions') {
-        return { flPushSubscriptionId: this.validateSubscriptions(this.subscriptions) || [] };
+      if (this.audience === 'sessions') {
+        return { flPushSubscriptionId: this.validateSessions(this.sessions) || [] };
       }
 
       return this.filterScopes.length ? { $and: this.filterScopes } : {};
@@ -490,7 +494,7 @@ export default {
         this.debouncedGetMatches();
       }
     },
-    subscriptions() {
+    sessions() {
       this.getMatches();
     }
   },
@@ -529,8 +533,8 @@ export default {
 
           break;
         case 'recipients':
-          if (this.audience === 'subscriptions' && !this.subscriptions.length) {
-            Vue.set(this.errors, 'subscriptions', 'Please enter one or more subscrption IDs');
+          if (this.audience === 'sessions' && !this.sessions.length) {
+            Vue.set(this.errors, 'sessions', 'Please enter one or more device IDs');
           }
 
           break;
@@ -562,19 +566,19 @@ export default {
     goToStep(name) {
       this.step = _.findIndex(this.steps, { name });
     },
-    validateSubscriptions(subscriptions) {
-      if (typeof subscriptions === 'string') {
-        subscriptions = subscriptions.split(',');
+    validateSessions(sessions) {
+      if (typeof sessions === 'string') {
+        sessions = sessions.split(',');
       }
 
-      if (!_.isArray(subscriptions)) {
-        subscriptions = [subscriptions];
+      if (!_.isArray(sessions)) {
+        sessions = [sessions];
       }
 
-      subscriptions = _.compact(_.map(subscriptions, (id) => {
+      sessions = _.compact(_.map(sessions, (id) => {
         return parseInt(id, 10);
       }));
-      return subscriptions;
+      return sessions;
     },
     getAsset(path) {
       return `${this.assetRoot}/${path}`;
@@ -828,8 +832,8 @@ export default {
               scheduledAt: this.orderAt, // @TODO Remove scheduledAt after API is refactored to only use orderAt
               audience: this.audience,
               _metadata: {
-                filters: this.audience !== 'subscriptions' ? this.filters : [],
-                subscriptions: this.validateSubscriptions(this.subscriptions),
+                filters: this.audience !== 'sessions' ? this.filters : [],
+                sessions: this.validateSessions(this.sessions),
                 scheduledAtTimezone: this.scheduledAtTimezone,
                 scheduledAt: this.scheduledAt,
                 schedule: this.schedule,
@@ -866,8 +870,9 @@ export default {
           }
 
           if (this.notificationHasChannel('push') && this.pushIsConfigured) {
-            if (this.subscriptions.length) {
-              pushNotification.subscriptions = this.validateSubscriptions(this.subscriptions);
+            if (this.sessions.length) {
+              // @QUESTION Will push notification payload support sessions as an attribute?
+              pushNotification.sessions = this.validateSessions(this.sessions);
             }
 
             this.notification.pushNotification = pushNotification;
