@@ -425,7 +425,7 @@ export default {
     },
     scope() {
       if (this.audience === 'sessions') {
-        return { flPushSubscriptionId: this.validateSessions(this.sessions) || [] };
+        return { flSessionId: this.validateSessions(this.sessions) || [] };
       }
 
       return this.filterScopes.length ? { $and: this.filterScopes } : {};
@@ -870,11 +870,6 @@ export default {
           }
 
           if (this.notificationHasChannel('push') && this.pushIsConfigured) {
-            if (this.sessions.length) {
-              // @QUESTION Will push notification payload support sessions as an attribute?
-              pushNotification.sessions = this.validateSessions(this.sessions);
-            }
-
             this.notification.pushNotification = pushNotification;
           }
 

@@ -4676,7 +4676,7 @@ var defaultConfirmationMessage = 'Your notification is saved.';
     scope: function scope() {
       if (this.audience === 'sessions') {
         return {
-          flPushSubscriptionId: this.validateSessions(this.sessions) || []
+          flSessionId: this.validateSessions(this.sessions) || []
         };
       }
 
@@ -5136,11 +5136,6 @@ var defaultConfirmationMessage = 'Your notification is saved.';
           }
 
           if (_this4.notificationHasChannel('push') && _this4.pushIsConfigured) {
-            if (_this4.sessions.length) {
-              // @QUESTION Will push notification payload support sessions as an attribute?
-              pushNotification.sessions = _this4.validateSessions(_this4.sessions);
-            }
-
             _this4.notification.pushNotification = pushNotification;
           }
 
