@@ -242,9 +242,7 @@ export default {
       };
 
       const errorTypes = {
-        NotRegistered: 'Device is not subscribed to receive this push notification or the app could be uninstalled.',
-        Unregistered: 'B',
-        DeviceTokenNotForTopic: 'C'
+        NotRegistered: 'Device is not subscribed to receive this push notification or the app could be uninstalled.'
       };
 
       data.errors = _.orderBy(_.map(_.keys(allErrors), (type) => {
