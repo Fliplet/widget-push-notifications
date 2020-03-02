@@ -1,4 +1,4 @@
-:key<template>
+<template>
   <div class="container-fluid">
     <div class="row">
       <div class="col-xs-6"><p><a href="#" @click.prevent="createNotification" class="btn btn-primary"><i class="fa fa-fw fa-lg fa-plus"></i> Create new</a></p></div>
