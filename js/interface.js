@@ -98,6 +98,7 @@ function getNotifications() {
       direction: 'DESC',
       limit: limit,
       includeDeleted: true,
+      includeDrafts: true,
       includeAllScopes: true
     }
   }).then(function (results) {
