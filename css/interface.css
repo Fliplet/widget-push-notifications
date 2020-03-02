@@ -4,6 +4,10 @@ body {
   /*padding: 0 10px;*/
 }
 
+#settings {
+  display: none;
+}
+
 [data-view="new"],
 [data-view="list"] {
   display: none;

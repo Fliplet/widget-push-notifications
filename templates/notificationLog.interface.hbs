@@ -1,0 +1,11 @@
+<p><strong>N<sup>o</sup> devices (iOS/Android)</strong><br>
+({{ios.count}}/{{android.count}})</p>
+<p><strong>Accepted for delivery</strong><br>
+{{accepted.count}} ({{accepted.percent}}%)</p>
+{{#if errors}}
+<p><strong>Errors</strong><br>
+{{#each errors}}
+<span class="label label-warning">{{type}}</span> ({{count}}) {{description}}{{#unless @last}}<br>{{/unless}}
+{{/each}}
+</p>
+{{/if}}

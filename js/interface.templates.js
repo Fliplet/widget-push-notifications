@@ -56,6 +56,40 @@ this["Fliplet"]["Widget"]["Templates"]["templates.notificationEntries"] = Handle
     return "{{#each this}}\n  <tr data-status=\"{{status}}\" data-id=\"{{id}}\">\n    <td><span title=\"{{moment createdAt format=\"MMM Do YYYY, HH:mm\"}}\">{{moment createdAt calendar=null}}</span></td>\n    <td><strong>{{data.title}}</strong>{{#and data.title data.message}}<br>{{/and}}{{data.message}}{{#if scope}}<br><br><i><strong>Custom filters:</strong></i> {{scope.length}} (<a href=\"#\" data-show-scope>more info</a>){{/if}}</td>\n    <td>{{statusText}}</td>\n    <td>{{#compare status \"===\" \"published\"}}<span title=\"{{moment orderAt format=\"MMM Do YYYY, HH:mm\"}}\">{{moment orderAt calendar=null}}</span>{{else}}{{/compare}}</td>\n    {{#if pushNotificationPayload}}\n    <td class=\"hidden\">{{#or pushNotificationPayload.title pushNotificationPayload.message}}<i class=\"fa fa-fw fa-lg fa-check\"></i>{{/or}}</td>\n    {{else}}\n    <td class=\"hidden\"></td>\n    {{/if}}\n    {{#unless isDeleted}}\n    <td><a href=\"#\" data-action=\"edit\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Edit\"><i class=\"fa fa-fw fa-lg fa-pencil\"></i></a> <a class=\"hidden\" href=\"#\" data-action=\"clone\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Copy as new draft\"><i class=\"fa fa-fw fa-lg fa-clone\"></i></a> <a href=\"#\" data-action=\"delete\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Delete\"><i class=\"fa fa-fw fa-lg fa-trash\"></i></a></td>\n    {{else}}\n    <td><a class=\"hidden\" href=\"#\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Copy as new draft\"><i class=\"fa fa-fw fa-lg fa-clone\"></i></a></td>\n    {{/unless}}\n  </tr>\n{{/each}}";
 },"useData":true});
 
+this["Fliplet"]["Widget"]["Templates"]["templates.notificationLog"] = Handlebars.template({"1":function(container,depth0,helpers,partials,data) {
+    var stack1;
+
+  return "<p><strong>Errors</strong><br>\n"
+    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? depth0.errors : depth0),{"name":"each","hash":{},"fn":container.program(2, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "</p>\n";
+},"2":function(container,depth0,helpers,partials,data) {
+    var stack1, helper, alias1=depth0 != null ? depth0 : (container.nullContext || {}), alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
+
+  return "<span class=\"label label-warning\">"
+    + alias4(((helper = (helper = helpers.type || (depth0 != null ? depth0.type : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"type","hash":{},"data":data}) : helper)))
+    + "</span> ("
+    + alias4(((helper = (helper = helpers.count || (depth0 != null ? depth0.count : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"count","hash":{},"data":data}) : helper)))
+    + ") "
+    + alias4(((helper = (helper = helpers.description || (depth0 != null ? depth0.description : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"description","hash":{},"data":data}) : helper)))
+    + ((stack1 = helpers.unless.call(alias1,(data && data.last),{"name":"unless","hash":{},"fn":container.program(3, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "\n";
+},"3":function(container,depth0,helpers,partials,data) {
+    return "<br>";
+},"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    var stack1, alias1=container.lambda, alias2=container.escapeExpression;
+
+  return "<p><strong>N<sup>o</sup> devices (iOS/Android)</strong><br>\n("
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.ios : depth0)) != null ? stack1.count : stack1), depth0))
+    + "/"
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.android : depth0)) != null ? stack1.count : stack1), depth0))
+    + ")</p>\n<p><strong>Accepted for delivery</strong><br>\n"
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.accepted : depth0)) != null ? stack1.count : stack1), depth0))
+    + " ("
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.accepted : depth0)) != null ? stack1.percent : stack1), depth0))
+    + "%)</p>\n"
+    + ((stack1 = helpers["if"].call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? depth0.errors : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
+},"useData":true});
+
 this["Fliplet"]["Widget"]["Templates"]["templates.notifications"] = Handlebars.template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     return "<p><a class=\"btn btn-primary\" data-action=\"new-notification\" href=\"#\">New notification</a></p>\n<table>\n  <thead>\n    <tr>\n      <th width=\"180\">Created at</th>\n      <th>Notification</th>\n      <th width=\"100\">Status</th>\n      <th width=\"180\">Published at</th>\n      <th width=\"100\" class=\"hidden\">Sent as push notification</th>\n      <th width=\"100\">&nbsp;</th>\n    </tr>\n  </thead>\n  <tbody>\n  {{> notificationEntries}}\n  </tbody>\n</table>\n<p class=\"text-center\"><a href=\"#\" data-load-more>Load more</a></p>";
 },"useData":true});

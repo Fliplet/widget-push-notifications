@@ -1,0 +1,183 @@
+.notification-form {
+  h2, h3, h4 {
+    text-align: center;
+  }
+
+  .steps-holder {
+    width: 100%;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    margin-bottom: 15px;
+
+    .step {
+      width: 8px;
+      height: 8px;
+      border-radius: 8px;
+      background-color: $brand-lighter-background-highlight;
+      margin-right: 6px;
+
+      &.active {
+        background-color: $brand-primary;
+      }
+    }
+  }
+
+  .filters {
+    [class*="col-xs-"] {
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+
+    .btn-circle.btn-default {
+      opacity: 0.5;
+    }
+
+    .add-path {
+      color: $brand-text-color-faded;
+
+      &:hover, &:focus {
+        color: $brand-primary;
+      }
+    }
+
+    .filter-path .form-group {
+      display: flex;
+      align-items: center;
+
+      .filter-path-label {
+        font-size: 0.8em;
+        font-weight: 400;
+        margin-bottom: 0;
+      }
+
+      .fa {
+        opacity: 0.5;
+        cursor: pointer;
+      }
+
+      .form-control {
+        flex: 1;
+        margin: 0 5px;
+      }
+    }
+  }
+
+  .filter-summary {
+    border-top: 1px solid $brand-light-background-highlight;
+    padding-top: 10px;
+    padding-left: 0;
+    padding-right: 0;
+    margin-bottom: 10px;
+
+    .filter-help {
+      display: inline-block;
+      color: $brand-text-color-faded;
+      margin-left: 5px;
+      font-size: 0.85em;
+
+      &:hover, &:focus {
+        color: $brand-primary;
+      }
+    }
+
+    .recipient-count {
+      font-weight: bold;
+      display: inline-block;
+      line-height: 40px;
+    }
+  }
+
+  .filter-summary-items {
+    padding-left: 0;
+
+    > li {
+      padding: 10px 0;
+      list-style: none;
+    }
+  }
+
+  .vdp-datepicker {
+    text-align: center;
+    margin-bottom: 10px;
+
+    .vdp-datepicker__calendar {
+      display: inline-block;
+      text-align: left;
+      border-radius: 6px;
+      border: 1px solid $brand-light-background-highlight;
+      width: auto;
+      margin-left: 5px;
+      margin-right: 5px;
+      padding: 10px;
+
+      header {
+        border: none;
+        margin: inherit;
+        padding: inherit;
+      }
+
+      .cell {
+        border-radius: 100px;
+
+        &:not(.selected):not(.blank):not(.disabled) {
+          &.day:hover,
+          &.month:hover,
+          &.year:hover {
+            background-color: transparent;
+            color: $btn-default-color;
+            border-color: transparent;
+          }
+        }
+
+        &.selected {
+          border-color: $btn-default-color;
+          background-color: $btn-default-color;
+          color: #fff;
+
+          &.day:hover,
+          &.month:hover,
+          &.year:hover {
+            border-color: $btn-default-color;
+            background-color: $btn-default-color;
+            color: #fff;
+          }
+        }
+      }
+    }
+  }
+
+  .time-picker {
+    [class*="col-xs-"] {
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+  }
+
+  .step-summary {
+    background-color: $brand-gray;
+    padding: 10px 0 0;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    text-align: center;
+
+    .btn {
+      margin-right: 5px;
+      margin-bottom: 10px;
+    }
+  }
+
+  .notification-review {
+    text-align: center;
+
+    h4 {
+      padding-top: 20px;
+  border-top: 1px solid $gray-lighter;
+      margin-top: 20px;
+    }
+  }
+}

@@ -1,0 +1,25 @@
+.form-control,
+.select-proxy-display select {
+  background: none;
+  border-color: $brand-light-background-highlight;
+
+  &:hover, &:focus {
+    border-color: $brand-heading-color;
+  }
+}
+
+.checkbox.checkbox-icon input[type="checkbox"],
+.radio.radio-icon input[type="radio"] {
+  + label {
+    color: $brand-text-color;
+  }
+
+  &:checked + label > span.check,
+  &:checked + label > span.check {
+    background-color: $brand-heading-color;
+
+    > i.fa {
+      color: #fff;
+    }
+  }
+}

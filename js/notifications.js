@@ -19,13 +19,15 @@ Fliplet.Widget.register('PushNotifications', function () {
     Fliplet.Hooks.on('beforePageViewHooksSuccess', resolve);
   });
 
-  var isConfigured = data && (data.apn || data.gcm || data.wns);
-
   if (!data || !data.showOnceOnPortal) {
     key += '-' + Fliplet.Env.get('appId');
   }
 
-  if (!data || !isConfigured) {
+  function isConfigured() {
+    return data && (data.apn || data.gcm || data.wns);
+  }
+
+  if (!data || !isConfigured()) {
     removeFromDom();
   }
 
@@ -150,6 +152,7 @@ Fliplet.Widget.register('PushNotifications', function () {
           return false;
         });
       }
+
       if (!alreadyShown || typeof alreadyShown !== 'string') {
         return true;
       }
@@ -248,6 +251,7 @@ Fliplet.Widget.register('PushNotifications', function () {
     reset: function () {
       askPromise = undefined;
       return Fliplet.Storage.remove(key);
-    }
+    },
+    isConfigured: isConfigured
   };
 });
