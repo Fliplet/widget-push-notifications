@@ -829,7 +829,6 @@ export default {
             type: this.type,
             orderAt: this.orderAt,
             data: {
-              scheduledAt: this.orderAt, // @TODO Remove scheduledAt after API is refactored to only use orderAt
               audience: this.audience,
               _metadata: {
                 filters: this.audience !== 'sessions' ? this.filters : [],
@@ -852,7 +851,6 @@ export default {
 
           if (status !== 'scheduled') {
             delete this.notification.orderAt;
-            delete this.notification.scheduledAt; // @TODO Remove scheduledAt after API is refactored to only use orderAt
           }
 
           let pushNotification = {
