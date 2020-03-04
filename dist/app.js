@@ -3545,7 +3545,11 @@ var render = function() {
                                 "a",
                                 {
                                   staticClass: "filter-help",
-                                  attrs: { href: "#", target: "_blank" }
+                                  attrs: {
+                                    href:
+                                      "https://help.fliplet.com/article/177-notifications",
+                                    target: "_blank"
+                                  }
                                 },
                                 [_vm._v("How to add data for filtering users")]
                               )
@@ -4702,7 +4706,7 @@ var defaultConfirmationMessage = 'Your notification is saved.';
       return Object(_libs_timezones__WEBPACK_IMPORTED_MODULE_4__["getOffsetString"])(this.scheduledAtTimezone, date);
     },
     notificationDate: function notificationDate() {
-      return "".concat(Object(_libs_date__WEBPACK_IMPORTED_MODULE_3__["formatDate"])(moment.unix(this.orderAt), this.scheduledAtTimezone), " ").concat(this.notificationTimezone);
+      return "".concat(Object(_libs_date__WEBPACK_IMPORTED_MODULE_3__["formatDate"])(moment.unix(this.orderAt - this.scheduledAtTimezoneOffset * 60), this.scheduledAtTimezone), " ").concat(this.notificationTimezone);
     },
     type: function type() {
       if (this.notificationHasChannel('in-app') || !this.notificationHasChannel('push')) {
@@ -5093,8 +5097,6 @@ var defaultConfirmationMessage = 'Your notification is saved.';
             type: _this4.type,
             orderAt: _this4.orderAt,
             data: {
-              scheduledAt: _this4.orderAt,
-              // @TODO Remove scheduledAt after API is refactored to only use orderAt
               audience: _this4.audience,
               _metadata: {
                 filters: _this4.audience !== 'sessions' ? _this4.filters : [],
@@ -5117,7 +5119,6 @@ var defaultConfirmationMessage = 'Your notification is saved.';
 
           if (status !== 'scheduled') {
             delete _this4.notification.orderAt;
-            delete _this4.notification.scheduledAt; // @TODO Remove scheduledAt after API is refactored to only use orderAt
           }
 
           var pushNotification = {

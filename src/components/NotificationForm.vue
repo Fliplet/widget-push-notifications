@@ -457,7 +457,7 @@ export default {
       return getTimezoneOffsetString(this.scheduledAtTimezone, date);
     },
     notificationDate() {
-      return `${formatDate(moment.unix(this.orderAt), this.scheduledAtTimezone)} ${this.notificationTimezone}`;
+      return `${formatDate(moment.unix(this.orderAt - this.scheduledAtTimezoneOffset * 60), this.scheduledAtTimezone)} ${this.notificationTimezone}`;
     },
     type() {
       if (this.notificationHasChannel('in-app') || !this.notificationHasChannel('push')) {
