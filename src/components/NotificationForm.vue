@@ -93,7 +93,7 @@
             </template>
             <div class="col-xs-12 filter-summary">
               <div class="col-xs-8">
-                <p v-if="audience !== 'sessions'"><a href="#" class="btn btn-default" @click.prevent="addFilter"><i class="fa fa-fw fa-plus"></i> Add filter</a> <a href="#" target="_blank" class="filter-help">How to add data for filtering users</a></p>
+                <p v-if="audience !== 'sessions'"><a href="#" class="btn btn-default" @click.prevent="addFilter"><i class="fa fa-fw fa-plus"></i> Add filter</a> <a href="https://help.fliplet.com/article/177-notifications" target="_blank" class="filter-help">How to add data for filtering users</a></p>
               </div>
               <div class="col-xs-4 text-right">
                 <p>
@@ -457,7 +457,7 @@ export default {
       return getTimezoneOffsetString(this.scheduledAtTimezone, date);
     },
     notificationDate() {
-      return `${formatDate(moment.unix(this.orderAt), this.scheduledAtTimezone)} ${this.notificationTimezone}`;
+      return `${formatDate(moment.unix(this.orderAt - this.scheduledAtTimezoneOffset * 60), this.scheduledAtTimezone)} ${this.notificationTimezone}`;
     },
     type() {
       if (this.notificationHasChannel('in-app') || !this.notificationHasChannel('push')) {
