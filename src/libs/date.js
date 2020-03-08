@@ -85,7 +85,7 @@ export function formatDate(value, timezone) {
   }
 
   if (!date.isValid()) {
-    console.warn('Invalid date: ' + value + '. Using current time as fallback.');
+    // Invalid date. Using current time as fallback.
     date = moment.utc();
   }
 
