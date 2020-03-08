@@ -430,13 +430,13 @@ export default {
       return this.filterScopes.length ? { $and: this.filterScopes } : {};
     },
     scheduledAt() {
-      const timestamp = moment([
+      const timestamp = moment.tz([
         this.scheduledAtDate.getFullYear(),
         this.scheduledAtDate.getMonth(),
         this.scheduledAtDate.getDate(),
         this.scheduledAtHour,
         this.scheduledAtMinute
-      ]).tz(this.scheduledAtTimezone);
+      ], this.scheduledAtTimezone);
 
       return timestamp.utc().unix();
     },
