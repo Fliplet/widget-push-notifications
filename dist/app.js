@@ -1001,6 +1001,7 @@ __webpack_require__.r(__webpack_exports__);
       pageCount: 0,
       lastNotificationShown: false,
       showTimezone: Object(_store__WEBPACK_IMPORTED_MODULE_5__["getShowTimezone"])(),
+      userTimezone: Object(_libs_timezones__WEBPACK_IMPORTED_MODULE_8__["validate"])(moment.tz.guess()),
       batchSize: 10,
       batchSizes: [10, 25, 50, 100, 250, 500]
     };
@@ -1070,16 +1071,15 @@ __webpack_require__.r(__webpack_exports__);
     getNotificationTimezone: function getNotificationTimezone(notification) {
       var timezone = _.get(notification, 'data._metadata.scheduledAtTimezone');
 
-      var date = moment(_.get(notification, 'orderAt')).toDate();
+      var date = moment.utc(_.get(notification, 'orderAt')).toDate();
       return Object(_libs_timezones__WEBPACK_IMPORTED_MODULE_8__["getOffsetString"])(timezone, date);
     },
     getNotificationDate: function getNotificationDate(notification) {
       if (!this.showTimezone) {
-        return "".concat(Object(_libs_date__WEBPACK_IMPORTED_MODULE_7__["formatDate"])(notification.orderAt));
+        return "".concat(Object(_libs_date__WEBPACK_IMPORTED_MODULE_7__["formatDate"])(notification.orderAt, this.userTimezone));
       }
 
-      var timezone = _.get(notification, 'data._metadata.scheduledAtTimezone');
-
+      var timezone = Object(_libs_timezones__WEBPACK_IMPORTED_MODULE_8__["validate"])(_.get(notification, 'data._metadata.scheduledAtTimezone'));
       return "".concat(Object(_libs_date__WEBPACK_IMPORTED_MODULE_7__["formatDate"])(notification.orderAt, timezone), " ").concat(this.getNotificationTimezone(notification));
     },
     getNotificationLog: function getNotificationLog(notification) {
@@ -2439,10 +2439,22 @@ function calendarDate(value) {
   });
 }
 function formatDate(value, timezone) {
-  var date = moment(value);
+  // @param value (Moment | Date | Number | String) Number would be a UNIX timestamp in seconds
+  var date;
+
+  if (value instanceof moment) {
+    date = value;
+  } else if (value instanceof Date) {
+    date = moment(value);
+  } else if (typeof value === 'number' || parseFloat(value).toString() === value) {
+    date = moment.utc(moment.unix(value));
+  } else {
+    date = moment(value);
+  }
 
   if (!date.isValid()) {
-    date = moment();
+    // Invalid date. Using current time as fallback.
+    date = moment.utc();
   }
 
   if (timezone) {
@@ -2467,6 +2479,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getOffset", function() { return getOffset; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getOffsetString", function() { return getOffsetString; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getOffsetObject", function() { return getOffsetObject; });
+var DEFAULT_TIMEZONE = 'Europe/London';
 var timezones = [{
   value: 'Etc/GMT+12',
   label: 'International Date Line West'
@@ -2716,7 +2729,7 @@ var timezones = [{
 }];
 function validate(name) {
   if (!name) {
-    throw new Error('Timezone not defined');
+    name = DEFAULT_TIMEZONE;
   }
 
   var zone = _.find(timezones, {
@@ -3768,6 +3781,9 @@ var render = function() {
                               },
                               "update:timezone": function($event) {
                                 _vm.scheduledAtTimezone = $event
+                              },
+                              "update:date": function($event) {
+                                _vm.scheduledAtDate = $event
                               }
                             }
                           })
@@ -4687,26 +4703,23 @@ var defaultConfirmationMessage = 'Your notification is saved.';
         $and: this.filterScopes
       } : {};
     },
-    scheduledAtTimezoneOffset: function scheduledAtTimezoneOffset() {
-      return Object(_libs_timezones__WEBPACK_IMPORTED_MODULE_4__["getOffset"])(this.scheduledAtTimezone, this.scheduledAtDate);
-    },
     scheduledAt: function scheduledAt() {
-      var timestamp = new Date(this.scheduledAtDate.getFullYear(), this.scheduledAtDate.getMonth(), this.scheduledAtDate.getDate(), this.scheduledAtHour, this.scheduledAtMinute);
-      return Math.floor((timestamp.getTime() + this.scheduledAtTimezoneOffset * 6e4) / 1000);
+      var timestamp = moment.tz([this.scheduledAtDate.getFullYear(), this.scheduledAtDate.getMonth(), this.scheduledAtDate.getDate(), this.scheduledAtHour, this.scheduledAtMinute], this.scheduledAtTimezone);
+      return timestamp.utc().unix();
     },
     orderAt: function orderAt() {
-      if (this.schedule === 'now') {
-        return moment().unix();
+      if (this.schedule === 'scheduled') {
+        return this.scheduledAt;
       }
 
-      return this.scheduledAt;
+      return moment().unix();
     },
     notificationTimezone: function notificationTimezone() {
       var date = moment.unix(this.orderAt).toDate();
       return Object(_libs_timezones__WEBPACK_IMPORTED_MODULE_4__["getOffsetString"])(this.scheduledAtTimezone, date);
     },
     notificationDate: function notificationDate() {
-      return "".concat(Object(_libs_date__WEBPACK_IMPORTED_MODULE_3__["formatDate"])(moment.unix(this.orderAt - this.scheduledAtTimezoneOffset * 60), this.scheduledAtTimezone), " ").concat(this.notificationTimezone);
+      return "".concat(Object(_libs_date__WEBPACK_IMPORTED_MODULE_3__["formatDate"])(this.orderAt, this.scheduledAtTimezone), " ").concat(this.notificationTimezone);
     },
     type: function type() {
       if (this.notificationHasChannel('in-app') || !this.notificationHasChannel('push')) {
@@ -6059,17 +6072,33 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   watch: {
+    date: function date() {
+      this.validateDST();
+    },
     hour12h: function hour12h(value) {
+      var hourChanged = this.validateDST();
+
+      if (hourChanged) {
+        return;
+      }
+
       this.$emit('update:hour', this.getHour24h(value, this.ampm));
     },
     minute: function minute(value) {
       this.$emit('update:minute', value);
     },
     ampm: function ampm(value) {
+      var hourChanged = this.validateDST();
+
+      if (hourChanged) {
+        return;
+      }
+
       this.$emit('update:hour', this.getHour24h(this.hour12h, value));
     },
     timezone: function timezone(value) {
-      this.$emit('update:timezone', Object(_libs_timezones__WEBPACK_IMPORTED_MODULE_0__["validate"])(value));
+      this.validateDST();
+      this.$emit('update:timezone', value);
     }
   },
   computed: {
@@ -6085,6 +6114,9 @@ __webpack_require__.r(__webpack_exports__);
       }), ['offset'], ['desc']);
     }
   },
+  mounted: function mounted() {
+    this.validateDST();
+  },
   methods: {
     getHour24h: function getHour24h(hour12h, ampm) {
       if (hour12h === 12) {
@@ -6096,6 +6128,16 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       return hour12h % 24;
+    },
+    validateDST: function validateDST() {
+      var timestamp = moment.tz([this.date.getFullYear(), this.date.getMonth(), this.date.getDate(), this.getHour24h(this.hour12h, this.ampm), this.minute], this.timezone);
+
+      if (timestamp.get('hour') === this.hour) {
+        return false;
+      }
+
+      this.hour12h = timestamp.get('hour') % 12 || 12;
+      return true;
     }
   }
 });

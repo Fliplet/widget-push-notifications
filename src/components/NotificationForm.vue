@@ -149,7 +149,7 @@
                 :hour.sync="scheduledAtHour"
                 :minute.sync="scheduledAtMinute"
                 :timezone.sync="scheduledAtTimezone"
-                :date="scheduledAtDate"
+                :date.sync="scheduledAtDate"
               ></Timepicker>
             </div>
           </div>
@@ -240,7 +240,6 @@ import { filterTypes, getFilterScope, getFilterVerbose } from '../libs/scope';
 import { formatDate } from '../libs/date';
 import {
   validate as validateTimezone,
-  getOffset as getTimezoneOffset,
   getOffsetString as getTimezoneOffsetString
 } from '../libs/timezones';
 import Tooltip from './Tooltip';
@@ -430,26 +429,23 @@ export default {
 
       return this.filterScopes.length ? { $and: this.filterScopes } : {};
     },
-    scheduledAtTimezoneOffset() {
-      return getTimezoneOffset(this.scheduledAtTimezone, this.scheduledAtDate);
-    },
     scheduledAt() {
-      const timestamp = new Date(
+      const timestamp = moment.tz([
         this.scheduledAtDate.getFullYear(),
         this.scheduledAtDate.getMonth(),
         this.scheduledAtDate.getDate(),
         this.scheduledAtHour,
         this.scheduledAtMinute
-      );
+      ], this.scheduledAtTimezone);
 
-      return Math.floor((timestamp.getTime() + this.scheduledAtTimezoneOffset * 6e4) / 1000);
+      return timestamp.utc().unix();
     },
     orderAt() {
-      if (this.schedule === 'now') {
-        return moment().unix();
+      if (this.schedule === 'scheduled') {
+        return this.scheduledAt;
       }
 
-      return this.scheduledAt;
+      return moment().unix();
     },
     notificationTimezone() {
       const date = moment.unix(this.orderAt).toDate();
@@ -457,7 +453,7 @@ export default {
       return getTimezoneOffsetString(this.scheduledAtTimezone, date);
     },
     notificationDate() {
-      return `${formatDate(moment.unix(this.orderAt - this.scheduledAtTimezoneOffset * 60), this.scheduledAtTimezone)} ${this.notificationTimezone}`;
+      return `${formatDate(this.orderAt, this.scheduledAtTimezone)} ${this.notificationTimezone}`;
     },
     type() {
       if (this.notificationHasChannel('in-app') || !this.notificationHasChannel('push')) {

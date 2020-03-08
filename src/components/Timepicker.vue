@@ -88,17 +88,33 @@ export default {
     }
   },
   watch: {
+    date() {
+      this.validateDST();
+    },
     hour12h(value) {
+      const hourChanged = this.validateDST();
+
+      if (hourChanged) {
+        return;
+      }
+
       this.$emit('update:hour', this.getHour24h(value, this.ampm));
     },
     minute(value) {
       this.$emit('update:minute', value);
     },
     ampm(value) {
+      const hourChanged = this.validateDST();
+
+      if (hourChanged) {
+        return;
+      }
+
       this.$emit('update:hour', this.getHour24h(this.hour12h, value));
     },
     timezone(value) {
-      this.$emit('update:timezone', validateTimezone(value));
+      this.validateDST();
+      this.$emit('update:timezone', value);
     }
   },
   computed: {
@@ -113,6 +129,9 @@ export default {
       }), ['offset'], ['desc']);
     }
   },
+  mounted() {
+    this.validateDST();
+  },
   methods: {
     getHour24h(hour12h, ampm) {
       if (hour12h === 12) {
@@ -124,6 +143,22 @@ export default {
       }
 
       return hour12h % 24;
+    },
+    validateDST() {
+      const timestamp = moment.tz([
+        this.date.getFullYear(),
+        this.date.getMonth(),
+        this.date.getDate(),
+        this.getHour24h(this.hour12h, this.ampm),
+        this.minute
+      ], this.timezone);
+
+      if (timestamp.get('hour') === this.hour) {
+        return false;
+      }
+
+      this.hour12h = timestamp.get('hour') % 12 || 12;
+      return true;
     }
   }
 };

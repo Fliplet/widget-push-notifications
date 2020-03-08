@@ -112,7 +112,8 @@ import {
 import bus from '../libs/bus';
 import { formatDate } from '../libs/date';
 import {
-  getOffsetString as getTimezoneOffsetString
+  getOffsetString as getTimezoneOffsetString,
+  validate as validateTimezone
 } from '../libs/timezones';
 
 export default {
@@ -124,6 +125,7 @@ export default {
       pageCount: 0,
       lastNotificationShown: false,
       showTimezone: getShowTimezone(),
+      userTimezone: validateTimezone(moment.tz.guess()),
       batchSize: 10,
       batchSizes: [10, 25, 50, 100, 250, 500]
     };
@@ -192,16 +194,16 @@ export default {
     },
     getNotificationTimezone(notification) {
       const timezone = _.get(notification, 'data._metadata.scheduledAtTimezone');
-      const date = moment(_.get(notification, 'orderAt')).toDate();
+      const date = moment.utc(_.get(notification, 'orderAt')).toDate();
 
       return getTimezoneOffsetString(timezone, date);
     },
     getNotificationDate(notification) {
       if (!this.showTimezone) {
-        return `${formatDate(notification.orderAt)}`;
+        return `${formatDate(notification.orderAt, this.userTimezone)}`;
       }
 
-      const timezone = _.get(notification, 'data._metadata.scheduledAtTimezone');
+      const timezone = validateTimezone(_.get(notification, 'data._metadata.scheduledAtTimezone'));
 
       return `${formatDate(notification.orderAt, timezone)} ${this.getNotificationTimezone(notification)}`;
     },

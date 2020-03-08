@@ -71,10 +71,22 @@ export function calendarDate(value) {
 }
 
 export function formatDate(value, timezone) {
-  let date = moment(value);
+  // @param value (Moment | Date | Number | String) Number would be a UNIX timestamp in seconds
+  let date;
+
+  if (value instanceof moment) {
+    date = value;
+  } else if (value instanceof Date) {
+    date = moment(value);
+  } else if (typeof value === 'number' || parseFloat(value).toString() === value) {
+    date = moment.utc(moment.unix(value));
+  } else {
+    date = moment(value);
+  }
 
   if (!date.isValid()) {
-    date = moment();
+    // Invalid date. Using current time as fallback.
+    date = moment.utc();
   }
 
   if (timezone) {

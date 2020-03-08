@@ -1,3 +1,5 @@
+var DEFAULT_TIMEZONE = 'Europe/London';
+
 export const timezones = [
   {
     value: 'Etc/GMT+12',
@@ -331,7 +333,7 @@ export const timezones = [
 
 export function validate(name) {
   if (!name) {
-    throw new Error('Timezone not defined');
+    name = DEFAULT_TIMEZONE;
   }
 
   let zone = _.find(timezones, { value: name });
