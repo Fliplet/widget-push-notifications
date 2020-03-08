@@ -441,15 +441,11 @@ export default {
       return timestamp.utc().unix();
     },
     orderAt() {
-      let orderAt;
-
-      if (this.schedule === 'now') {
-        orderAt = moment().unix();
-      } else {
-        orderAt = this.scheduledAt;
+      if (this.schedule === 'scheduled') {
+        return this.scheduledAt;
       }
 
-      return orderAt;
+      return moment().unix();
     },
     notificationTimezone() {
       const date = moment.unix(this.orderAt).toDate();
@@ -457,9 +453,7 @@ export default {
       return getTimezoneOffsetString(this.scheduledAtTimezone, date);
     },
     notificationDate() {
-      const notificationDate = `${formatDate(this.orderAt, this.scheduledAtTimezone)} ${this.notificationTimezone}`;
-
-      return notificationDate;
+      return `${formatDate(this.orderAt, this.scheduledAtTimezone)} ${this.notificationTimezone}`;
     },
     type() {
       if (this.notificationHasChannel('in-app') || !this.notificationHasChannel('push')) {

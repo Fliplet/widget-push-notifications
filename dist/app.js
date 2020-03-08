@@ -4701,27 +4701,22 @@ var defaultConfirmationMessage = 'Your notification is saved.';
       } : {};
     },
     scheduledAt: function scheduledAt() {
-      var timestamp = moment([this.scheduledAtDate.getFullYear(), this.scheduledAtDate.getMonth(), this.scheduledAtDate.getDate(), this.scheduledAtHour, this.scheduledAtMinute]).tz(this.scheduledAtTimezone);
+      var timestamp = moment.tz([this.scheduledAtDate.getFullYear(), this.scheduledAtDate.getMonth(), this.scheduledAtDate.getDate(), this.scheduledAtHour, this.scheduledAtMinute], this.scheduledAtTimezone);
       return timestamp.utc().unix();
     },
     orderAt: function orderAt() {
-      var orderAt;
-
-      if (this.schedule === 'now') {
-        orderAt = moment().unix();
-      } else {
-        orderAt = this.scheduledAt;
+      if (this.schedule === 'scheduled') {
+        return this.scheduledAt;
       }
 
-      return orderAt;
+      return moment().unix();
     },
     notificationTimezone: function notificationTimezone() {
       var date = moment.unix(this.orderAt).toDate();
       return Object(_libs_timezones__WEBPACK_IMPORTED_MODULE_4__["getOffsetString"])(this.scheduledAtTimezone, date);
     },
     notificationDate: function notificationDate() {
-      var notificationDate = "".concat(Object(_libs_date__WEBPACK_IMPORTED_MODULE_3__["formatDate"])(this.orderAt, this.scheduledAtTimezone), " ").concat(this.notificationTimezone);
-      return notificationDate;
+      return "".concat(Object(_libs_date__WEBPACK_IMPORTED_MODULE_3__["formatDate"])(this.orderAt, this.scheduledAtTimezone), " ").concat(this.notificationTimezone);
     },
     type: function type() {
       if (this.notificationHasChannel('in-app') || !this.notificationHasChannel('push')) {
@@ -6074,17 +6069,33 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   watch: {
+    date: function date() {
+      this.validateDST();
+    },
     hour12h: function hour12h(value) {
+      var hourChanged = this.validateDST();
+
+      if (hourChanged) {
+        return;
+      }
+
       this.$emit('update:hour', this.getHour24h(value, this.ampm));
     },
     minute: function minute(value) {
       this.$emit('update:minute', value);
     },
     ampm: function ampm(value) {
+      var hourChanged = this.validateDST();
+
+      if (hourChanged) {
+        return;
+      }
+
       this.$emit('update:hour', this.getHour24h(this.hour12h, value));
     },
     timezone: function timezone(value) {
-      this.$emit('update:timezone', Object(_libs_timezones__WEBPACK_IMPORTED_MODULE_0__["validate"])(value));
+      this.validateDST();
+      this.$emit('update:timezone', value);
     }
   },
   computed: {
@@ -6100,6 +6111,9 @@ __webpack_require__.r(__webpack_exports__);
       }), ['offset'], ['desc']);
     }
   },
+  mounted: function mounted() {
+    this.validateDST();
+  },
   methods: {
     getHour24h: function getHour24h(hour12h, ampm) {
       if (hour12h === 12) {
@@ -6111,6 +6125,16 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       return hour12h % 24;
+    },
+    validateDST: function validateDST() {
+      var timestamp = moment.tz([this.date.getFullYear(), this.date.getMonth(), this.date.getDate(), this.getHour24h(this.hour, this.ampm), this.minute], this.timezone);
+
+      if (timestamp.get('hour') === this.hour) {
+        return false;
+      }
+
+      this.hour12h = timestamp.get('hour') % 12 || 12;
+      return true;
     }
   }
 });
