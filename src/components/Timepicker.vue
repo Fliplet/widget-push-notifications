@@ -149,7 +149,7 @@ export default {
         this.date.getFullYear(),
         this.date.getMonth(),
         this.date.getDate(),
-        this.getHour24h(this.hour, this.ampm),
+        this.getHour24h(this.hour12h, this.ampm),
         this.minute
       ], this.timezone);
 

@@ -149,7 +149,7 @@
                 :hour.sync="scheduledAtHour"
                 :minute.sync="scheduledAtMinute"
                 :timezone.sync="scheduledAtTimezone"
-                :date="scheduledAtDate"
+                :date.sync="scheduledAtDate"
               ></Timepicker>
             </div>
           </div>

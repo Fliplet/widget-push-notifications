@@ -3781,6 +3781,9 @@ var render = function() {
                               },
                               "update:timezone": function($event) {
                                 _vm.scheduledAtTimezone = $event
+                              },
+                              "update:date": function($event) {
+                                _vm.scheduledAtDate = $event
                               }
                             }
                           })
@@ -6127,7 +6130,7 @@ __webpack_require__.r(__webpack_exports__);
       return hour12h % 24;
     },
     validateDST: function validateDST() {
-      var timestamp = moment.tz([this.date.getFullYear(), this.date.getMonth(), this.date.getDate(), this.getHour24h(this.hour, this.ampm), this.minute], this.timezone);
+      var timestamp = moment.tz([this.date.getFullYear(), this.date.getMonth(), this.date.getDate(), this.getHour24h(this.hour12h, this.ampm), this.minute], this.timezone);
 
       if (timestamp.get('hour') === this.hour) {
         return false;
