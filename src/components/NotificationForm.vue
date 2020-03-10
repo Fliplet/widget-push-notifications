@@ -849,21 +849,23 @@ export default {
             delete this.notification.orderAt;
           }
 
-          let pushNotification = {
-            payload: {
-              title: this.notification.data.title,
-              body: this.notification.data.message,
-              icon: 'icon_notification',
-              badge: 1,
-              priority: 'high'
+          if (this.notificationHasChannel('push') && this.pushIsConfigured && status !== 'draft') {
+            // Do not assign push notification payload when saving a draft.
+            // The backend will send a push notifcation to users.
+            let pushNotification = {
+              payload: {
+                title: this.notification.data.title,
+                body: this.notification.data.message,
+                icon: 'icon_notification',
+                badge: 1,
+                priority: 'high'
+              }
+            };
+
+            if (this.notification.data.navigate) {
+              _.set(pushNotification, 'custom.customData', this.notification.data.navigate);
             }
-          };
 
-          if (this.notification.data.navigate) {
-            _.set(pushNotification, 'custom.customData', this.notification.data.navigate);
-          }
-
-          if (this.notificationHasChannel('push') && this.pushIsConfigured) {
             this.notification.pushNotification = pushNotification;
           }
 
