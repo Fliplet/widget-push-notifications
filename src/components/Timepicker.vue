@@ -92,24 +92,14 @@ export default {
       this.validateDST();
     },
     hour12h(value) {
-      const hourChanged = this.validateDST();
-
-      if (hourChanged) {
-        return;
-      }
-
+      this.validateDST();
       this.$emit('update:hour', this.getHour24h(value, this.ampm));
     },
     minute(value) {
       this.$emit('update:minute', value);
     },
     ampm(value) {
-      const hourChanged = this.validateDST();
-
-      if (hourChanged) {
-        return;
-      }
-
+      this.validateDST();
       this.$emit('update:hour', this.getHour24h(this.hour12h, value));
     },
     timezone(value) {
