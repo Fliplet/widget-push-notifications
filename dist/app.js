@@ -4550,6 +4550,7 @@ var defaultConfirmationMessage = 'Your notification is saved.';
       disabledDates: {
         to: moment().subtract(1, 'days').toDate()
       },
+      sessions: [],
       showScreenPreview: false,
       screenLinkProvider: null,
       urlLinkProvider: null,
@@ -4583,6 +4584,14 @@ var defaultConfirmationMessage = 'Your notification is saved.';
 
     if (this.pushIsConfigured) {
       this.addNotificationChannel('push');
+    }
+
+    var sessions = _.get(this.notification, 'data._metadata.sessions');
+
+    if (_.isArray(sessions) && sessions.length) {
+      _.forEach(sessions, function (sessionId) {
+        _this.sessions.push(sessionId);
+      });
     }
 
     this.instance = Fliplet.Notifications.init();
@@ -4686,14 +4695,6 @@ var defaultConfirmationMessage = 'Your notification is saved.';
       },
       set: function set(notes) {
         return _.set(this.notification, 'data._metadata.notes', notes);
-      }
-    },
-    sessions: {
-      get: function get() {
-        return _.get(this.notification, 'data._metadata.sessions', []) || [];
-      },
-      set: function set(sessions) {
-        _.set(this.notification, 'data._metadata.sessions', sessions);
       }
     },
     filterScopes: function filterScopes() {
@@ -5120,7 +5121,7 @@ var defaultConfirmationMessage = 'Your notification is saved.';
               audience: _this4.audience,
               _metadata: {
                 filters: _this4.audience !== 'sessions' ? _this4.filters : [],
-                sessions: _this4.validateSessions(_this4.sessions),
+                sessions: _this4.audience === 'sessions' ? _this4.validateSessions(_this4.sessions) : undefined,
                 scheduledAtTimezone: _this4.scheduledAtTimezone,
                 scheduledAt: _this4.scheduledAt,
                 schedule: _this4.schedule,
@@ -5754,8 +5755,13 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     getTokens: function getTokens() {
+      var _this2 = this;
+
       this.collection.splice(0, this.collection.length);
-      this.collection = _.concat(this.collection, $(this.$refs.input).tokenfield('getTokens'));
+
+      _.forEach($(this.$refs.input).tokenfield('getTokens'), function (token) {
+        _this2.collection.push(token);
+      });
     }
   }
 });

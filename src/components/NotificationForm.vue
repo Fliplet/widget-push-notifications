@@ -286,6 +286,7 @@ export default {
       disabledDates: {
         to: moment().subtract(1, 'days').toDate()
       },
+      sessions: [],
       showScreenPreview: false,
       screenLinkProvider: null,
       urlLinkProvider: null,
@@ -319,6 +320,14 @@ export default {
       this.addNotificationChannel('push');
     }
 
+    const sessions = _.get(this.notification, 'data._metadata.sessions');
+
+    if (_.isArray(sessions) && sessions.length) {
+      _.forEach(sessions, (sessionId) => {
+        this.sessions.push(sessionId);
+      });
+    }
+
     this.instance = Fliplet.Notifications.init();
     this.getMatches();
     this.initializeProviders();
@@ -334,7 +343,6 @@ export default {
       this.scheduledAtHour = date.get('hour');
       this.scheduledAtMinute = date.get('minute');
     }
-
 
     Fliplet.Apps.get().then((apps) => {
       const app = _.find(apps, { id: Fliplet.Env.get('appId') });
@@ -416,14 +424,6 @@ export default {
       },
       set(notes) {
         return _.set(this.notification, 'data._metadata.notes', notes);
-      }
-    },
-    sessions: {
-      get() {
-        return _.get(this.notification, 'data._metadata.sessions', []) || [];
-      },
-      set(sessions) {
-        _.set(this.notification, 'data._metadata.sessions', sessions);
       }
     },
     filterScopes() {
@@ -835,7 +835,7 @@ export default {
               audience: this.audience,
               _metadata: {
                 filters: this.audience !== 'sessions' ? this.filters : [],
-                sessions: this.validateSessions(this.sessions),
+                sessions: this.audience === 'sessions' ? this.validateSessions(this.sessions) : undefined,
                 scheduledAtTimezone: this.scheduledAtTimezone,
                 scheduledAt: this.scheduledAt,
                 schedule: this.schedule,

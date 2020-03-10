@@ -52,7 +52,9 @@ export default {
   methods: {
     getTokens() {
       this.collection.splice(0, this.collection.length);
-      this.collection = _.concat(this.collection, $(this.$refs.input).tokenfield('getTokens'));
+      _.forEach($(this.$refs.input).tokenfield('getTokens'), (token) => {
+        this.collection.push(token);
+      });
     }
   }
 };
