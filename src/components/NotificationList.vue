@@ -251,7 +251,7 @@ export default {
         DeviceTokenNotForTopic: 'The target bundle identifier does not match with the one being used by some of the subscribed devices.',
         TopicDisallowed: 'The target bundle identifier does not match with the one being used by some of the subscribed devices.',
         GCMNotSet: 'Push notifications for Firebase (Android devices) have not been set.',
-        APNNotSet: 'Push Notifications for Apple (iOS devices) have not been set.'
+        APNNotSet: 'Push notifications for Apple (iOS devices) have not been configured.'
       };
 
       data.errors = _.orderBy(_.map(_.keys(allErrors), (type) => {
