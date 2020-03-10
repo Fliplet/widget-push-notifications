@@ -278,7 +278,6 @@ export default {
         { name: 'review' }
       ],
       filterTypes,
-      sessions: [],
       linkAction: getNotificationLinkAction(),
       scheduledAtDate: defaultScheduledAt.clone().startOf('day').toDate(),
       scheduledAtHour: defaultScheduledAt.get('hour'),
@@ -417,6 +416,14 @@ export default {
       },
       set(notes) {
         return _.set(this.notification, 'data._metadata.notes', notes);
+      }
+    },
+    sessions: {
+      get() {
+        return _.get(this.notification, 'data._metadata.sessions', []) || [];
+      },
+      set(sessions) {
+        _.set(this.notification, 'data._metadata.sessions', sessions);
       }
     },
     filterScopes() {

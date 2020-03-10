@@ -20,16 +20,25 @@ export default {
     }
   },
   mounted() {
+    this.collection = _.concat(this.collection, _.map(this.value, (obj) => {
+      if (_.hasIn(obj, 'value')) {
+        return obj;
+      }
+
+      return {
+        value: obj
+      };
+    }));
     $(this.$refs.input)
+      .tokenfield({
+        tokens: this.collection,
+        createTokensOnBlur: true
+      })
       .on('tokenfield:createdtoken', () => {
-        this.collection = $(this.$refs.input).tokenfield('getTokens');
+        this.getTokens();
       })
       .on('tokenfield:removedtoken', () => {
-        this.collection = $(this.$refs.input).tokenfield('getTokens');
-      })
-      .tokenfield({
-        tokens: this.value,
-        createTokensOnBlur: true
+        this.getTokens();
       });
   },
   unmounted() {
@@ -38,6 +47,12 @@ export default {
   watch: {
     collection(collection) {
       this.$emit('update:value', _.map(collection, 'value'));
+    }
+  },
+  methods: {
+    getTokens() {
+      this.collection.splice(0, this.collection.length);
+      this.collection = _.concat(this.collection, $(this.$refs.input).tokenfield('getTokens'));
     }
   }
 };
