@@ -5134,21 +5134,23 @@ var defaultConfirmationMessage = 'Your notification is saved.';
             delete _this4.notification.orderAt;
           }
 
-          var pushNotification = {
-            payload: {
-              title: _this4.notification.data.title,
-              body: _this4.notification.data.message,
-              icon: 'icon_notification',
-              badge: 1,
-              priority: 'high'
+          if (_this4.notificationHasChannel('push') && _this4.pushIsConfigured && status !== 'draft') {
+            // Do not assign push notification payload when saving a draft.
+            // The backend will send a push notifcation to users.
+            var pushNotification = {
+              payload: {
+                title: _this4.notification.data.title,
+                body: _this4.notification.data.message,
+                icon: 'icon_notification',
+                badge: 1,
+                priority: 'high'
+              }
+            };
+
+            if (_this4.notification.data.navigate) {
+              _.set(pushNotification, 'custom.customData', _this4.notification.data.navigate);
             }
-          };
 
-          if (_this4.notification.data.navigate) {
-            _.set(pushNotification, 'custom.customData', _this4.notification.data.navigate);
-          }
-
-          if (_this4.notificationHasChannel('push') && _this4.pushIsConfigured) {
             _this4.notification.pushNotification = pushNotification;
           }
 
