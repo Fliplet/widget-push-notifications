@@ -248,7 +248,7 @@ export default {
         NotRegistered: 'Device is not subscribed to receive this push notification or the app could be uninstalled.',
         InvalidProviderToken: 'The APN Key ID, push certificate or Team ID are not valid. Please double check the settings you have set.',
         MismatchSenderId: 'The Android push notification settings for GCM incorrectly use the Project ID instead of the Sender ID',
-        DeviceTokenNotForTopic: 'The target bundle identifier does not match with the one being used by some of the subscribed devices.',
+        DeviceTokenNotForTopic: 'The target bundle identifier does not match the one being used by some of the subscribed devices.',
         TopicDisallowed: 'The target bundle identifier does not match with the one being used by some of the subscribed devices.',
         GCMNotSet: 'Push notifications for Firebase (Android devices) have not been configured.',
         APNNotSet: 'Push notifications for Apple (iOS devices) have not been configured.'
