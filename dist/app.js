@@ -4542,7 +4542,6 @@ var defaultConfirmationMessage = 'Your notification is saved.';
         name: 'review'
       }],
       filterTypes: _libs_scope__WEBPACK_IMPORTED_MODULE_2__["filterTypes"],
-      sessions: [],
       linkAction: Object(_store__WEBPACK_IMPORTED_MODULE_0__["getNotificationLinkAction"])(),
       scheduledAtDate: defaultScheduledAt.clone().startOf('day').toDate(),
       scheduledAtHour: defaultScheduledAt.get('hour'),
@@ -4687,6 +4686,14 @@ var defaultConfirmationMessage = 'Your notification is saved.';
       },
       set: function set(notes) {
         return _.set(this.notification, 'data._metadata.notes', notes);
+      }
+    },
+    sessions: {
+      get: function get() {
+        return _.get(this.notification, 'data._metadata.sessions', []) || [];
+      },
+      set: function set(sessions) {
+        _.set(this.notification, 'data._metadata.sessions', sessions);
       }
     },
     filterScopes: function filterScopes() {
@@ -5719,13 +5726,22 @@ __webpack_require__.r(__webpack_exports__);
   mounted: function mounted() {
     var _this = this;
 
-    $(this.$refs.input).on('tokenfield:createdtoken', function () {
-      _this.collection = $(_this.$refs.input).tokenfield('getTokens');
-    }).on('tokenfield:removedtoken', function () {
-      _this.collection = $(_this.$refs.input).tokenfield('getTokens');
-    }).tokenfield({
-      tokens: this.value,
+    this.collection = _.concat(this.collection, _.map(this.value, function (obj) {
+      if (_.hasIn(obj, 'value')) {
+        return obj;
+      }
+
+      return {
+        value: obj
+      };
+    }));
+    $(this.$refs.input).tokenfield({
+      tokens: this.collection,
       createTokensOnBlur: true
+    }).on('tokenfield:createdtoken', function () {
+      _this.getTokens();
+    }).on('tokenfield:removedtoken', function () {
+      _this.getTokens();
     });
   },
   unmounted: function unmounted() {
@@ -5734,6 +5750,12 @@ __webpack_require__.r(__webpack_exports__);
   watch: {
     collection: function collection(_collection) {
       this.$emit('update:value', _.map(_collection, 'value'));
+    }
+  },
+  methods: {
+    getTokens: function getTokens() {
+      this.collection.splice(0, this.collection.length);
+      this.collection = _.concat(this.collection, $(this.$refs.input).tokenfield('getTokens'));
     }
   }
 });
