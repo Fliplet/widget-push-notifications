@@ -6078,24 +6078,14 @@ __webpack_require__.r(__webpack_exports__);
       this.validateDST();
     },
     hour12h: function hour12h(value) {
-      var hourChanged = this.validateDST();
-
-      if (hourChanged) {
-        return;
-      }
-
+      this.validateDST();
       this.$emit('update:hour', this.getHour24h(value, this.ampm));
     },
     minute: function minute(value) {
       this.$emit('update:minute', value);
     },
     ampm: function ampm(value) {
-      var hourChanged = this.validateDST();
-
-      if (hourChanged) {
-        return;
-      }
-
+      this.validateDST();
       this.$emit('update:hour', this.getHour24h(this.hour12h, value));
     },
     timezone: function timezone(value) {
