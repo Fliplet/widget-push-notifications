@@ -4599,13 +4599,15 @@ var defaultConfirmationMessage = 'Your notification is saved.';
     this.initializeProviders();
 
     if (this.schedule === 'scheduled') {
-      var date = moment.unix(_.get(this.notification, 'data._metadata.scheduledAt'));
+      var date = moment.utc(moment.unix(_.get(this.notification, 'data._metadata.scheduledAt')));
 
       if (!date.isValid()) {
-        date = moment();
+        date = moment.utc().unix();
       }
 
-      this.scheduledAtDate = date.clone().startOf('day').toDate();
+      this.scheduledAtTimezone = Object(_libs_timezones__WEBPACK_IMPORTED_MODULE_4__["validate"])(_.get(this.notification, 'data._metadata.scheduledAtTimezone'));
+      date.tz(this.scheduledAtTimezone);
+      this.scheduledAtDate = new Date(date.clone().startOf('day').format('lll'));
       this.scheduledAtHour = date.get('hour');
       this.scheduledAtMinute = date.get('minute');
     }
