@@ -120,7 +120,11 @@ export default {
     }
   },
   mounted() {
-    this.validateDST();
+    // If the validation isn't run after a tick, the dropdown doesn't effectively
+    // change the values or trigger the watchers.
+    this.$nextTick(() => {
+      this.validateDST();
+    });
   },
   methods: {
     getHour24h(hour12h, ampm) {
@@ -144,11 +148,10 @@ export default {
       ], this.timezone);
 
       if (timestamp.get('hour') === this.hour) {
-        return false;
+        return;
       }
 
       this.hour12h = timestamp.get('hour') % 12 || 12;
-      return true;
     }
   }
 };

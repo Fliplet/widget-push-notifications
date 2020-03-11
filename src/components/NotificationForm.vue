@@ -333,13 +333,16 @@ export default {
     this.initializeProviders();
 
     if (this.schedule === 'scheduled') {
-      let date = moment.unix(_.get(this.notification, 'data._metadata.scheduledAt'));
+      let date = moment.utc(moment.unix(_.get(this.notification, 'data._metadata.scheduledAt')));
 
       if (!date.isValid()) {
-        date = moment();
+        date = moment.utc().unix();
       }
 
-      this.scheduledAtDate = date.clone().startOf('day').toDate();
+      this.scheduledAtTimezone = validateTimezone(_.get(this.notification, 'data._metadata.scheduledAtTimezone'));
+      date.tz(this.scheduledAtTimezone);
+
+      this.scheduledAtDate = new Date(date.clone().startOf('day').format('lll'));
       this.scheduledAtHour = date.get('hour');
       this.scheduledAtMinute = date.get('minute');
     }

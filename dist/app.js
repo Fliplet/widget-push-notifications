@@ -4599,13 +4599,15 @@ var defaultConfirmationMessage = 'Your notification is saved.';
     this.initializeProviders();
 
     if (this.schedule === 'scheduled') {
-      var date = moment.unix(_.get(this.notification, 'data._metadata.scheduledAt'));
+      var date = moment.utc(moment.unix(_.get(this.notification, 'data._metadata.scheduledAt')));
 
       if (!date.isValid()) {
-        date = moment();
+        date = moment.utc().unix();
       }
 
-      this.scheduledAtDate = date.clone().startOf('day').toDate();
+      this.scheduledAtTimezone = Object(_libs_timezones__WEBPACK_IMPORTED_MODULE_4__["validate"])(_.get(this.notification, 'data._metadata.scheduledAtTimezone'));
+      date.tz(this.scheduledAtTimezone);
+      this.scheduledAtDate = new Date(date.clone().startOf('day').format('lll'));
       this.scheduledAtHour = date.get('hour');
       this.scheduledAtMinute = date.get('minute');
     }
@@ -6135,7 +6137,13 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
-    this.validateDST();
+    var _this2 = this;
+
+    // If the validation isn't run after a tick, the dropdown doesn't effectively
+    // change the values or trigger the watchers.
+    this.$nextTick(function () {
+      _this2.validateDST();
+    });
   },
   methods: {
     getHour24h: function getHour24h(hour12h, ampm) {
@@ -6153,11 +6161,10 @@ __webpack_require__.r(__webpack_exports__);
       var timestamp = moment.tz([this.date.getFullYear(), this.date.getMonth(), this.date.getDate(), this.getHour24h(this.hour12h, this.ampm), this.minute], this.timezone);
 
       if (timestamp.get('hour') === this.hour) {
-        return false;
+        return;
       }
 
       this.hour12h = timestamp.get('hour') % 12 || 12;
-      return true;
     }
   }
 });
