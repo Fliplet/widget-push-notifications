@@ -6135,7 +6135,13 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
-    this.validateDST();
+    var _this2 = this;
+
+    // If the validation isn't run after a tick, the dropdown doesn't effectively
+    // change the values or trigger the watchers.
+    this.$nextTick(function () {
+      _this2.validateDST();
+    });
   },
   methods: {
     getHour24h: function getHour24h(hour12h, ampm) {
@@ -6153,11 +6159,10 @@ __webpack_require__.r(__webpack_exports__);
       var timestamp = moment.tz([this.date.getFullYear(), this.date.getMonth(), this.date.getDate(), this.getHour24h(this.hour12h, this.ampm), this.minute], this.timezone);
 
       if (timestamp.get('hour') === this.hour) {
-        return false;
+        return;
       }
 
       this.hour12h = timestamp.get('hour') % 12 || 12;
-      return true;
     }
   }
 });
