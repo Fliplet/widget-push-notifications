@@ -1,19 +1,6 @@
 {
-  "root": true,
-  "extends": [
-    "eslint:recommended",
-    "fliplet",
-    "plugin:vue/essential"
-  ],
+  "extends": "fliplet",
   "globals": {
     "Vue": true
-  },
-  "rules": {
-    "no-new": 0,
-    "space-before-function-paren": ["error", {
-      "anonymous": "always",
-      "named": "never",
-      "asyncArrow": "always"
-    }]
   }
 }
