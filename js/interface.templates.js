@@ -86,7 +86,11 @@ this["Fliplet"]["Widget"]["Templates"]["templates.notificationLog"] = Handlebars
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.accepted : depth0)) != null ? stack1.count : stack1), depth0))
     + " ("
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.accepted : depth0)) != null ? stack1.percent : stack1), depth0))
-    + "%)</p>\n"
+    + "%)</p>\n<p><strong>Batches (Sent/Total)</strong><br>\n"
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.batches : depth0)) != null ? stack1.sent : stack1), depth0))
+    + "/"
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.batches : depth0)) != null ? stack1.total : stack1), depth0))
+    + "</p>\n"
     + ((stack1 = helpers["if"].call(depth0 != null ? depth0 : (container.nullContext || {}),(depth0 != null ? depth0.errors : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
 },"useData":true});
 
