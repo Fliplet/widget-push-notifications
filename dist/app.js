@@ -1118,7 +1118,14 @@ __webpack_require__.r(__webpack_exports__);
         percent: data.ios.count + data.android.count === 0 ? 0 : Math.round((data.ios.success + data.android.success) / (data.ios.count + data.android.count) * 100)
       };
       var errorTypes = {
-        NotRegistered: 'Device is not subscribed to receive this push notification or the app could be uninstalled.'
+        NoSubscriptions: 'One or more devices are not subscribed to receive this push notification.',
+        NotRegistered: 'One or more devices are not subscribed to receive this push notification or the app could be uninstalled.',
+        InvalidProviderToken: 'The APN Key ID, push certificate or Team ID is not valid. Please double-check your settings.',
+        MismatchSenderId: 'The Android push notification settings for GCM incorrectly use the Project ID instead of the Sender ID',
+        DeviceTokenNotForTopic: 'The target bundle identifier does not match the one being used by some of the subscribed devices.',
+        TopicDisallowed: 'The target bundle identifier does not match the one being used by some of the subscribed devices.',
+        GCMNotSet: 'Push notifications for Firebase (Android devices) have not been configured.',
+        APNNotSet: 'Push notifications for Apple (iOS devices) have not been configured.'
       };
       data.errors = _.orderBy(_.map(_.keys(allErrors), function (type) {
         return {
@@ -1127,6 +1134,10 @@ __webpack_require__.r(__webpack_exports__);
           count: allErrors[type]
         };
       }), ['count'], ['desc']);
+      data.batches = _.get(notification, 'job.batches', {
+        sent: 0,
+        total: 0
+      });
       return tpl(data);
     },
     notificationIsEditable: function notificationIsEditable(notification) {

@@ -261,6 +261,7 @@ export default {
           count: allErrors[type]
         };
       }), ['count'], ['desc']);
+      data.batches = _.get(notification, 'job.batches', { sent: 0, total: 0 });
 
       return tpl(data);
     },
