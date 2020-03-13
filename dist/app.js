@@ -5165,7 +5165,7 @@ var defaultConfirmationMessage = 'Your notification is saved.';
             };
 
             if (_this4.notification.data.navigate) {
-              _.set(pushNotification, 'custom.customData', _this4.notification.data.navigate);
+              _.set(pushNotification, 'payload.custom.customData', _this4.notification.data.navigate);
             }
 
             _this4.notification.pushNotification = pushNotification;

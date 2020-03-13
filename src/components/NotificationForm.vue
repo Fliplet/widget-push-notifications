@@ -869,7 +869,7 @@ export default {
             };
 
             if (this.notification.data.navigate) {
-              _.set(pushNotification, 'custom.customData', this.notification.data.navigate);
+              _.set(pushNotification, 'payload.custom.customData', this.notification.data.navigate);
             }
 
             this.notification.pushNotification = pushNotification;
