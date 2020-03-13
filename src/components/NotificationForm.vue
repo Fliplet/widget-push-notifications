@@ -847,10 +847,6 @@ export default {
             }
           });
 
-          if (_.isEmpty(this.notification.scope)) {
-            delete this.notification.scope;
-          }
-
           if (_.get(this.notification, 'data.navigate') && _.isEmpty(this.notification.data.navigate)) {
             delete this.notification.data.navigate;
           }
