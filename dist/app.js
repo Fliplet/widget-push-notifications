@@ -5143,10 +5143,6 @@ var defaultConfirmationMessage = 'Your notification is saved.';
             }
           });
 
-          if (_.isEmpty(_this4.notification.scope)) {
-            delete _this4.notification.scope;
-          }
-
           if (_.get(_this4.notification, 'data.navigate') && _.isEmpty(_this4.notification.data.navigate)) {
             delete _this4.notification.data.navigate;
           }
