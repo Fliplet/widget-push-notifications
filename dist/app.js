@@ -5175,7 +5175,7 @@ var defaultSendLabel = 'Send notification';
         }
 
         if (from === 'scheduled') {
-          return 'Saving scheduled notification';
+          return 'Saving notification';
         }
       }
 
@@ -5318,7 +5318,8 @@ var defaultSendLabel = 'Send notification';
           title: 'Success!',
           message: _this4.getConfirmationMessage(statusFrom, statusTo)
         });
-        return; // this.backToNotifications();
+
+        _this4.backToNotifications();
       })["catch"](function (error) {
         _this4.isSaving = false;
         Fliplet.Modal.alert({

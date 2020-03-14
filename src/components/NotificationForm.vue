@@ -805,7 +805,7 @@ export default {
         }
 
         if (from === 'scheduled') {
-          return 'Saving scheduled notification';
+          return 'Saving notification';
         }
       }
 
@@ -947,8 +947,7 @@ export default {
           title: 'Success!',
           message: this.getConfirmationMessage(statusFrom, statusTo)
         });
-        return;
-        // this.backToNotifications();
+        this.backToNotifications();
       }).catch((error) => {
         this.isSaving = false;
         Fliplet.Modal.alert({
