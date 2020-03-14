@@ -234,7 +234,8 @@
 </template>
 
 <script>
-import { getAssetRoot, getNotification, getNotificationLinkAction, getShowTimezone, getDefaultNotification } from '../store';
+import { getAssetRoot, getNotification, getNotificationLinkAction,
+  getShowTimezone, getDefaultNotification } from '../store';
 import bus from '../libs/bus';
 import { filterTypes, getFilterScope, getFilterVerbose } from '../libs/scope';
 import { formatDate } from '../libs/date';
@@ -511,7 +512,7 @@ export default {
     },
     backToNotifications() {
       bus.$emit('set-view', 'list');
-      bus.$emit('refresh-list');
+      bus.$emit('refresh-list', 1);
     },
     autosize() {
       bus.$emit('autosize');

@@ -6,7 +6,7 @@
     </div>
     <div class="row">
       <div class="col-xs-12">
-        <div v-if="loading" class="notifications-loading spinner-holder animated">
+        <div v-if="isLoading" class="notifications-loading spinner-holder animated">
           <div class="spinner-overlay"></div>
           <p>Loading notifications</p>
         </div>
@@ -79,8 +79,8 @@
             </table>
             <div class="list-pagination clearfix">
               <paginate
+                v-model="pageNumber"
                 :page-count="pageCount"
-                :click-handler="loadNotifications"
                 :prev-text="'Prev'"
                 :next-text="'Next'"
                 :container-class="'pagination clearfix'">
@@ -119,10 +119,11 @@ import {
 export default {
   data() {
     return {
-      loading: true,
+      isLoading: false,
       notifications: [],
       instance: null,
       pageCount: 0,
+      pageNumber: getPageNumber(),
       lastNotificationShown: false,
       showTimezone: getShowTimezone(),
       userTimezone: validateTimezone(moment.tz.guess()),
@@ -131,13 +132,8 @@ export default {
     };
   },
   computed: {
-    offset: {
-      get() {
-        return getPageNumber();
-      },
-      set(value) {
-        setPageNumber(value);
-      }
+    offset() {
+      return (this.pageNumber - 1) * this.batchSize;
     }
   },
   watch: {
@@ -151,6 +147,12 @@ export default {
       }
     },
     batchSize() {
+      this.loadNotifications();
+    },
+    pageNumber(pageNumber) {
+      setPageNumber(pageNumber);
+    },
+    offset() {
       this.loadNotifications();
     }
   },
@@ -326,24 +328,29 @@ export default {
       bus.$emit('set-view', 'form');
     },
     loadNotifications(pageNumber) {
-      if (typeof pageNumber !== 'number') {
-        pageNumber = this.offset;
+      if (typeof pageNumber === 'number') {
+        this.pageNumber = pageNumber;
+        return;
       }
+
+      this.isLoading = true;
 
       return this.instance.poll({
         includeLogs: true,
-        offset: pageNumber,
+        offset: this.offset,
         limit: this.batchSize,
         includeAllScopes: true
       }).then((response) => {
-        if (!response.entries.length && pageNumber >= response.pageCount) {
-          return this.loadNotifications(response.pageCount - 1);
+        if (!response.entries.length && this.pageNumber > response.pageCount) {
+          // Load last page
+          this.pageNumber = response.pageCount;
+          return;
         }
 
-        this.loading = false;
+        this.isLoading = false;
         this.notifications = response.entries;
         this.pageCount = response.pageCount;
-        this.offset = response.pageNumber;
+        this.pageNumber = response.pageNumber + 1;
       }).catch((error) => {
         Fliplet.Modal.alert({
           title: 'Error loading notifications',
