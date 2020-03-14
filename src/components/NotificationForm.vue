@@ -1,7 +1,13 @@
 <template>
   <div>
     <div class="notification-form">
-      <div class="container-fluid">
+      <div class="container-fluid" v-if="isSaving">
+        <div class="spinner-holder animated">
+          <div class="spinner-overlay"></div>
+          <p v-html="saveMessage"></p>
+        </div>
+      </div>
+      <div class="container-fluid" v-else>
         <div class="steps-holder">
           <div v-for="(stepObj, index) in steps" :key="stepObj.name" class="step" :class="{ 'active': index === step }"></div>
         </div>
@@ -38,9 +44,9 @@
               </div>
             </div>
             <p class="step-summary">
-              <a class="btn btn-default" :class="{ 'disabled': saving }" href="#" @click.prevent="cancel">Cancel</a>
-              <a class="btn btn-primary" :class="{ 'disabled': saving }" href="#" @click.prevent="nextStep">Select recipients</a><br>
-              <a class="btn btn-link" :class="{ 'disabled': saving }" href="#" @click.prevent="save('draft')">Save as draft</a>
+              <a class="btn btn-default" href="#" @click.prevent="cancel">Cancel</a>
+              <a class="btn btn-primary" href="#" @click.prevent="nextStep">Select recipients</a><br>
+              <a class="btn btn-link" href="#" @click.prevent="save('draft')">Save as draft</a>
             </p>
           </div>
         </div>
@@ -113,9 +119,9 @@
               <textarea class="form-control" rows="4" v-model="notes" placeholder="(Optional) Add some notes to this notification. Your users will not see this."></textarea>
             </div>
             <p class="step-summary">
-              <a class="btn btn-default" :class="{ 'disabled': saving }" href="#" @click.prevent="prevStep">Back</a>
-              <a class="btn btn-primary" :class="{ 'disabled': saving }" href="#" @click.prevent="nextStep">Prepare for send</a><br>
-              <a class="btn btn-link" :class="{ 'disabled': saving }" href="#" @click.prevent="save('draft')">Save as draft</a>
+              <a class="btn btn-default" href="#" @click.prevent="prevStep">Back</a>
+              <a class="btn btn-primary" href="#" @click.prevent="nextStep">Prepare for send</a><br>
+              <a class="btn btn-link" href="#" @click.prevent="save('draft')">Save as draft</a>
             </p>
           </div>
         </div>
@@ -167,9 +173,9 @@
           <div class="row">
             <div class="col-md-8 col-md-offset-2">
               <p class="step-summary">
-                <a class="btn btn-default" :class="{ 'disabled': saving }" href="#" @click.prevent="prevStep">Back</a>
-                <a class="btn btn-primary" :class="{ 'disabled': saving }" href="#" @click.prevent="nextStep">Review and send</a><br>
-                <a class="btn btn-link" :class="{ 'disabled': saving }" href="#" @click.prevent="save('draft')">Save as draft</a>
+                <a class="btn btn-default" href="#" @click.prevent="prevStep">Back</a>
+                <a class="btn btn-primary" href="#" @click.prevent="nextStep">Review</a><br>
+                <a class="btn btn-link" href="#" @click.prevent="save('draft')">Save as draft</a>
               </p>
             </div>
           </div>
@@ -223,8 +229,9 @@
             <h4>Send the notification {{ scheduleVerbose }}</h4>
             <p v-if="schedule === 'scheduled'" v-html="notificationDate"></p>
             <p class="step-summary">
-              <a class="btn btn-default" :class="{ 'disabled': saving }" href="#" @click.prevent="prevStep">Back</a>
-              <a class="btn btn-primary" :class="{ 'disabled': saving }" href="#" @click.prevent="send()">Send</a>
+              <a class="btn btn-default" href="#" @click.prevent="prevStep">Back</a>
+              <a class="btn btn-primary" href="#" @click.prevent="send()" v-html="getSendLabel()"></a><br>
+              <a class="btn btn-link" href="#" @click.prevent="save('draft')">Save as draft</a>
             </p>
           </div>
         </div>
@@ -257,11 +264,14 @@ const defaultAudience = '';
 const defaultSchedule = 'now';
 const defaultScheduledAt = moment().add(2, 'hours');
 const defaultConfirmationMessage = 'Your notification is saved.';
+const defaultSaveMessage = 'Saving';
+const defaultSendLabel = 'Send notification';
 
 export default {
   data() {
     return {
-      saving: false,
+      isSaving: false,
+      saveMessage: 'Saving',
       showTimezone: getShowTimezone(),
       appName: Fliplet.Env.get('appName'),
       appIcon: this.getAsset('img/app-icon.png'),
@@ -474,6 +484,9 @@ export default {
     }
   },
   watch: {
+    isSaving() {
+      this.autosize();
+    },
     notification() {
       this.autosize();
     },
@@ -775,6 +788,44 @@ export default {
 
       return defaultConfirmationMessage;
     },
+    getSaveMessage(from, to) {
+      // Returns a save message based on the status
+      // the notification is going from and to
+      if (to === 'draft') {
+        return 'Saving as draft';
+      }
+
+      if (to === 'published') {
+        return 'Sending notification';
+      }
+
+      if (to === 'scheduled') {
+        if (from === 'draft') {
+          return 'Scheduling notification';
+        }
+
+        if (from === 'scheduled') {
+          return 'Saving scheduled notification';
+        }
+      }
+
+      return defaultSaveMessage;
+    },
+    getSendLabel() {
+      if (this.schedule === 'now') {
+        return 'Send notification';
+      }
+
+      if (this.schedule === 'scheduled') {
+        if (this.notification.status === 'scheduled') {
+          return 'Save notification';
+        }
+
+        return 'Schedule notification';
+      }
+
+      return defaultSendLabel;
+    },
     save(status) {
       let saveLinkProvider = Promise.resolve();
       const statusFrom = this.notification.status || 'draft';
@@ -875,7 +926,8 @@ export default {
             this.notification.pushNotification = pushNotification;
           }
 
-          this.saving = true;
+          this.isSaving = true;
+          this.saveMessage = this.getSaveMessage(statusFrom, statusTo);
 
           if (!_.get(this, 'notification.id')) {
             return this.instance.insert(this.notification).then(resolve);
@@ -895,9 +947,10 @@ export default {
           title: 'Success!',
           message: this.getConfirmationMessage(statusFrom, statusTo)
         });
-        this.backToNotifications();
+        return;
+        // this.backToNotifications();
       }).catch((error) => {
-        this.saving = false;
+        this.isSaving = false;
         Fliplet.Modal.alert({
           title: 'Error saving notification',
           message: Fliplet.parseError(error)
