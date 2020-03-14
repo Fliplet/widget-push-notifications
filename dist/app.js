@@ -2082,7 +2082,7 @@ __webpack_require__.r(__webpack_exports__);
 
       _.set(this.notification, 'data._metadata.notes', this.notes);
 
-      return this.instance.update(this.notification.id, _.pick(this.notification, ['status', 'type', 'data', 'scope', 'orderAt', 'pushNotification'])).then(function () {
+      return this.instance.update(this.notification.id, _.pick(this.notification, 'data')).then(function () {
         _this.cachedNotes = '';
         _this.mode = 'view';
 
