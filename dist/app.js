@@ -1207,11 +1207,13 @@ __webpack_require__.r(__webpack_exports__);
       Object(_store__WEBPACK_IMPORTED_MODULE_5__["setNotification"])();
       _libs_bus__WEBPACK_IMPORTED_MODULE_6__["default"].$emit('set-view', 'form');
     },
-    loadNotifications: function loadNotifications(pageNumber) {
+    loadNotifications: function loadNotifications(notificationId) {
       var _this3 = this;
 
-      if (typeof pageNumber === 'number') {
-        this.pageNumber = pageNumber;
+      if (typeof notificationId === 'number' && _.findIndex(this.notifications, {
+        id: notificationId
+      }) === -1) {
+        this.pageNumber = 1;
         return;
       }
 
@@ -4799,9 +4801,10 @@ var defaultConfirmationMessage = 'Your notification is saved.';
     cancel: function cancel() {
       _libs_bus__WEBPACK_IMPORTED_MODULE_1__["default"].$emit('set-view', 'list');
     },
-    backToNotifications: function backToNotifications() {
+    backToNotifications: function backToNotifications(options) {
+      options = options || {};
       _libs_bus__WEBPACK_IMPORTED_MODULE_1__["default"].$emit('set-view', 'list');
-      _libs_bus__WEBPACK_IMPORTED_MODULE_1__["default"].$emit('refresh-list', 1);
+      _libs_bus__WEBPACK_IMPORTED_MODULE_1__["default"].$emit('refresh-list', options.notificationId);
     },
     autosize: function autosize() {
       _libs_bus__WEBPACK_IMPORTED_MODULE_1__["default"].$emit('autosize');
@@ -5192,13 +5195,15 @@ var defaultConfirmationMessage = 'Your notification is saved.';
 
           return _this4.instance.update(_this4.notification.id, _.pick(_this4.notification, ['status', 'type', 'data', 'scope', 'orderAt', 'pushNotification'])).then(resolve);
         });
-      }).then(function () {
+      }).then(function (response) {
         Fliplet.Modal.alert({
           title: 'Success!',
           message: _this4.getConfirmationMessage(statusFrom, statusTo)
         });
 
-        _this4.backToNotifications();
+        _this4.backToNotifications({
+          notificationId: response.notification.id
+        });
       })["catch"](function (error) {
         _this4.saving = false;
         Fliplet.Modal.alert({

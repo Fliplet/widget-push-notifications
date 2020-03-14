@@ -510,9 +510,11 @@ export default {
     cancel() {
       bus.$emit('set-view', 'list');
     },
-    backToNotifications() {
+    backToNotifications(options) {
+      options = options || {};
+
       bus.$emit('set-view', 'list');
-      bus.$emit('refresh-list', 1);
+      bus.$emit('refresh-list', options.notificationId);
     },
     autosize() {
       bus.$emit('autosize');
@@ -891,12 +893,14 @@ export default {
             'pushNotification'
           ])).then(resolve);
         });
-      }).then(() => {
+      }).then((response) => {
         Fliplet.Modal.alert({
           title: 'Success!',
           message: this.getConfirmationMessage(statusFrom, statusTo)
         });
-        this.backToNotifications();
+        this.backToNotifications({
+          notificationId: response.notification.id
+        });
       }).catch((error) => {
         this.saving = false;
         Fliplet.Modal.alert({
