@@ -339,7 +339,7 @@ var render = function() {
         "div",
         { staticClass: "col-xs-12" },
         [
-          _vm.loading
+          _vm.isLoading
             ? _c(
                 "div",
                 {
@@ -721,10 +721,16 @@ var render = function() {
                           _c("paginate", {
                             attrs: {
                               "page-count": _vm.pageCount,
-                              "click-handler": _vm.loadNotifications,
                               "prev-text": "Prev",
                               "next-text": "Next",
                               "container-class": "pagination clearfix"
+                            },
+                            model: {
+                              value: _vm.pageNumber,
+                              callback: function($$v) {
+                                _vm.pageNumber = $$v
+                              },
+                              expression: "pageNumber"
                             }
                           }),
                           _vm._v(" "),
@@ -995,10 +1001,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      loading: true,
+      isLoading: false,
       notifications: [],
       instance: null,
       pageCount: 0,
+      pageNumber: Object(_store__WEBPACK_IMPORTED_MODULE_5__["getPageNumber"])(),
       lastNotificationShown: false,
       showTimezone: Object(_store__WEBPACK_IMPORTED_MODULE_5__["getShowTimezone"])(),
       userTimezone: Object(_libs_timezones__WEBPACK_IMPORTED_MODULE_8__["validate"])(moment.tz.guess()),
@@ -1007,13 +1014,8 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   computed: {
-    offset: {
-      get: function get() {
-        return Object(_store__WEBPACK_IMPORTED_MODULE_5__["getPageNumber"])();
-      },
-      set: function set(value) {
-        Object(_store__WEBPACK_IMPORTED_MODULE_5__["setPageNumber"])(value);
-      }
+    offset: function offset() {
+      return (this.pageNumber - 1) * this.batchSize;
     }
   },
   watch: {
@@ -1027,6 +1029,12 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     batchSize: function batchSize() {
+      this.loadNotifications();
+    },
+    pageNumber: function pageNumber(_pageNumber) {
+      Object(_store__WEBPACK_IMPORTED_MODULE_5__["setPageNumber"])(_pageNumber);
+    },
+    offset: function offset() {
       this.loadNotifications();
     }
   },
@@ -1199,27 +1207,33 @@ __webpack_require__.r(__webpack_exports__);
       Object(_store__WEBPACK_IMPORTED_MODULE_5__["setNotification"])();
       _libs_bus__WEBPACK_IMPORTED_MODULE_6__["default"].$emit('set-view', 'form');
     },
-    loadNotifications: function loadNotifications(pageNumber) {
+    loadNotifications: function loadNotifications(notificationId) {
       var _this3 = this;
 
-      if (typeof pageNumber !== 'number') {
-        pageNumber = this.offset;
+      if (typeof notificationId === 'number' && _.findIndex(this.notifications, {
+        id: notificationId
+      }) === -1) {
+        this.pageNumber = 1;
+        return;
       }
 
+      this.isLoading = true;
       return this.instance.poll({
         includeLogs: true,
-        offset: pageNumber,
+        offset: this.offset,
         limit: this.batchSize,
         includeAllScopes: true
       }).then(function (response) {
-        if (!response.entries.length && pageNumber >= response.pageCount) {
-          return _this3.loadNotifications(response.pageCount - 1);
+        if (!response.entries.length && _this3.pageNumber > response.pageCount) {
+          // Load last page
+          _this3.pageNumber = response.pageCount;
+          return;
         }
 
-        _this3.loading = false;
+        _this3.isLoading = false;
         _this3.notifications = response.entries;
         _this3.pageCount = response.pageCount;
-        _this3.offset = response.pageNumber;
+        _this3.pageNumber = response.pageNumber + 1;
       })["catch"](function (error) {
         Fliplet.Modal.alert({
           title: 'Error loading notifications',
@@ -1497,7 +1511,8 @@ var state = {
   view: 'list',
   notification: getDefaultNotification(),
   assetRoot: location.origin,
-  pageNumber: 0,
+  pageNumber: 1,
+  // 1-based
   showTimezone: js_cookie__WEBPACK_IMPORTED_MODULE_0___default.a.get(COOKIE.showTimezone) === 'true'
 };
 function setAppPages(appPages) {
@@ -1526,10 +1541,10 @@ function getNotificationLinkAction() {
   return _.get(state.notification, 'data.navigate.action', '');
 }
 function getPageNumber() {
-  return state.pageNumber;
+  return state.pageNumber || 1;
 }
 function setPageNumber(number) {
-  state.pageNumber = Math.max(0, parseInt(number, 10) || 0);
+  state.pageNumber = Math.max(1, parseInt(number, 10) || 1);
 }
 function setAssetRoot(url) {
   state.assetRoot = url || location.origin;
@@ -4881,9 +4896,10 @@ var defaultSendLabel = 'Send notification';
     cancel: function cancel() {
       _libs_bus__WEBPACK_IMPORTED_MODULE_1__["default"].$emit('set-view', 'list');
     },
-    backToNotifications: function backToNotifications() {
+    backToNotifications: function backToNotifications(options) {
+      options = options || {};
       _libs_bus__WEBPACK_IMPORTED_MODULE_1__["default"].$emit('set-view', 'list');
-      _libs_bus__WEBPACK_IMPORTED_MODULE_1__["default"].$emit('refresh-list');
+      _libs_bus__WEBPACK_IMPORTED_MODULE_1__["default"].$emit('refresh-list', options.notificationId);
     },
     autosize: function autosize() {
       _libs_bus__WEBPACK_IMPORTED_MODULE_1__["default"].$emit('autosize');
@@ -5313,13 +5329,15 @@ var defaultSendLabel = 'Send notification';
 
           return _this4.instance.update(_this4.notification.id, _.pick(_this4.notification, ['status', 'type', 'data', 'scope', 'orderAt', 'pushNotification'])).then(resolve);
         });
-      }).then(function () {
+      }).then(function (response) {
         Fliplet.Modal.alert({
           title: 'Success!',
           message: _this4.getConfirmationMessage(statusFrom, statusTo)
         });
 
-        _this4.backToNotifications();
+        _this4.backToNotifications({
+          notificationId: response.notification.id
+        });
       })["catch"](function (error) {
         _this4.isSaving = false;
         Fliplet.Modal.alert({

@@ -28,7 +28,7 @@ export const state = {
   view: 'list',
   notification: getDefaultNotification(),
   assetRoot: location.origin,
-  pageNumber: 0,
+  pageNumber: 1, // 1-based
   showTimezone: Cookies.get(COOKIE.showTimezone) === 'true'
 };
 
@@ -65,11 +65,11 @@ export function getNotificationLinkAction() {
 }
 
 export function getPageNumber() {
-  return state.pageNumber;
+  return state.pageNumber || 1;
 }
 
 export function setPageNumber(number) {
-  state.pageNumber = Math.max(0, parseInt(number, 10) || 0);
+  state.pageNumber = Math.max(1, parseInt(number, 10) || 1);
 }
 
 export function setAssetRoot(url) {

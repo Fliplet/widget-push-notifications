@@ -241,7 +241,8 @@
 </template>
 
 <script>
-import { getAssetRoot, getNotification, getNotificationLinkAction, getShowTimezone, getDefaultNotification } from '../store';
+import { getAssetRoot, getNotification, getNotificationLinkAction,
+  getShowTimezone, getDefaultNotification } from '../store';
 import bus from '../libs/bus';
 import { filterTypes, getFilterScope, getFilterVerbose } from '../libs/scope';
 import { formatDate } from '../libs/date';
@@ -522,9 +523,11 @@ export default {
     cancel() {
       bus.$emit('set-view', 'list');
     },
-    backToNotifications() {
+    backToNotifications(options) {
+      options = options || {};
+
       bus.$emit('set-view', 'list');
-      bus.$emit('refresh-list');
+      bus.$emit('refresh-list', options.notificationId);
     },
     autosize() {
       bus.$emit('autosize');
@@ -942,12 +945,14 @@ export default {
             'pushNotification'
           ])).then(resolve);
         });
-      }).then(() => {
+      }).then((response) => {
         Fliplet.Modal.alert({
           title: 'Success!',
           message: this.getConfirmationMessage(statusFrom, statusTo)
         });
-        this.backToNotifications();
+        this.backToNotifications({
+          notificationId: response.notification.id
+        });
       }).catch((error) => {
         this.isSaving = false;
         Fliplet.Modal.alert({
