@@ -2857,696 +2857,256 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", [
     _c("div", { staticClass: "notification-form" }, [
-      _c(
-        "div",
-        { staticClass: "container-fluid" },
-        [
-          _c(
+      _vm.isSaving
+        ? _c("div", { staticClass: "container-fluid" }, [
+            _c("div", { staticClass: "spinner-holder animated" }, [
+              _c("div", { staticClass: "spinner-overlay" }),
+              _vm._v(" "),
+              _c("p", { domProps: { innerHTML: _vm._s(_vm.saveMessage) } })
+            ])
+          ])
+        : _c(
             "div",
-            { staticClass: "steps-holder" },
-            _vm._l(_vm.steps, function(stepObj, index) {
-              return _c("div", {
-                key: stepObj.name,
-                staticClass: "step",
-                class: { active: index === _vm.step }
-              })
-            }),
-            0
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              directives: [
-                {
-                  name: "show",
-                  rawName: "v-show",
-                  value: _vm.steps[_vm.step].name === "configure",
-                  expression: "steps[step].name === 'configure'"
-                }
-              ],
-              staticClass: "row"
-            },
+            { staticClass: "container-fluid" },
             [
-              _c("div", { staticClass: "col-md-8 col-md-offset-2" }, [
-                _c("h3", [_vm._v("Configure your notification")]),
-                _vm._v(" "),
-                _c("div", { staticClass: "form-group clearfix" }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.notification.data.title,
-                        expression: "notification.data.title"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: {
-                      type: "text",
-                      placeholder: "Enter notification title",
-                      "data-count-selector": "#title-count",
-                      maxlength: _vm.titleCharacterLimit,
-                      required: ""
-                    },
-                    domProps: { value: _vm.notification.data.title },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.notification.data,
-                          "title",
-                          $event.target.value
-                        )
-                      }
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c(
-                    "div",
+              _c(
+                "div",
+                { staticClass: "steps-holder" },
+                _vm._l(_vm.steps, function(stepObj, index) {
+                  return _c("div", {
+                    key: stepObj.name,
+                    staticClass: "step",
+                    class: { active: index === _vm.step }
+                  })
+                }),
+                0
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  directives: [
                     {
-                      staticClass: "pull-right",
-                      class: {
-                        "text-success": _vm.titleCharactersRemaining >= 0,
-                        "text-danger": _vm.titleCharactersRemaining < 0
-                      }
-                    },
-                    [
-                      _vm._v(
-                        _vm._s(_vm.titleCharactersRemaining) + " character"
-                      ),
-                      _vm.titleCharactersRemaining !== 1 ? void 0 : _vm._e(),
-                      _vm._v(" left")
-                    ],
-                    2
-                  ),
-                  _vm._v(" "),
-                  _vm.errors.title
-                    ? _c("div", { staticClass: "text-danger" }, [
-                        _vm._v(_vm._s(_vm.errors.title))
-                      ])
-                    : _vm._e()
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "form-group clearfix" }, [
-                  _c("textarea", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.notification.data.message,
-                        expression: "notification.data.message"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: {
-                      rows: "4",
-                      placeholder:
-                        "Enter notification message (15 words recommended)",
-                      maxlength: _vm.messageCharacterLimit,
-                      required: ""
-                    },
-                    domProps: { value: _vm.notification.data.message },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.notification.data,
-                          "message",
-                          $event.target.value
-                        )
-                      }
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.steps[_vm.step].name === "configure",
+                      expression: "steps[step].name === 'configure'"
                     }
-                  }),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    {
-                      staticClass: "pull-right",
-                      class: {
-                        "text-success": _vm.messageCharactersRemaining >= 0,
-                        "text-danger": _vm.messageCharactersRemaining < 0
-                      }
-                    },
-                    [
-                      _vm._v(
-                        _vm._s(_vm.messageCharactersRemaining) + " character"
-                      ),
-                      _vm.messageCharactersRemaining !== 1 ? void 0 : _vm._e(),
-                      _vm._v(" left")
-                    ],
-                    2
-                  ),
-                  _vm._v(" "),
-                  _vm.errors.message
-                    ? _c("div", { staticClass: "text-danger" }, [
-                        _vm._v(_vm._s(_vm.errors.message))
-                      ])
-                    : _vm._e()
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "form-group clearfix" }, [
-                  _c("h3", [_vm._v("Add a link")]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "tab-selection" }, [
-                    _c(
-                      "span",
-                      {
-                        staticClass: "tab",
-                        class: { active: _vm.linkAction === "" },
-                        on: {
-                          click: function($event) {
-                            _vm.linkAction = ""
-                          }
-                        }
-                      },
-                      [_vm._v("No link")]
-                    ),
+                  ],
+                  staticClass: "row"
+                },
+                [
+                  _c("div", { staticClass: "col-md-8 col-md-offset-2" }, [
+                    _c("h3", [_vm._v("Configure your notification")]),
                     _vm._v(" "),
-                    _c(
-                      "span",
-                      {
-                        staticClass: "tab",
-                        class: { active: _vm.linkAction === "screen" },
-                        on: {
-                          click: function($event) {
-                            _vm.linkAction = "screen"
-                          }
-                        }
-                      },
-                      [_vm._v("Link to screen")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "span",
-                      {
-                        staticClass: "tab",
-                        class: { active: _vm.linkAction === "url" },
-                        on: {
-                          click: function($event) {
-                            _vm.linkAction = "url"
-                          }
-                        }
-                      },
-                      [_vm._v("Link to web page")]
-                    )
-                  ])
-                ]),
-                _vm._v(" "),
-                _c(
-                  "div",
-                  {
-                    directives: [
-                      {
-                        name: "show",
-                        rawName: "v-show",
-                        value: _vm.linkAction !== "none",
-                        expression: "linkAction !== 'none'"
-                      }
-                    ],
-                    staticClass: "clearfix link-providers"
-                  },
-                  [
-                    _c(
-                      "div",
-                      {
+                    _c("div", { staticClass: "form-group clearfix" }, [
+                      _c("input", {
                         directives: [
                           {
-                            name: "show",
-                            rawName: "v-show",
-                            value: _vm.linkAction === "screen",
-                            expression: "linkAction === 'screen'"
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.notification.data.title,
+                            expression: "notification.data.title"
                           }
                         ],
-                        staticClass: "form-group"
-                      },
-                      [
-                        _c("div", { ref: "screenLinkProvider" }),
-                        _vm._v(" "),
-                        _vm.errors.screenLink
-                          ? _c("div", { staticClass: "text-danger" }, [
-                              _vm._v(_vm._s(_vm.errors.screenLink))
-                            ])
-                          : _vm._e(),
-                        _vm._v(" "),
-                        _c("p", { staticClass: "text-center" }, [
-                          _c(
-                            "a",
-                            {
-                              staticClass: "btn btn-default",
-                              attrs: { href: "#" },
-                              on: {
-                                click: function($event) {
-                                  $event.preventDefault()
-                                  return _vm.previewScreenLink($event)
-                                }
-                              }
-                            },
-                            [_vm._v("Preview target screen")]
-                          )
-                        ])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        directives: [
-                          {
-                            name: "show",
-                            rawName: "v-show",
-                            value: _vm.linkAction === "url",
-                            expression: "linkAction === 'url'"
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "text",
+                          placeholder: "Enter notification title",
+                          "data-count-selector": "#title-count",
+                          maxlength: _vm.titleCharacterLimit,
+                          required: ""
+                        },
+                        domProps: { value: _vm.notification.data.title },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.notification.data,
+                              "title",
+                              $event.target.value
+                            )
                           }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        {
+                          staticClass: "pull-right",
+                          class: {
+                            "text-success": _vm.titleCharactersRemaining >= 0,
+                            "text-danger": _vm.titleCharactersRemaining < 0
+                          }
+                        },
+                        [
+                          _vm._v(
+                            _vm._s(_vm.titleCharactersRemaining) + " character"
+                          ),
+                          _vm.titleCharactersRemaining !== 1
+                            ? void 0
+                            : _vm._e(),
+                          _vm._v(" left")
                         ],
-                        staticClass: "form-group"
-                      },
-                      [
-                        _c("div", { ref: "urlLinkProvider" }),
-                        _vm._v(" "),
-                        _vm.errors.urlLink
-                          ? _c("div", { staticClass: "text-danger" }, [
-                              _vm._v(_vm._s(_vm.errors.urlLink))
-                            ])
-                          : _vm._e()
-                      ]
-                    )
-                  ]
-                ),
-                _vm._v(" "),
-                _c("p", { staticClass: "step-summary" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "btn btn-default",
-                      class: { disabled: _vm.saving },
-                      attrs: { href: "#" },
-                      on: {
-                        click: function($event) {
-                          $event.preventDefault()
-                          return _vm.cancel($event)
-                        }
-                      }
-                    },
-                    [_vm._v("Cancel")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "a",
-                    {
-                      staticClass: "btn btn-primary",
-                      class: { disabled: _vm.saving },
-                      attrs: { href: "#" },
-                      on: {
-                        click: function($event) {
-                          $event.preventDefault()
-                          return _vm.nextStep($event)
-                        }
-                      }
-                    },
-                    [_vm._v("Select recipients")]
-                  ),
-                  _c("br"),
-                  _vm._v(" "),
-                  _c(
-                    "a",
-                    {
-                      staticClass: "btn btn-link",
-                      class: { disabled: _vm.saving },
-                      attrs: { href: "#" },
-                      on: {
-                        click: function($event) {
-                          $event.preventDefault()
-                          return _vm.save("draft")
-                        }
-                      }
-                    },
-                    [_vm._v("Save as draft")]
-                  )
-                ])
-              ])
-            ]
-          ),
-          _vm._v(" "),
-          _vm.steps[_vm.step].name === "recipients"
-            ? _c("div", { staticClass: "row" }, [
-                _c(
-                  "div",
-                  { staticClass: "col-md-10 col-md-offset-1" },
-                  [
-                    _c("h3", [_vm._v("Send notification to...")]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "tab-selection" }, [
-                      _c(
-                        "span",
-                        {
-                          staticClass: "tab",
-                          class: { active: _vm.audience === "" },
-                          on: {
-                            click: function($event) {
-                              _vm.audience = ""
-                            }
-                          }
-                        },
-                        [_vm._v("All users")]
+                        2
                       ),
                       _vm._v(" "),
-                      _c(
-                        "span",
-                        {
-                          staticClass: "tab",
-                          class: { active: _vm.audience === "loggedIn" },
-                          on: {
-                            click: function($event) {
-                              _vm.audience = "loggedIn"
-                            }
-                          }
-                        },
-                        [_vm._v("Signed in users")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "span",
-                        {
-                          staticClass: "tab",
-                          class: { active: _vm.audience === "sessions" },
-                          on: {
-                            click: function($event) {
-                              _vm.audience = "sessions"
-                            }
-                          }
-                        },
-                        [_vm._v("Test devices")]
-                      )
+                      _vm.errors.title
+                        ? _c("div", { staticClass: "text-danger" }, [
+                            _vm._v(_vm._s(_vm.errors.title))
+                          ])
+                        : _vm._e()
                     ]),
                     _vm._v(" "),
-                    _vm.audience !== "sessions" && _vm.filters.length
-                      ? [
-                          _c("h4", [
-                            _vm._v("Recipients must match all of the following")
-                          ]),
-                          _vm._v(" "),
-                          _vm._l(_vm.filters, function(filter, index) {
-                            return _c(
-                              "div",
-                              { key: index, staticClass: "filters" },
-                              [
-                                _c(
-                                  "div",
-                                  { staticClass: "form-group clearfix" },
-                                  [
-                                    _c("div", { staticClass: "col-xs-1" }, [
-                                      _c(
-                                        "span",
-                                        {
-                                          staticClass:
-                                            "btn btn-circle btn-default",
-                                          on: {
-                                            click: function($event) {
-                                              return _vm.removeFilter(index)
-                                            }
-                                          }
-                                        },
-                                        [
-                                          _c("i", {
-                                            staticClass: "fa fa-fw fa-minus"
-                                          })
-                                        ]
-                                      )
-                                    ]),
-                                    _vm._v(" "),
-                                    _c("div", { staticClass: "col-xs-4" }, [
-                                      _c("p", [
-                                        _c("input", {
-                                          directives: [
-                                            {
-                                              name: "model",
-                                              rawName: "v-model",
-                                              value: filter.column,
-                                              expression: "filter.column"
-                                            }
-                                          ],
-                                          staticClass: "form-control",
-                                          attrs: {
-                                            type: "text",
-                                            placeholder: "Field name"
-                                          },
-                                          domProps: { value: filter.column },
-                                          on: {
-                                            input: function($event) {
-                                              if ($event.target.composing) {
-                                                return
-                                              }
-                                              _vm.$set(
-                                                filter,
-                                                "column",
-                                                $event.target.value
-                                              )
-                                            }
-                                          }
-                                        })
-                                      ]),
-                                      _vm._v(" "),
-                                      _c(
-                                        "div",
-                                        {
-                                          staticClass: "form-inline filter-path"
-                                        },
-                                        [
-                                          !_vm.showFilterPath(filter)
-                                            ? _c(
-                                                "a",
-                                                {
-                                                  staticClass: "add-path",
-                                                  attrs: { href: "#" },
-                                                  on: {
-                                                    click: function($event) {
-                                                      $event.preventDefault()
-                                                      return _vm.addFilterPath(
-                                                        filter
-                                                      )
-                                                    }
-                                                  }
-                                                },
-                                                [
-                                                  _vm._v(
-                                                    "This field is an object"
-                                                  )
-                                                ]
-                                              )
-                                            : _c(
-                                                "div",
-                                                { staticClass: "form-group" },
-                                                [
-                                                  _c(
-                                                    "label",
-                                                    {
-                                                      staticClass:
-                                                        "filter-path-label"
-                                                    },
-                                                    [_vm._v("Path")]
-                                                  ),
-                                                  _vm._v(" "),
-                                                  _c("input", {
-                                                    directives: [
-                                                      {
-                                                        name: "model",
-                                                        rawName: "v-model",
-                                                        value: filter.path,
-                                                        expression:
-                                                          "filter.path"
-                                                      }
-                                                    ],
-                                                    staticClass: "form-control",
-                                                    attrs: {
-                                                      type: "text",
-                                                      placeholder:
-                                                        "e.g. companies[0].name"
-                                                    },
-                                                    domProps: {
-                                                      value: filter.path
-                                                    },
-                                                    on: {
-                                                      input: function($event) {
-                                                        if (
-                                                          $event.target
-                                                            .composing
-                                                        ) {
-                                                          return
-                                                        }
-                                                        _vm.$set(
-                                                          filter,
-                                                          "path",
-                                                          $event.target.value
-                                                        )
-                                                      }
-                                                    }
-                                                  }),
-                                                  _vm._v(" "),
-                                                  _c("i", {
-                                                    staticClass:
-                                                      "fa fa-fw fa-times",
-                                                    on: {
-                                                      click: function($event) {
-                                                        return _vm.removeFilterPath(
-                                                          filter
-                                                        )
-                                                      }
-                                                    }
-                                                  })
-                                                ]
-                                              )
-                                        ]
-                                      )
-                                    ]),
-                                    _vm._v(" "),
-                                    _c("div", { staticClass: "col-xs-3" }, [
-                                      _c(
-                                        "label",
-                                        { staticClass: "select-proxy-display" },
-                                        [
-                                          _c(
-                                            "select",
-                                            {
-                                              directives: [
-                                                {
-                                                  name: "model",
-                                                  rawName: "v-model",
-                                                  value: filter.condition,
-                                                  expression: "filter.condition"
-                                                }
-                                              ],
-                                              staticClass:
-                                                "hidden-select form-control",
-                                              on: {
-                                                change: function($event) {
-                                                  var $$selectedVal = Array.prototype.filter
-                                                    .call(
-                                                      $event.target.options,
-                                                      function(o) {
-                                                        return o.selected
-                                                      }
-                                                    )
-                                                    .map(function(o) {
-                                                      var val =
-                                                        "_value" in o
-                                                          ? o._value
-                                                          : o.value
-                                                      return val
-                                                    })
-                                                  _vm.$set(
-                                                    filter,
-                                                    "condition",
-                                                    $event.target.multiple
-                                                      ? $$selectedVal
-                                                      : $$selectedVal[0]
-                                                  )
-                                                }
-                                              }
-                                            },
-                                            _vm._l(_vm.filterTypes, function(
-                                              type
-                                            ) {
-                                              return _c("option", {
-                                                key: type.name,
-                                                domProps: {
-                                                  value: type.name,
-                                                  innerHTML: _vm._s(type.label)
-                                                }
-                                              })
-                                            }),
-                                            0
-                                          ),
-                                          _vm._v(" "),
-                                          _c("span", {
-                                            staticClass:
-                                              "icon fa fa-chevron-down"
-                                          })
-                                        ]
-                                      )
-                                    ]),
-                                    _vm._v(" "),
-                                    _c(
-                                      "div",
-                                      { staticClass: "col-xs-4" },
-                                      [
-                                        _c("Filter-Value", {
-                                          attrs: {
-                                            type: _vm.getFilterValueType(
-                                              filter
-                                            ),
-                                            value: filter.value
-                                          },
-                                          on: {
-                                            "update:value": function($event) {
-                                              return _vm.$set(
-                                                filter,
-                                                "value",
-                                                $event
-                                              )
-                                            }
-                                          }
-                                        })
-                                      ],
-                                      1
-                                    )
-                                  ]
-                                )
-                              ]
+                    _c("div", { staticClass: "form-group clearfix" }, [
+                      _c("textarea", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.notification.data.message,
+                            expression: "notification.data.message"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          rows: "4",
+                          placeholder:
+                            "Enter notification message (15 words recommended)",
+                          maxlength: _vm.messageCharacterLimit,
+                          required: ""
+                        },
+                        domProps: { value: _vm.notification.data.message },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.notification.data,
+                              "message",
+                              $event.target.value
                             )
-                          })
-                        ]
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _vm.audience === "sessions"
-                      ? [
-                          _c("h4", [_vm._v("Device IDs")]),
-                          _vm._v(" "),
-                          _c("p", { staticClass: "text-center" }, [
-                            _vm._v(
-                              "To test notifications with individual devices, enter the device ID for each device."
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c(
-                            "p",
-                            [
-                              _c("Token-Field", {
-                                attrs: {
-                                  value: _vm.sessions,
-                                  placeholder:
-                                    "Separate multiple IDs with commas"
-                                },
-                                on: {
-                                  "update:value": function($event) {
-                                    _vm.sessions = $event
-                                  }
-                                }
-                              })
-                            ],
-                            1
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        {
+                          staticClass: "pull-right",
+                          class: {
+                            "text-success": _vm.messageCharactersRemaining >= 0,
+                            "text-danger": _vm.messageCharactersRemaining < 0
+                          }
+                        },
+                        [
+                          _vm._v(
+                            _vm._s(_vm.messageCharactersRemaining) +
+                              " character"
                           ),
-                          _vm._v(" "),
-                          _vm._m(0),
-                          _vm._v(" "),
-                          _vm.errors.sessions
-                            ? _c(
-                                "p",
-                                { staticClass: "text-center text-danger" },
-                                [_vm._v(_vm._s(_vm.errors.sessions))]
-                              )
-                            : _vm._e()
-                        ]
-                      : _vm._e(),
+                          _vm.messageCharactersRemaining !== 1
+                            ? void 0
+                            : _vm._e(),
+                          _vm._v(" left")
+                        ],
+                        2
+                      ),
+                      _vm._v(" "),
+                      _vm.errors.message
+                        ? _c("div", { staticClass: "text-danger" }, [
+                            _vm._v(_vm._s(_vm.errors.message))
+                          ])
+                        : _vm._e()
+                    ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "col-xs-12 filter-summary" }, [
-                      _c("div", { staticClass: "col-xs-8" }, [
-                        _vm.audience !== "sessions"
-                          ? _c("p", [
+                    _c("div", { staticClass: "form-group clearfix" }, [
+                      _c("h3", [_vm._v("Add a link")]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "tab-selection" }, [
+                        _c(
+                          "span",
+                          {
+                            staticClass: "tab",
+                            class: { active: _vm.linkAction === "" },
+                            on: {
+                              click: function($event) {
+                                _vm.linkAction = ""
+                              }
+                            }
+                          },
+                          [_vm._v("No link")]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "span",
+                          {
+                            staticClass: "tab",
+                            class: { active: _vm.linkAction === "screen" },
+                            on: {
+                              click: function($event) {
+                                _vm.linkAction = "screen"
+                              }
+                            }
+                          },
+                          [_vm._v("Link to screen")]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "span",
+                          {
+                            staticClass: "tab",
+                            class: { active: _vm.linkAction === "url" },
+                            on: {
+                              click: function($event) {
+                                _vm.linkAction = "url"
+                              }
+                            }
+                          },
+                          [_vm._v("Link to web page")]
+                        )
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      {
+                        directives: [
+                          {
+                            name: "show",
+                            rawName: "v-show",
+                            value: _vm.linkAction !== "none",
+                            expression: "linkAction !== 'none'"
+                          }
+                        ],
+                        staticClass: "clearfix link-providers"
+                      },
+                      [
+                        _c(
+                          "div",
+                          {
+                            directives: [
+                              {
+                                name: "show",
+                                rawName: "v-show",
+                                value: _vm.linkAction === "screen",
+                                expression: "linkAction === 'screen'"
+                              }
+                            ],
+                            staticClass: "form-group"
+                          },
+                          [
+                            _c("div", { ref: "screenLinkProvider" }),
+                            _vm._v(" "),
+                            _vm.errors.screenLink
+                              ? _c("div", { staticClass: "text-danger" }, [
+                                  _vm._v(_vm._s(_vm.errors.screenLink))
+                                ])
+                              : _vm._e(),
+                            _vm._v(" "),
+                            _c("p", { staticClass: "text-center" }, [
                               _c(
                                 "a",
                                 {
@@ -3555,661 +3115,1183 @@ var render = function() {
                                   on: {
                                     click: function($event) {
                                       $event.preventDefault()
-                                      return _vm.addFilter($event)
+                                      return _vm.previewScreenLink($event)
                                     }
                                   }
                                 },
-                                [
-                                  _c("i", { staticClass: "fa fa-fw fa-plus" }),
-                                  _vm._v(" Add filter")
-                                ]
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "a",
-                                {
-                                  staticClass: "filter-help",
-                                  attrs: {
-                                    href:
-                                      "https://help.fliplet.com/article/177-notifications",
-                                    target: "_blank"
-                                  }
-                                },
-                                [_vm._v("How to add data for filtering users")]
+                                [_vm._v("Preview target screen")]
                               )
                             ])
-                          : _vm._e()
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col-xs-4 text-right" }, [
-                        _c("p", [
-                          _c(
-                            "span",
-                            { staticClass: "recipient-count" },
-                            [
-                              _vm.loadingMatches
-                                ? [
-                                    _vm._v(
-                                      "\n                    Estimating...\n                  "
-                                    )
-                                  ]
-                                : [
-                                    _vm._v(
-                                      "\n                  Estimated: " +
-                                        _vm._s(_vm.matches.count) +
-                                        " user"
-                                    ),
-                                    _vm.matches.count !== 1
-                                      ? [_vm._v("s")]
-                                      : _vm._e(),
-                                    _vm._v(" "),
-                                    _c(
-                                      "tooltip",
-                                      {
-                                        attrs: {
-                                          title:
-                                            "This is an approximation and will depend on the user preference at the time of publish."
-                                        }
-                                      },
-                                      [
-                                        _c("i", {
-                                          staticClass: "fa fa-info-circle"
-                                        })
-                                      ]
-                                    )
-                                  ]
-                            ],
-                            2
-                          )
-                        ])
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c("h3", [_vm._v("Notes")]),
-                      _vm._v(" "),
-                      _c("textarea", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.notes,
-                            expression: "notes"
-                          }
-                        ],
-                        staticClass: "form-control",
-                        attrs: {
-                          rows: "4",
-                          placeholder:
-                            "(Optional) Add some notes to this notification. Your users will not see this."
-                        },
-                        domProps: { value: _vm.notes },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.notes = $event.target.value
-                          }
-                        }
-                      })
-                    ]),
-                    _vm._v(" "),
-                    _c("p", { staticClass: "step-summary" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass: "btn btn-default",
-                          class: { disabled: _vm.saving },
-                          attrs: { href: "#" },
-                          on: {
-                            click: function($event) {
-                              $event.preventDefault()
-                              return _vm.prevStep($event)
-                            }
-                          }
-                        },
-                        [_vm._v("Back")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "a",
-                        {
-                          staticClass: "btn btn-primary",
-                          class: { disabled: _vm.saving },
-                          attrs: { href: "#" },
-                          on: {
-                            click: function($event) {
-                              $event.preventDefault()
-                              return _vm.nextStep($event)
-                            }
-                          }
-                        },
-                        [_vm._v("Prepare for send")]
-                      ),
-                      _c("br"),
-                      _vm._v(" "),
-                      _c(
-                        "a",
-                        {
-                          staticClass: "btn btn-link",
-                          class: { disabled: _vm.saving },
-                          attrs: { href: "#" },
-                          on: {
-                            click: function($event) {
-                              $event.preventDefault()
-                              return _vm.save("draft")
-                            }
-                          }
-                        },
-                        [_vm._v("Save as draft")]
-                      )
-                    ])
-                  ],
-                  2
-                )
-              ])
-            : _vm._e(),
-          _vm._v(" "),
-          _vm.steps[_vm.step].name === "schedule"
-            ? [
-                _vm._m(1),
-                _vm._v(" "),
-                _c("div", { staticClass: "row" }, [
-                  _c("div", { staticClass: "col-md-8 col-md-offset-2" }, [
-                    _c("div", { staticClass: "tab-selection" }, [
-                      _c(
-                        "span",
-                        {
-                          staticClass: "tab",
-                          class: { active: _vm.schedule === "now" },
-                          on: {
-                            click: function($event) {
-                              _vm.schedule = "now"
-                            }
-                          }
-                        },
-                        [_vm._v("Now")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "span",
-                        {
-                          staticClass: "tab",
-                          class: { active: _vm.schedule === "scheduled" },
-                          on: {
-                            click: function($event) {
-                              _vm.schedule = "scheduled"
-                            }
-                          }
-                        },
-                        [_vm._v("Later")]
-                      )
-                    ])
-                  ])
-                ]),
-                _vm._v(" "),
-                _vm.schedule === "scheduled"
-                  ? _c("div", { staticClass: "row" }, [
-                      _c(
-                        "div",
-                        { staticClass: "col-md-8 col-md-offset-2 text-center" },
-                        [
-                          _c("Datepicker", {
-                            attrs: {
-                              inline: true,
-                              "monday-first": true,
-                              required: true,
-                              "disabled-dates": _vm.disabledDates
-                            },
-                            on: {
-                              changedMonth: _vm.autosize,
-                              changedYear: _vm.autosize,
-                              changedDecade: _vm.autosize
-                            },
-                            model: {
-                              value: _vm.scheduledAtDate,
-                              callback: function($$v) {
-                                _vm.scheduledAtDate = $$v
-                              },
-                              expression: "scheduledAtDate"
-                            }
-                          }),
-                          _vm._v(" "),
-                          _c("Timepicker", {
-                            attrs: {
-                              hour: _vm.scheduledAtHour,
-                              minute: _vm.scheduledAtMinute,
-                              timezone: _vm.scheduledAtTimezone,
-                              date: _vm.scheduledAtDate
-                            },
-                            on: {
-                              "update:hour": function($event) {
-                                _vm.scheduledAtHour = $event
-                              },
-                              "update:minute": function($event) {
-                                _vm.scheduledAtMinute = $event
-                              },
-                              "update:timezone": function($event) {
-                                _vm.scheduledAtTimezone = $event
-                              },
-                              "update:date": function($event) {
-                                _vm.scheduledAtDate = $event
-                              }
-                            }
-                          })
-                        ],
-                        1
-                      )
-                    ])
-                  : _vm._e(),
-                _vm._v(" "),
-                _c("div", { staticClass: "row" }, [
-                  _c("h3", [_vm._v("Show notification as...")]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-md-8 col-md-offset-2" }, [
-                    _c("div", { staticClass: "tab-selection" }, [
-                      _c(
-                        "span",
-                        {
-                          staticClass: "tab tab-checked",
-                          class: {
-                            active: _vm.notificationHasChannel("in-app")
-                          },
-                          on: {
-                            click: function($event) {
-                              return _vm.toggleNotificationChannel("in-app")
-                            }
-                          }
-                        },
-                        [_vm._v("In-app notification")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "span",
-                        {
-                          staticClass: "tab tab-checked",
-                          class: {
-                            active:
-                              _vm.notificationHasChannel("push") &&
-                              _vm.pushIsConfigured,
-                            "not-allowed": !_vm.pushIsConfigured
-                          },
-                          on: {
-                            click: function($event) {
-                              return _vm.toggleNotificationChannel("push")
-                            }
-                          }
-                        },
-                        [_vm._v("Push notification")]
-                      )
-                    ]),
-                    _vm._v(" "),
-                    !_vm.pushIsConfigured
-                      ? _c("div", { staticClass: "alert alert-warning" }, [
-                          _vm._v(
-                            "To send push notifications, you must configure push notifications for your native app on "
-                          ),
-                          _c(
-                            "a",
-                            {
-                              attrs: {
-                                href:
-                                  "https://help.fliplet.com/article/23-configure-push-notifications-for-ios",
-                                target: "_blank"
-                              }
-                            },
-                            [_vm._v("iOS")]
-                          ),
-                          _vm._v(" and "),
-                          _c(
-                            "a",
-                            {
-                              attrs: {
-                                href:
-                                  "https://help.fliplet.com/article/40-configure-push-notifications-for-android",
-                                target: "_blank"
-                              }
-                            },
-                            [_vm._v("Android")]
-                          ),
-                          _vm._v(".")
-                        ])
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _vm.errors.channels
-                      ? _c("p", { staticClass: "text-center text-danger" }, [
-                          _vm._v(_vm._s(_vm.errors.channels))
-                        ])
-                      : _vm._e()
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "row" }, [
-                  _c("div", { staticClass: "col-md-8 col-md-offset-2" }, [
-                    _c("p", { staticClass: "step-summary" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass: "btn btn-default",
-                          class: { disabled: _vm.saving },
-                          attrs: { href: "#" },
-                          on: {
-                            click: function($event) {
-                              $event.preventDefault()
-                              return _vm.prevStep($event)
-                            }
-                          }
-                        },
-                        [_vm._v("Back")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "a",
-                        {
-                          staticClass: "btn btn-primary",
-                          class: { disabled: _vm.saving },
-                          attrs: { href: "#" },
-                          on: {
-                            click: function($event) {
-                              $event.preventDefault()
-                              return _vm.nextStep($event)
-                            }
-                          }
-                        },
-                        [_vm._v("Review and send")]
-                      ),
-                      _c("br"),
-                      _vm._v(" "),
-                      _c(
-                        "a",
-                        {
-                          staticClass: "btn btn-link",
-                          class: { disabled: _vm.saving },
-                          attrs: { href: "#" },
-                          on: {
-                            click: function($event) {
-                              $event.preventDefault()
-                              return _vm.save("draft")
-                            }
-                          }
-                        },
-                        [_vm._v("Save as draft")]
-                      )
-                    ])
-                  ])
-                ])
-              ]
-            : _vm._e(),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              directives: [
-                {
-                  name: "show",
-                  rawName: "v-show",
-                  value: _vm.steps[_vm.step].name === "review",
-                  expression: "steps[step].name === 'review'"
-                }
-              ],
-              staticClass: "row notification-review"
-            },
-            [
-              _c(
-                "div",
-                { staticClass: "col-md-10 col-md-offset-1" },
-                [
-                  _c("h3", [_vm._v("Your notification")]),
-                  _vm._v(" "),
-                  _vm.notificationHasChannel("in-app")
-                    ? [
-                        _c("div", { staticClass: "notification-message" }, [
-                          _c("strong", [
-                            _vm._v(_vm._s(_vm.notification.data.title))
-                          ]),
-                          _c("br"),
-                          _vm._v(
-                            _vm._s(_vm.notification.data.message) +
-                              "\n            "
-                          )
-                        ])
-                      ]
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _vm.notificationHasChannel("push")
-                    ? _c("div", { staticClass: "push-notification-preview" }, [
-                        _vm.notificationHasChannel("in-app")
-                          ? _c("h4", [
-                              _vm._v("A push notification will also be sent")
-                            ])
-                          : _vm._e(),
-                        _vm._v(" "),
-                        _vm._m(2),
+                          ]
+                        ),
                         _vm._v(" "),
                         _c(
                           "div",
                           {
-                            staticClass:
-                              "visible-sm-block visible-md-block visible-lg-block",
-                            attrs: { id: "notification-message-preview" }
+                            directives: [
+                              {
+                                name: "show",
+                                rawName: "v-show",
+                                value: _vm.linkAction === "url",
+                                expression: "linkAction === 'url'"
+                              }
+                            ],
+                            staticClass: "form-group"
                           },
                           [
-                            _c("img", {
-                              attrs: {
-                                src: _vm.getAsset(
-                                  "img/notifications_device_preview_empty.jpg"
-                                )
-                              }
-                            }),
+                            _c("div", { ref: "urlLinkProvider" }),
                             _vm._v(" "),
-                            _c(
-                              "div",
-                              { attrs: { id: "notification-preview-home" } },
-                              [
-                                _c("img", {
-                                  staticClass: "app-icon-preview",
-                                  attrs: { src: _vm.appIcon }
-                                }),
-                                _vm._v(" "),
-                                _c("strong", { staticClass: "app-name" }, [
-                                  _vm._v(_vm._s(_vm.appName))
-                                ]),
-                                _vm._v(" "),
-                                _c(
-                                  "span",
-                                  { staticClass: "notification-message" },
-                                  [
-                                    _c("strong", [
-                                      _vm._v(
-                                        _vm._s(_vm.notification.data.title)
-                                      )
-                                    ]),
-                                    _c("br"),
-                                    _vm._v(
-                                      _vm._s(_vm.notification.data.message) +
-                                        "\n                "
-                                    )
-                                  ]
-                                )
-                              ]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "div",
-                              {
-                                attrs: { id: "notification-preview-icon-home" }
-                              },
-                              [
-                                _c("img", {
-                                  staticClass: "app-icon-preview",
-                                  attrs: { src: _vm.appIcon }
-                                }),
-                                _vm._v(" "),
-                                _c("strong", { staticClass: "app-name" }, [
-                                  _vm._v(_vm._s(_vm.appName))
+                            _vm.errors.urlLink
+                              ? _c("div", { staticClass: "text-danger" }, [
+                                  _vm._v(_vm._s(_vm.errors.urlLink))
                                 ])
-                              ]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "div",
-                              {
-                                attrs: { id: "notification-preview-lockscreen" }
-                              },
-                              [
-                                _c("img", {
-                                  staticClass: "app-icon-preview",
-                                  attrs: { src: _vm.appIcon }
-                                }),
-                                _vm._v(" "),
-                                _c("strong", { staticClass: "app-name" }, [
-                                  _vm._v(_vm._s(_vm.appName))
-                                ]),
-                                _vm._v(" "),
-                                _c(
-                                  "span",
-                                  { staticClass: "notification-message" },
-                                  [
-                                    _c("strong", [
-                                      _vm._v(
-                                        _vm._s(_vm.notification.data.title)
-                                      )
-                                    ]),
-                                    _c("br"),
-                                    _vm._v(
-                                      _vm._s(_vm.notification.data.message) +
-                                        "\n                "
-                                    )
-                                  ]
-                                )
-                              ]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "div",
-                              {
-                                attrs: {
-                                  id: "notification-preview-notification-center"
-                                }
-                              },
-                              [
-                                _c("img", {
-                                  staticClass: "app-icon-preview",
-                                  attrs: { src: _vm.appIcon }
-                                }),
-                                _vm._v(" "),
-                                _c("strong", { staticClass: "app-name" }),
-                                _vm._v(" "),
-                                _c(
-                                  "span",
-                                  { staticClass: "notification-message" },
-                                  [
-                                    _c("strong", [
-                                      _vm._v(
-                                        _vm._s(_vm.notification.data.title)
-                                      )
-                                    ]),
-                                    _c("br"),
-                                    _vm._v(
-                                      _vm._s(_vm.notification.data.message) +
-                                        "\n                "
-                                    )
-                                  ]
-                                )
-                              ]
-                            )
+                              : _vm._e()
                           ]
                         )
-                      ])
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c(
-                    "h4",
-                    [
-                      _vm._v("Sending to "),
-                      _c("strong", [_vm._v(_vm._s(_vm.matches.count))]),
-                      _vm._v(" " + _vm._s(_vm.audienceVerbose) + " user"),
-                      _vm.matches.count !== 1 ? [_vm._v("s")] : _vm._e(),
-                      _vm._v(" "),
-                      _vm.filters.length
-                        ? [_vm._v("matching all of the following")]
-                        : _vm._e()
-                    ],
-                    2
-                  ),
-                  _vm._v(" "),
-                  _vm.filters.length
-                    ? [
-                        _c(
-                          "ul",
-                          { staticClass: "filter-summary-items" },
-                          _vm._l(_vm.filters, function(filter, index) {
-                            return _c("li", {
-                              key: index,
-                              domProps: {
-                                innerHTML: _vm._s(_vm.getFilterVerbose(filter))
-                              }
-                            })
-                          }),
-                          0
-                        )
                       ]
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c("h4", [
-                    _vm._v(
-                      "Send the notification " + _vm._s(_vm.scheduleVerbose)
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _vm.schedule === "scheduled"
-                    ? _c("p", {
-                        domProps: { innerHTML: _vm._s(_vm.notificationDate) }
-                      })
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c("p", { staticClass: "step-summary" }, [
-                    _c(
-                      "a",
-                      {
-                        staticClass: "btn btn-default",
-                        class: { disabled: _vm.saving },
-                        attrs: { href: "#" },
-                        on: {
-                          click: function($event) {
-                            $event.preventDefault()
-                            return _vm.prevStep($event)
-                          }
-                        }
-                      },
-                      [_vm._v("Back")]
                     ),
                     _vm._v(" "),
-                    _c(
-                      "a",
-                      {
-                        staticClass: "btn btn-primary",
-                        class: { disabled: _vm.saving },
-                        attrs: { href: "#" },
-                        on: {
-                          click: function($event) {
-                            $event.preventDefault()
-                            return _vm.send()
+                    _c("p", { staticClass: "step-summary" }, [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "btn btn-default",
+                          attrs: { href: "#" },
+                          on: {
+                            click: function($event) {
+                              $event.preventDefault()
+                              return _vm.cancel($event)
+                            }
                           }
-                        }
-                      },
-                      [_vm._v("Send")]
+                        },
+                        [_vm._v("Cancel")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "a",
+                        {
+                          staticClass: "btn btn-primary",
+                          attrs: { href: "#" },
+                          on: {
+                            click: function($event) {
+                              $event.preventDefault()
+                              return _vm.nextStep($event)
+                            }
+                          }
+                        },
+                        [_vm._v("Select recipients")]
+                      ),
+                      _c("br"),
+                      _vm._v(" "),
+                      _c(
+                        "a",
+                        {
+                          staticClass: "btn btn-link",
+                          attrs: { href: "#" },
+                          on: {
+                            click: function($event) {
+                              $event.preventDefault()
+                              return _vm.save("draft")
+                            }
+                          }
+                        },
+                        [_vm._v("Save as draft")]
+                      )
+                    ])
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _vm.steps[_vm.step].name === "recipients"
+                ? _c("div", { staticClass: "row" }, [
+                    _c(
+                      "div",
+                      { staticClass: "col-md-10 col-md-offset-1" },
+                      [
+                        _c("h3", [_vm._v("Send notification to...")]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "tab-selection" }, [
+                          _c(
+                            "span",
+                            {
+                              staticClass: "tab",
+                              class: { active: _vm.audience === "" },
+                              on: {
+                                click: function($event) {
+                                  _vm.audience = ""
+                                }
+                              }
+                            },
+                            [_vm._v("All users")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "span",
+                            {
+                              staticClass: "tab",
+                              class: { active: _vm.audience === "loggedIn" },
+                              on: {
+                                click: function($event) {
+                                  _vm.audience = "loggedIn"
+                                }
+                              }
+                            },
+                            [_vm._v("Signed in users")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "span",
+                            {
+                              staticClass: "tab",
+                              class: { active: _vm.audience === "sessions" },
+                              on: {
+                                click: function($event) {
+                                  _vm.audience = "sessions"
+                                }
+                              }
+                            },
+                            [_vm._v("Test devices")]
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _vm.audience !== "sessions" && _vm.filters.length
+                          ? [
+                              _c("h4", [
+                                _vm._v(
+                                  "Recipients must match all of the following"
+                                )
+                              ]),
+                              _vm._v(" "),
+                              _vm._l(_vm.filters, function(filter, index) {
+                                return _c(
+                                  "div",
+                                  { key: index, staticClass: "filters" },
+                                  [
+                                    _c(
+                                      "div",
+                                      { staticClass: "form-group clearfix" },
+                                      [
+                                        _c("div", { staticClass: "col-xs-1" }, [
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass:
+                                                "btn btn-circle btn-default",
+                                              on: {
+                                                click: function($event) {
+                                                  return _vm.removeFilter(index)
+                                                }
+                                              }
+                                            },
+                                            [
+                                              _c("i", {
+                                                staticClass: "fa fa-fw fa-minus"
+                                              })
+                                            ]
+                                          )
+                                        ]),
+                                        _vm._v(" "),
+                                        _c("div", { staticClass: "col-xs-4" }, [
+                                          _c("p", [
+                                            _c("input", {
+                                              directives: [
+                                                {
+                                                  name: "model",
+                                                  rawName: "v-model",
+                                                  value: filter.column,
+                                                  expression: "filter.column"
+                                                }
+                                              ],
+                                              staticClass: "form-control",
+                                              attrs: {
+                                                type: "text",
+                                                placeholder: "Field name"
+                                              },
+                                              domProps: {
+                                                value: filter.column
+                                              },
+                                              on: {
+                                                input: function($event) {
+                                                  if ($event.target.composing) {
+                                                    return
+                                                  }
+                                                  _vm.$set(
+                                                    filter,
+                                                    "column",
+                                                    $event.target.value
+                                                  )
+                                                }
+                                              }
+                                            })
+                                          ]),
+                                          _vm._v(" "),
+                                          _c(
+                                            "div",
+                                            {
+                                              staticClass:
+                                                "form-inline filter-path"
+                                            },
+                                            [
+                                              !_vm.showFilterPath(filter)
+                                                ? _c(
+                                                    "a",
+                                                    {
+                                                      staticClass: "add-path",
+                                                      attrs: { href: "#" },
+                                                      on: {
+                                                        click: function(
+                                                          $event
+                                                        ) {
+                                                          $event.preventDefault()
+                                                          return _vm.addFilterPath(
+                                                            filter
+                                                          )
+                                                        }
+                                                      }
+                                                    },
+                                                    [
+                                                      _vm._v(
+                                                        "This field is an object"
+                                                      )
+                                                    ]
+                                                  )
+                                                : _c(
+                                                    "div",
+                                                    {
+                                                      staticClass: "form-group"
+                                                    },
+                                                    [
+                                                      _c(
+                                                        "label",
+                                                        {
+                                                          staticClass:
+                                                            "filter-path-label"
+                                                        },
+                                                        [_vm._v("Path")]
+                                                      ),
+                                                      _vm._v(" "),
+                                                      _c("input", {
+                                                        directives: [
+                                                          {
+                                                            name: "model",
+                                                            rawName: "v-model",
+                                                            value: filter.path,
+                                                            expression:
+                                                              "filter.path"
+                                                          }
+                                                        ],
+                                                        staticClass:
+                                                          "form-control",
+                                                        attrs: {
+                                                          type: "text",
+                                                          placeholder:
+                                                            "e.g. companies[0].name"
+                                                        },
+                                                        domProps: {
+                                                          value: filter.path
+                                                        },
+                                                        on: {
+                                                          input: function(
+                                                            $event
+                                                          ) {
+                                                            if (
+                                                              $event.target
+                                                                .composing
+                                                            ) {
+                                                              return
+                                                            }
+                                                            _vm.$set(
+                                                              filter,
+                                                              "path",
+                                                              $event.target
+                                                                .value
+                                                            )
+                                                          }
+                                                        }
+                                                      }),
+                                                      _vm._v(" "),
+                                                      _c("i", {
+                                                        staticClass:
+                                                          "fa fa-fw fa-times",
+                                                        on: {
+                                                          click: function(
+                                                            $event
+                                                          ) {
+                                                            return _vm.removeFilterPath(
+                                                              filter
+                                                            )
+                                                          }
+                                                        }
+                                                      })
+                                                    ]
+                                                  )
+                                            ]
+                                          )
+                                        ]),
+                                        _vm._v(" "),
+                                        _c("div", { staticClass: "col-xs-3" }, [
+                                          _c(
+                                            "label",
+                                            {
+                                              staticClass:
+                                                "select-proxy-display"
+                                            },
+                                            [
+                                              _c(
+                                                "select",
+                                                {
+                                                  directives: [
+                                                    {
+                                                      name: "model",
+                                                      rawName: "v-model",
+                                                      value: filter.condition,
+                                                      expression:
+                                                        "filter.condition"
+                                                    }
+                                                  ],
+                                                  staticClass:
+                                                    "hidden-select form-control",
+                                                  on: {
+                                                    change: function($event) {
+                                                      var $$selectedVal = Array.prototype.filter
+                                                        .call(
+                                                          $event.target.options,
+                                                          function(o) {
+                                                            return o.selected
+                                                          }
+                                                        )
+                                                        .map(function(o) {
+                                                          var val =
+                                                            "_value" in o
+                                                              ? o._value
+                                                              : o.value
+                                                          return val
+                                                        })
+                                                      _vm.$set(
+                                                        filter,
+                                                        "condition",
+                                                        $event.target.multiple
+                                                          ? $$selectedVal
+                                                          : $$selectedVal[0]
+                                                      )
+                                                    }
+                                                  }
+                                                },
+                                                _vm._l(
+                                                  _vm.filterTypes,
+                                                  function(type) {
+                                                    return _c("option", {
+                                                      key: type.name,
+                                                      domProps: {
+                                                        value: type.name,
+                                                        innerHTML: _vm._s(
+                                                          type.label
+                                                        )
+                                                      }
+                                                    })
+                                                  }
+                                                ),
+                                                0
+                                              ),
+                                              _vm._v(" "),
+                                              _c("span", {
+                                                staticClass:
+                                                  "icon fa fa-chevron-down"
+                                              })
+                                            ]
+                                          )
+                                        ]),
+                                        _vm._v(" "),
+                                        _c(
+                                          "div",
+                                          { staticClass: "col-xs-4" },
+                                          [
+                                            _c("Filter-Value", {
+                                              attrs: {
+                                                type: _vm.getFilterValueType(
+                                                  filter
+                                                ),
+                                                value: filter.value
+                                              },
+                                              on: {
+                                                "update:value": function(
+                                                  $event
+                                                ) {
+                                                  return _vm.$set(
+                                                    filter,
+                                                    "value",
+                                                    $event
+                                                  )
+                                                }
+                                              }
+                                            })
+                                          ],
+                                          1
+                                        )
+                                      ]
+                                    )
+                                  ]
+                                )
+                              })
+                            ]
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.audience === "sessions"
+                          ? [
+                              _c("h4", [_vm._v("Device IDs")]),
+                              _vm._v(" "),
+                              _c("p", { staticClass: "text-center" }, [
+                                _vm._v(
+                                  "To test notifications with individual devices, enter the device ID for each device."
+                                )
+                              ]),
+                              _vm._v(" "),
+                              _c(
+                                "p",
+                                [
+                                  _c("Token-Field", {
+                                    attrs: {
+                                      value: _vm.sessions,
+                                      placeholder:
+                                        "Separate multiple IDs with commas"
+                                    },
+                                    on: {
+                                      "update:value": function($event) {
+                                        _vm.sessions = $event
+                                      }
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _vm._m(0),
+                              _vm._v(" "),
+                              _vm.errors.sessions
+                                ? _c(
+                                    "p",
+                                    { staticClass: "text-center text-danger" },
+                                    [_vm._v(_vm._s(_vm.errors.sessions))]
+                                  )
+                                : _vm._e()
+                            ]
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "col-xs-12 filter-summary" }, [
+                          _c("div", { staticClass: "col-xs-8" }, [
+                            _vm.audience !== "sessions"
+                              ? _c("p", [
+                                  _c(
+                                    "a",
+                                    {
+                                      staticClass: "btn btn-default",
+                                      attrs: { href: "#" },
+                                      on: {
+                                        click: function($event) {
+                                          $event.preventDefault()
+                                          return _vm.addFilter($event)
+                                        }
+                                      }
+                                    },
+                                    [
+                                      _c("i", {
+                                        staticClass: "fa fa-fw fa-plus"
+                                      }),
+                                      _vm._v(" Add filter")
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "a",
+                                    {
+                                      staticClass: "filter-help",
+                                      attrs: {
+                                        href:
+                                          "https://help.fliplet.com/article/177-notifications",
+                                        target: "_blank"
+                                      }
+                                    },
+                                    [
+                                      _vm._v(
+                                        "How to add data for filtering users"
+                                      )
+                                    ]
+                                  )
+                                ])
+                              : _vm._e()
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "col-xs-4 text-right" }, [
+                            _c("p", [
+                              _c(
+                                "span",
+                                { staticClass: "recipient-count" },
+                                [
+                                  _vm.loadingMatches
+                                    ? [
+                                        _vm._v(
+                                          "\n                    Estimating...\n                  "
+                                        )
+                                      ]
+                                    : [
+                                        _vm._v(
+                                          "\n                  Estimated: " +
+                                            _vm._s(_vm.matches.count) +
+                                            " user"
+                                        ),
+                                        _vm.matches.count !== 1
+                                          ? [_vm._v("s")]
+                                          : _vm._e(),
+                                        _vm._v(" "),
+                                        _c(
+                                          "tooltip",
+                                          {
+                                            attrs: {
+                                              title:
+                                                "This is an approximation and will depend on the user preference at the time of publish."
+                                            }
+                                          },
+                                          [
+                                            _c("i", {
+                                              staticClass: "fa fa-info-circle"
+                                            })
+                                          ]
+                                        )
+                                      ]
+                                ],
+                                2
+                              )
+                            ])
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "form-group" }, [
+                          _c("h3", [_vm._v("Notes")]),
+                          _vm._v(" "),
+                          _c("textarea", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.notes,
+                                expression: "notes"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: {
+                              rows: "4",
+                              placeholder:
+                                "(Optional) Add some notes to this notification. Your users will not see this."
+                            },
+                            domProps: { value: _vm.notes },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.notes = $event.target.value
+                              }
+                            }
+                          })
+                        ]),
+                        _vm._v(" "),
+                        _c("p", { staticClass: "step-summary" }, [
+                          _c(
+                            "a",
+                            {
+                              staticClass: "btn btn-default",
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  return _vm.prevStep($event)
+                                }
+                              }
+                            },
+                            [_vm._v("Back")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "a",
+                            {
+                              staticClass: "btn btn-primary",
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  return _vm.nextStep($event)
+                                }
+                              }
+                            },
+                            [_vm._v("Prepare for send")]
+                          ),
+                          _c("br"),
+                          _vm._v(" "),
+                          _c(
+                            "a",
+                            {
+                              staticClass: "btn btn-link",
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  return _vm.save("draft")
+                                }
+                              }
+                            },
+                            [_vm._v("Save as draft")]
+                          )
+                        ])
+                      ],
+                      2
                     )
                   ])
-                ],
-                2
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.steps[_vm.step].name === "schedule"
+                ? [
+                    _vm._m(1),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "row" }, [
+                      _c("div", { staticClass: "col-md-8 col-md-offset-2" }, [
+                        _c("div", { staticClass: "tab-selection" }, [
+                          _c(
+                            "span",
+                            {
+                              staticClass: "tab",
+                              class: { active: _vm.schedule === "now" },
+                              on: {
+                                click: function($event) {
+                                  _vm.schedule = "now"
+                                }
+                              }
+                            },
+                            [_vm._v("Now")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "span",
+                            {
+                              staticClass: "tab",
+                              class: { active: _vm.schedule === "scheduled" },
+                              on: {
+                                click: function($event) {
+                                  _vm.schedule = "scheduled"
+                                }
+                              }
+                            },
+                            [_vm._v("Later")]
+                          )
+                        ])
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _vm.schedule === "scheduled"
+                      ? _c("div", { staticClass: "row" }, [
+                          _c(
+                            "div",
+                            {
+                              staticClass:
+                                "col-md-8 col-md-offset-2 text-center"
+                            },
+                            [
+                              _c("Datepicker", {
+                                attrs: {
+                                  inline: true,
+                                  "monday-first": true,
+                                  required: true,
+                                  "disabled-dates": _vm.disabledDates
+                                },
+                                on: {
+                                  changedMonth: _vm.autosize,
+                                  changedYear: _vm.autosize,
+                                  changedDecade: _vm.autosize
+                                },
+                                model: {
+                                  value: _vm.scheduledAtDate,
+                                  callback: function($$v) {
+                                    _vm.scheduledAtDate = $$v
+                                  },
+                                  expression: "scheduledAtDate"
+                                }
+                              }),
+                              _vm._v(" "),
+                              _c("Timepicker", {
+                                attrs: {
+                                  hour: _vm.scheduledAtHour,
+                                  minute: _vm.scheduledAtMinute,
+                                  timezone: _vm.scheduledAtTimezone,
+                                  date: _vm.scheduledAtDate
+                                },
+                                on: {
+                                  "update:hour": function($event) {
+                                    _vm.scheduledAtHour = $event
+                                  },
+                                  "update:minute": function($event) {
+                                    _vm.scheduledAtMinute = $event
+                                  },
+                                  "update:timezone": function($event) {
+                                    _vm.scheduledAtTimezone = $event
+                                  },
+                                  "update:date": function($event) {
+                                    _vm.scheduledAtDate = $event
+                                  }
+                                }
+                              })
+                            ],
+                            1
+                          )
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "row" }, [
+                      _c("h3", [_vm._v("Show notification as...")]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-md-8 col-md-offset-2" }, [
+                        _c("div", { staticClass: "tab-selection" }, [
+                          _c(
+                            "span",
+                            {
+                              staticClass: "tab tab-checked",
+                              class: {
+                                active: _vm.notificationHasChannel("in-app")
+                              },
+                              on: {
+                                click: function($event) {
+                                  return _vm.toggleNotificationChannel("in-app")
+                                }
+                              }
+                            },
+                            [_vm._v("In-app notification")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "span",
+                            {
+                              staticClass: "tab tab-checked",
+                              class: {
+                                active:
+                                  _vm.notificationHasChannel("push") &&
+                                  _vm.pushIsConfigured,
+                                "not-allowed": !_vm.pushIsConfigured
+                              },
+                              on: {
+                                click: function($event) {
+                                  return _vm.toggleNotificationChannel("push")
+                                }
+                              }
+                            },
+                            [_vm._v("Push notification")]
+                          )
+                        ]),
+                        _vm._v(" "),
+                        !_vm.pushIsConfigured
+                          ? _c("div", { staticClass: "alert alert-warning" }, [
+                              _vm._v(
+                                "To send push notifications, you must configure push notifications for your native app on "
+                              ),
+                              _c(
+                                "a",
+                                {
+                                  attrs: {
+                                    href:
+                                      "https://help.fliplet.com/article/23-configure-push-notifications-for-ios",
+                                    target: "_blank"
+                                  }
+                                },
+                                [_vm._v("iOS")]
+                              ),
+                              _vm._v(" and "),
+                              _c(
+                                "a",
+                                {
+                                  attrs: {
+                                    href:
+                                      "https://help.fliplet.com/article/40-configure-push-notifications-for-android",
+                                    target: "_blank"
+                                  }
+                                },
+                                [_vm._v("Android")]
+                              ),
+                              _vm._v(".")
+                            ])
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.errors.channels
+                          ? _c(
+                              "p",
+                              { staticClass: "text-center text-danger" },
+                              [_vm._v(_vm._s(_vm.errors.channels))]
+                            )
+                          : _vm._e()
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "row" }, [
+                      _c("div", { staticClass: "col-md-8 col-md-offset-2" }, [
+                        _c("p", { staticClass: "step-summary" }, [
+                          _c(
+                            "a",
+                            {
+                              staticClass: "btn btn-default",
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  return _vm.prevStep($event)
+                                }
+                              }
+                            },
+                            [_vm._v("Back")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "a",
+                            {
+                              staticClass: "btn btn-primary",
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  return _vm.nextStep($event)
+                                }
+                              }
+                            },
+                            [_vm._v("Review")]
+                          ),
+                          _c("br"),
+                          _vm._v(" "),
+                          _c(
+                            "a",
+                            {
+                              staticClass: "btn btn-link",
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  return _vm.save("draft")
+                                }
+                              }
+                            },
+                            [_vm._v("Save as draft")]
+                          )
+                        ])
+                      ])
+                    ])
+                  ]
+                : _vm._e(),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.steps[_vm.step].name === "review",
+                      expression: "steps[step].name === 'review'"
+                    }
+                  ],
+                  staticClass: "row notification-review"
+                },
+                [
+                  _c(
+                    "div",
+                    { staticClass: "col-md-10 col-md-offset-1" },
+                    [
+                      _c("h3", [_vm._v("Your notification")]),
+                      _vm._v(" "),
+                      _vm.notificationHasChannel("in-app")
+                        ? [
+                            _c("div", { staticClass: "notification-message" }, [
+                              _c("strong", [
+                                _vm._v(_vm._s(_vm.notification.data.title))
+                              ]),
+                              _c("br"),
+                              _vm._v(
+                                _vm._s(_vm.notification.data.message) +
+                                  "\n            "
+                              )
+                            ])
+                          ]
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _vm.notificationHasChannel("push")
+                        ? _c(
+                            "div",
+                            { staticClass: "push-notification-preview" },
+                            [
+                              _vm.notificationHasChannel("in-app")
+                                ? _c("h4", [
+                                    _vm._v(
+                                      "A push notification will also be sent"
+                                    )
+                                  ])
+                                : _vm._e(),
+                              _vm._v(" "),
+                              _vm._m(2),
+                              _vm._v(" "),
+                              _c(
+                                "div",
+                                {
+                                  staticClass:
+                                    "visible-sm-block visible-md-block visible-lg-block",
+                                  attrs: { id: "notification-message-preview" }
+                                },
+                                [
+                                  _c("img", {
+                                    attrs: {
+                                      src: _vm.getAsset(
+                                        "img/notifications_device_preview_empty.jpg"
+                                      )
+                                    }
+                                  }),
+                                  _vm._v(" "),
+                                  _c(
+                                    "div",
+                                    {
+                                      attrs: { id: "notification-preview-home" }
+                                    },
+                                    [
+                                      _c("img", {
+                                        staticClass: "app-icon-preview",
+                                        attrs: { src: _vm.appIcon }
+                                      }),
+                                      _vm._v(" "),
+                                      _c(
+                                        "strong",
+                                        { staticClass: "app-name" },
+                                        [_vm._v(_vm._s(_vm.appName))]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "span",
+                                        { staticClass: "notification-message" },
+                                        [
+                                          _c("strong", [
+                                            _vm._v(
+                                              _vm._s(
+                                                _vm.notification.data.title
+                                              )
+                                            )
+                                          ]),
+                                          _c("br"),
+                                          _vm._v(
+                                            _vm._s(
+                                              _vm.notification.data.message
+                                            ) + "\n                "
+                                          )
+                                        ]
+                                      )
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "div",
+                                    {
+                                      attrs: {
+                                        id: "notification-preview-icon-home"
+                                      }
+                                    },
+                                    [
+                                      _c("img", {
+                                        staticClass: "app-icon-preview",
+                                        attrs: { src: _vm.appIcon }
+                                      }),
+                                      _vm._v(" "),
+                                      _c(
+                                        "strong",
+                                        { staticClass: "app-name" },
+                                        [_vm._v(_vm._s(_vm.appName))]
+                                      )
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "div",
+                                    {
+                                      attrs: {
+                                        id: "notification-preview-lockscreen"
+                                      }
+                                    },
+                                    [
+                                      _c("img", {
+                                        staticClass: "app-icon-preview",
+                                        attrs: { src: _vm.appIcon }
+                                      }),
+                                      _vm._v(" "),
+                                      _c(
+                                        "strong",
+                                        { staticClass: "app-name" },
+                                        [_vm._v(_vm._s(_vm.appName))]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "span",
+                                        { staticClass: "notification-message" },
+                                        [
+                                          _c("strong", [
+                                            _vm._v(
+                                              _vm._s(
+                                                _vm.notification.data.title
+                                              )
+                                            )
+                                          ]),
+                                          _c("br"),
+                                          _vm._v(
+                                            _vm._s(
+                                              _vm.notification.data.message
+                                            ) + "\n                "
+                                          )
+                                        ]
+                                      )
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "div",
+                                    {
+                                      attrs: {
+                                        id:
+                                          "notification-preview-notification-center"
+                                      }
+                                    },
+                                    [
+                                      _c("img", {
+                                        staticClass: "app-icon-preview",
+                                        attrs: { src: _vm.appIcon }
+                                      }),
+                                      _vm._v(" "),
+                                      _c("strong", { staticClass: "app-name" }),
+                                      _vm._v(" "),
+                                      _c(
+                                        "span",
+                                        { staticClass: "notification-message" },
+                                        [
+                                          _c("strong", [
+                                            _vm._v(
+                                              _vm._s(
+                                                _vm.notification.data.title
+                                              )
+                                            )
+                                          ]),
+                                          _c("br"),
+                                          _vm._v(
+                                            _vm._s(
+                                              _vm.notification.data.message
+                                            ) + "\n                "
+                                          )
+                                        ]
+                                      )
+                                    ]
+                                  )
+                                ]
+                              )
+                            ]
+                          )
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _c(
+                        "h4",
+                        [
+                          _vm._v("Sending to "),
+                          _c("strong", [_vm._v(_vm._s(_vm.matches.count))]),
+                          _vm._v(" " + _vm._s(_vm.audienceVerbose) + " user"),
+                          _vm.matches.count !== 1 ? [_vm._v("s")] : _vm._e(),
+                          _vm._v(" "),
+                          _vm.filters.length
+                            ? [_vm._v("matching all of the following")]
+                            : _vm._e()
+                        ],
+                        2
+                      ),
+                      _vm._v(" "),
+                      _vm.filters.length
+                        ? [
+                            _c(
+                              "ul",
+                              { staticClass: "filter-summary-items" },
+                              _vm._l(_vm.filters, function(filter, index) {
+                                return _c("li", {
+                                  key: index,
+                                  domProps: {
+                                    innerHTML: _vm._s(
+                                      _vm.getFilterVerbose(filter)
+                                    )
+                                  }
+                                })
+                              }),
+                              0
+                            )
+                          ]
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _c("h4", [
+                        _vm._v(
+                          "Send the notification " + _vm._s(_vm.scheduleVerbose)
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _vm.schedule === "scheduled"
+                        ? _c("p", {
+                            domProps: {
+                              innerHTML: _vm._s(_vm.notificationDate)
+                            }
+                          })
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _c("p", { staticClass: "step-summary" }, [
+                        _c(
+                          "a",
+                          {
+                            staticClass: "btn btn-default",
+                            attrs: { href: "#" },
+                            on: {
+                              click: function($event) {
+                                $event.preventDefault()
+                                return _vm.prevStep($event)
+                              }
+                            }
+                          },
+                          [_vm._v("Back")]
+                        ),
+                        _vm._v(" "),
+                        _c("a", {
+                          staticClass: "btn btn-primary",
+                          attrs: { href: "#" },
+                          domProps: { innerHTML: _vm._s(_vm.getSendLabel()) },
+                          on: {
+                            click: function($event) {
+                              $event.preventDefault()
+                              return _vm.send()
+                            }
+                          }
+                        }),
+                        _c("br"),
+                        _vm._v(" "),
+                        _c(
+                          "a",
+                          {
+                            staticClass: "btn btn-link",
+                            attrs: { href: "#" },
+                            on: {
+                              click: function($event) {
+                                $event.preventDefault()
+                                return _vm.save("draft")
+                              }
+                            }
+                          },
+                          [_vm._v("Save as draft")]
+                        )
+                      ])
+                    ],
+                    2
+                  )
+                ]
               )
-            ]
+            ],
+            2
           )
-        ],
-        2
-      )
     ])
   ])
 }
@@ -4511,6 +4593,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -4530,10 +4619,13 @@ var defaultAudience = '';
 var defaultSchedule = 'now';
 var defaultScheduledAt = moment().add(2, 'hours');
 var defaultConfirmationMessage = 'Your notification is saved.';
+var defaultSaveMessage = 'Saving';
+var defaultSendLabel = 'Send notification';
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      saving: false,
+      isSaving: false,
+      saveMessage: 'Saving',
       showTimezone: Object(_store__WEBPACK_IMPORTED_MODULE_0__["getShowTimezone"])(),
       appName: Fliplet.Env.get('appName'),
       appIcon: this.getAsset('img/app-icon.png'),
@@ -4751,6 +4843,9 @@ var defaultConfirmationMessage = 'Your notification is saved.';
     }
   },
   watch: {
+    isSaving: function isSaving() {
+      this.autosize();
+    },
     notification: function notification() {
       this.autosize();
     },
@@ -5063,6 +5158,44 @@ var defaultConfirmationMessage = 'Your notification is saved.';
 
       return defaultConfirmationMessage;
     },
+    getSaveMessage: function getSaveMessage(from, to) {
+      // Returns a save message based on the status
+      // the notification is going from and to
+      if (to === 'draft') {
+        return 'Saving as draft';
+      }
+
+      if (to === 'published') {
+        return 'Sending notification';
+      }
+
+      if (to === 'scheduled') {
+        if (from === 'draft') {
+          return 'Scheduling notification';
+        }
+
+        if (from === 'scheduled') {
+          return 'Saving notification';
+        }
+      }
+
+      return defaultSaveMessage;
+    },
+    getSendLabel: function getSendLabel() {
+      if (this.schedule === 'now') {
+        return 'Send notification';
+      }
+
+      if (this.schedule === 'scheduled') {
+        if (this.notification.status === 'scheduled') {
+          return 'Save notification';
+        }
+
+        return 'Schedule notification';
+      }
+
+      return defaultSendLabel;
+    },
     save: function save(status) {
       var _this4 = this;
 
@@ -5171,7 +5304,8 @@ var defaultConfirmationMessage = 'Your notification is saved.';
             _this4.notification.pushNotification = pushNotification;
           }
 
-          _this4.saving = true;
+          _this4.isSaving = true;
+          _this4.saveMessage = _this4.getSaveMessage(statusFrom, statusTo);
 
           if (!_.get(_this4, 'notification.id')) {
             return _this4.instance.insert(_this4.notification).then(resolve);
@@ -5187,7 +5321,7 @@ var defaultConfirmationMessage = 'Your notification is saved.';
 
         _this4.backToNotifications();
       })["catch"](function (error) {
-        _this4.saving = false;
+        _this4.isSaving = false;
         Fliplet.Modal.alert({
           title: 'Error saving notification',
           message: Fliplet.parseError(error)
