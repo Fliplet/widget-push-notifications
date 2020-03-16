@@ -5390,23 +5390,27 @@ var filterTypes = [{
   name: 'notempty',
   label: 'Is not empty',
   labelVerbose: 'is not empty'
-}, {
-  name: 'gt',
-  label: 'Greater than',
-  labelVerbose: 'is greater than'
-}, {
-  name: 'gte',
-  label: 'Greater than or equal to',
-  labelVerbose: 'is greater than or equal to'
-}, {
-  name: 'lt',
-  label: 'Less than',
-  labelVerbose: 'is less than'
-}, {
-  name: 'lte',
-  label: 'Less than or equal to',
-  labelVerbose: 'is less than or equal to'
-}];
+} // {
+//   name: 'gt',
+//   label: 'Greater than',
+//   labelVerbose: 'is greater than'
+// },
+// {
+//   name: 'gte',
+//   label: 'Greater than or equal to',
+//   labelVerbose: 'is greater than or equal to'
+// },
+// {
+//   name: 'lt',
+//   label: 'Less than',
+//   labelVerbose: 'is less than'
+// },
+// {
+//   name: 'lte',
+//   label: 'Less than or equal to',
+//   labelVerbose: 'is less than or equal to'
+// }
+];
 function getFilterScope(filter) {
   filter = filter || {};
   var column = filter.column;
