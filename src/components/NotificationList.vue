@@ -41,11 +41,13 @@
                   :data-job-id="notification.job && notification.job.id">
                   <td class="list-col-content">
                     <p>
-                      <span v-if="notification.status === 'draft'" class="label label-default">Draft</span>
-                      <template v-else>
-                        <span v-if="notification.status === 'scheduled'" class="label label-info">Scheduled for {{ getNotificationDate(notification)}}</span>
-                        <span v-else class="label label-success">Sent on {{ getNotificationDate(notification) }}</span>
-                      </template>
+                      <tooltip :title="getNotificationTooltip(notification)">
+                        <span v-if="notification.status === 'draft'" class="label label-default">Draft</span>
+                        <template v-else>
+                          <span v-if="notification.status === 'scheduled'" class="label label-info">Scheduled for {{ getNotificationDate(notification)}}</span>
+                          <span v-else class="label label-success">Sent on {{ getNotificationDate(notification) }}</span>
+                        </template>
+                      </tooltip>
                     </p>
                     <p><strong>{{ notification.data.title }}</strong><br>{{ notification.data.message }}</p>
                     <Notification-Link :notification="notification"></Notification-Link>
@@ -185,6 +187,17 @@ export default {
       const updatedAt = moment(notification.updatedAt).unix();
 
       return `${id}-${createdAt}-${updatedAt}`;
+    },
+    getNotificationTooltip(notification) {
+      if (notification.id) {
+        return `Notification ${notification.id}`;
+      }
+
+      if (notification.job && notification.job.id) {
+        return `Job ${notification.job.id}`;
+      }
+
+      return 'No ID found';
     },
     initialize() {
       return Fliplet.Pages.get().then((pages) => {
