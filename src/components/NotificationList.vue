@@ -341,7 +341,9 @@ export default {
       bus.$emit('set-view', 'form');
     },
     loadNotifications(notificationId) {
-      if (typeof notificationId === 'number' && _.findIndex(this.notifications, { id: notificationId }) === -1) {
+      if (typeof notificationId === 'number'
+        && _.findIndex(this.notifications, { id: notificationId }) === -1
+        && this.pageNumber !== 1) {
         this.pageNumber = 1;
         return;
       }
