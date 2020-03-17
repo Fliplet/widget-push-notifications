@@ -1238,7 +1238,7 @@ __webpack_require__.r(__webpack_exports__);
 
       if (typeof notificationId === 'number' && _.findIndex(this.notifications, {
         id: notificationId
-      }) === -1) {
+      }) === -1 && this.pageNumber !== 1) {
         this.pageNumber = 1;
         return;
       }
