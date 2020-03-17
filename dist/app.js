@@ -427,55 +427,68 @@ var render = function() {
                                       _c(
                                         "p",
                                         [
-                                          notification.status === "draft"
-                                            ? _c(
-                                                "span",
-                                                {
-                                                  staticClass:
-                                                    "label label-default"
-                                                },
-                                                [_vm._v("Draft")]
-                                              )
-                                            : [
-                                                notification.status ===
-                                                "scheduled"
-                                                  ? _c(
-                                                      "span",
-                                                      {
-                                                        staticClass:
-                                                          "label label-info"
-                                                      },
-                                                      [
-                                                        _vm._v(
-                                                          "Scheduled for " +
-                                                            _vm._s(
-                                                              _vm.getNotificationDate(
-                                                                notification
-                                                              )
+                                          _c(
+                                            "tooltip",
+                                            {
+                                              attrs: {
+                                                title: _vm.getNotificationTooltip(
+                                                  notification
+                                                )
+                                              }
+                                            },
+                                            [
+                                              notification.status === "draft"
+                                                ? _c(
+                                                    "span",
+                                                    {
+                                                      staticClass:
+                                                        "label label-default"
+                                                    },
+                                                    [_vm._v("Draft")]
+                                                  )
+                                                : [
+                                                    notification.status ===
+                                                    "scheduled"
+                                                      ? _c(
+                                                          "span",
+                                                          {
+                                                            staticClass:
+                                                              "label label-info"
+                                                          },
+                                                          [
+                                                            _vm._v(
+                                                              "Scheduled for " +
+                                                                _vm._s(
+                                                                  _vm.getNotificationDate(
+                                                                    notification
+                                                                  )
+                                                                )
                                                             )
+                                                          ]
                                                         )
-                                                      ]
-                                                    )
-                                                  : _c(
-                                                      "span",
-                                                      {
-                                                        staticClass:
-                                                          "label label-success"
-                                                      },
-                                                      [
-                                                        _vm._v(
-                                                          "Sent on " +
-                                                            _vm._s(
-                                                              _vm.getNotificationDate(
-                                                                notification
-                                                              )
+                                                      : _c(
+                                                          "span",
+                                                          {
+                                                            staticClass:
+                                                              "label label-success"
+                                                          },
+                                                          [
+                                                            _vm._v(
+                                                              "Sent on " +
+                                                                _vm._s(
+                                                                  _vm.getNotificationDate(
+                                                                    notification
+                                                                  )
+                                                                )
                                                             )
+                                                          ]
                                                         )
-                                                      ]
-                                                    )
-                                              ]
+                                                  ]
+                                            ],
+                                            2
+                                          )
                                         ],
-                                        2
+                                        1
                                       ),
                                       _vm._v(" "),
                                       _c("p", [
@@ -989,6 +1002,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 
 
@@ -1066,6 +1081,17 @@ __webpack_require__.r(__webpack_exports__);
       var createdAt = moment(notification.createdAt).unix();
       var updatedAt = moment(notification.updatedAt).unix();
       return "".concat(id, "-").concat(createdAt, "-").concat(updatedAt);
+    },
+    getNotificationTooltip: function getNotificationTooltip(notification) {
+      if (notification.id) {
+        return "Notification ".concat(notification.id);
+      }
+
+      if (notification.job && notification.job.id) {
+        return "Job ".concat(notification.job.id);
+      }
+
+      return 'No ID found';
     },
     initialize: function initialize() {
       var _this = this;
@@ -3663,7 +3689,7 @@ var render = function() {
                                           {
                                             attrs: {
                                               title:
-                                                "This is an approximation and will depend on the user preference at the time of publish."
+                                                "This is an approximation and will depend on the user preference at the time of publish. Users who have never used the app will be excluded."
                                             }
                                           },
                                           [
