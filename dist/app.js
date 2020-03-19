@@ -5309,6 +5309,7 @@ var defaultSendLabel = 'Send notification';
               audience: _this4.audience,
               _metadata: {
                 filters: _this4.audience !== 'sessions' ? _this4.filters : [],
+                scope: _this4.scope,
                 sessions: _this4.audience === 'sessions' ? _this4.validateSessions(_this4.sessions) : undefined,
                 scheduledAtTimezone: _this4.scheduledAtTimezone,
                 scheduledAt: _this4.scheduledAt,

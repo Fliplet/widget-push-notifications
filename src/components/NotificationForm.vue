@@ -892,6 +892,7 @@ export default {
               audience: this.audience,
               _metadata: {
                 filters: this.audience !== 'sessions' ? this.filters : [],
+                scope: this.scope,
                 sessions: this.audience === 'sessions' ? this.validateSessions(this.sessions) : undefined,
                 scheduledAtTimezone: this.scheduledAtTimezone,
                 scheduledAt: this.scheduledAt,
