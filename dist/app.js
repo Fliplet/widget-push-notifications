@@ -1525,7 +1525,6 @@ function getDefaultNotification() {
       audience: '',
       _metadata: {
         filters: [],
-        subscriptions: [],
         schedule: 'now',
         notes: ''
       }
