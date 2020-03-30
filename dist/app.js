@@ -532,45 +532,37 @@ var render = function() {
                                     "td",
                                     { staticClass: "list-col-sent-to" },
                                     [
-                                      _c(
-                                        "p",
-                                        [
-                                          _vm._v(
-                                            "\n                    " +
-                                              _vm._s(notification.userCount) +
-                                              " user"
-                                          ),
-                                          notification.userCount !== 1
-                                            ? [_vm._v("s")]
-                                            : _vm._e(),
-                                          _c("br"),
-                                          _vm._v(" "),
-                                          _c(
-                                            "small",
-                                            [
-                                              _vm._v("via "),
-                                              notification.type === "in-app"
-                                                ? [_vm._v("in-app")]
-                                                : _vm._e(),
-                                              _vm._v(" "),
-                                              notification.type === "in-app" &&
-                                              notification.job
-                                                ? [_vm._v("&")]
-                                                : _vm._e(),
-                                              _vm._v(" "),
-                                              notification.job ||
-                                              notification.type === "push"
-                                                ? [_vm._v("push")]
-                                                : _vm._e(),
-                                              _vm._v(
-                                                "\n                    notifications"
-                                              )
-                                            ],
-                                            2
-                                          )
-                                        ],
-                                        2
-                                      )
+                                      _c("p", [
+                                        _vm._v(
+                                          "\n                    " +
+                                            _vm._s(_vm.userCount(notification))
+                                        ),
+                                        _c("br"),
+                                        _vm._v(" "),
+                                        _c(
+                                          "small",
+                                          [
+                                            _vm._v("via "),
+                                            notification.type === "in-app"
+                                              ? [_vm._v("in-app")]
+                                              : _vm._e(),
+                                            _vm._v(" "),
+                                            notification.type === "in-app" &&
+                                            notification.job
+                                              ? [_vm._v("&")]
+                                              : _vm._e(),
+                                            _vm._v(" "),
+                                            notification.job ||
+                                            notification.type === "push"
+                                              ? [_vm._v("push")]
+                                              : _vm._e(),
+                                            _vm._v(
+                                              "\n                    notifications"
+                                            )
+                                          ],
+                                          2
+                                        )
+                                      ])
                                     ]
                                   ),
                                   _vm._v(" "),
@@ -1013,6 +1005,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+var defaultAudience = '';
+var defaultScope = [];
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -1101,6 +1095,21 @@ __webpack_require__.r(__webpack_exports__);
         _this.instance = Fliplet.Notifications.init();
         return _this.loadNotifications();
       });
+    },
+    userCount: function userCount(notification) {
+      if (!notification) {
+        return;
+      }
+
+      var audience = _.get(notification, 'data.audience', defaultAudience);
+
+      var scope = _.get(notification, 'scope', defaultScope);
+
+      if (!audience && _.isEmpty(scope)) {
+        return 'All users';
+      }
+
+      return "".concat(notification.userCount, " user").concat(notification.userCount !== 1 ? 's' : '');
     },
     getNotificationTimezone: function getNotificationTimezone(notification) {
       var timezone = _.get(notification, 'data._metadata.scheduledAtTimezone');

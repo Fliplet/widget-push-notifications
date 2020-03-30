@@ -55,7 +55,7 @@
                   <td class="list-col-notes"><Notification-Notes :notification.sync="notification"></Notification-Notes></td>
                   <td class="list-col-sent-to">
                     <p>
-                      {{ notification.userCount }} user<template v-if="notification.userCount !== 1">s</template><br>
+                      {{ userCount(notification) }}<br>
                       <small>via <template v-if="notification.type === 'in-app'">in-app</template>
                       <template v-if="notification.type === 'in-app' && notification.job">&amp;</template>
                       <template v-if="notification.job || notification.type === 'push'">push</template>
@@ -117,6 +117,9 @@ import {
   getOffsetString as getTimezoneOffsetString,
   validate as validateTimezone
 } from '../libs/timezones';
+
+const defaultAudience = '';
+const defaultScope = [];
 
 export default {
   data() {
@@ -206,6 +209,20 @@ export default {
         this.instance = Fliplet.Notifications.init();
         return this.loadNotifications();
       });
+    },
+    userCount(notification) {
+      if (!notification) {
+        return;
+      }
+
+      const audience = _.get(notification, 'data.audience', defaultAudience);
+      const scope = _.get(notification, 'scope', defaultScope);
+
+      if (!audience && _.isEmpty(scope)) {
+        return 'All users';
+      }
+
+      return `${notification.userCount} user${notification.userCount !== 1 ? 's' : ''}`;
     },
     getNotificationTimezone(notification) {
       const timezone = _.get(notification, 'data._metadata.scheduledAtTimezone');
