@@ -68,7 +68,7 @@
                   <div class="col-xs-4">
                     <p><input type="text" class="form-control" placeholder="Field name" v-model="filter.column"></p>
                     <div class="form-inline filter-path">
-                      <a v-if="!showFilterPath(filter)" class="add-path" href="#" @click.prevent="addFilterPath(filter)">This field is an object</a>
+                      <a v-if="!showFilterPath(filter)" class="add-path" href="#" @click.prevent="addFilterPath(filter)" tabindex="-1">This field is an object</a>
                       <div v-else class="form-group">
                         <label class="filter-path-label">Path</label>
                         <input type="text" class="form-control" placeholder="e.g. companies[0].name" v-model="filter.path">

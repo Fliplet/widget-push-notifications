@@ -3378,7 +3378,10 @@ var render = function() {
                                                     "a",
                                                     {
                                                       staticClass: "add-path",
-                                                      attrs: { href: "#" },
+                                                      attrs: {
+                                                        href: "#",
+                                                        tabindex: "-1"
+                                                      },
                                                       on: {
                                                         click: function(
                                                           $event
