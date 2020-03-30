@@ -221,7 +221,7 @@
               </div>
             </div>
             <h4>Sending to
-              <template v-if="audience === ''">all users</template>
+              <template v-if="audience === '' && !filterScopes.length">all users</template>
               <template v-else>
                 <strong>{{ matches.count }}</strong> {{ audienceVerbose }} user<template v-if="matches.count !== 1">s</template>
               </template>

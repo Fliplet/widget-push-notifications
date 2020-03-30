@@ -4239,7 +4239,7 @@ var render = function() {
                         "h4",
                         [
                           _vm._v("Sending to\n            "),
-                          _vm.audience === ""
+                          _vm.audience === "" && !_vm.filterScopes.length
                             ? [_vm._v("all users")]
                             : [
                                 _c("strong", [
