@@ -103,7 +103,7 @@
               </div>
               <div class="col-xs-4 text-right">
                 <p>
-                  <span class="recipient-count">
+                  <span class="recipient-count" v-if="audience !== '' || filterScopes.length">
                     <template v-if="loadingMatches">
                       Estimating...
                     </template>
@@ -220,8 +220,14 @@
                 </div>
               </div>
             </div>
-            <h4>Sending to <strong>{{ matches.count }}</strong> {{ audienceVerbose }} user<template v-if="matches.count !== 1">s</template> <template v-if="filters.length">matching all of the following</template></h4>
-            <template v-if="filters.length">
+            <h4>Sending to
+              <template v-if="audience === ''">all users</template>
+              <template v-else>
+                <strong>{{ matches.count }}</strong> {{ audienceVerbose }} user<template v-if="matches.count !== 1">s</template>
+              </template>
+              <template v-if="filterScopes.length">matching all of the following</template>
+            </h4>
+            <template v-if="filterScopes.length">
               <ul class="filter-summary-items">
                 <li v-for="(filter, index) in filters" :key="index" v-html="getFilterVerbose(filter)"></li>
               </ul>
@@ -624,6 +630,11 @@ export default {
     },
     getMatches() {
       if (!this.instance) {
+        return Promise.resolve();
+      }
+
+      if (!this.audience && !this.filterScopes.length) {
+        // Don't calculate matches if it's for all users
         return Promise.resolve();
       }
 
