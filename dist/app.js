@@ -532,45 +532,37 @@ var render = function() {
                                     "td",
                                     { staticClass: "list-col-sent-to" },
                                     [
-                                      _c(
-                                        "p",
-                                        [
-                                          _vm._v(
-                                            "\n                    " +
-                                              _vm._s(notification.userCount) +
-                                              " user"
-                                          ),
-                                          notification.userCount !== 1
-                                            ? [_vm._v("s")]
-                                            : _vm._e(),
-                                          _c("br"),
-                                          _vm._v(" "),
-                                          _c(
-                                            "small",
-                                            [
-                                              _vm._v("via "),
-                                              notification.type === "in-app"
-                                                ? [_vm._v("in-app")]
-                                                : _vm._e(),
-                                              _vm._v(" "),
-                                              notification.type === "in-app" &&
-                                              notification.job
-                                                ? [_vm._v("&")]
-                                                : _vm._e(),
-                                              _vm._v(" "),
-                                              notification.job ||
-                                              notification.type === "push"
-                                                ? [_vm._v("push")]
-                                                : _vm._e(),
-                                              _vm._v(
-                                                "\n                    notifications"
-                                              )
-                                            ],
-                                            2
-                                          )
-                                        ],
-                                        2
-                                      )
+                                      _c("p", [
+                                        _vm._v(
+                                          "\n                    " +
+                                            _vm._s(_vm.userCount(notification))
+                                        ),
+                                        _c("br"),
+                                        _vm._v(" "),
+                                        _c(
+                                          "small",
+                                          [
+                                            _vm._v("via "),
+                                            notification.type === "in-app"
+                                              ? [_vm._v("in-app")]
+                                              : _vm._e(),
+                                            _vm._v(" "),
+                                            notification.type === "in-app" &&
+                                            notification.job
+                                              ? [_vm._v("&")]
+                                              : _vm._e(),
+                                            _vm._v(" "),
+                                            notification.job ||
+                                            notification.type === "push"
+                                              ? [_vm._v("push")]
+                                              : _vm._e(),
+                                            _vm._v(
+                                              "\n                    notifications"
+                                            )
+                                          ],
+                                          2
+                                        )
+                                      ])
                                     ]
                                   ),
                                   _vm._v(" "),
@@ -1013,6 +1005,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+var defaultAudience = '';
+var defaultScope = [];
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -1101,6 +1095,21 @@ __webpack_require__.r(__webpack_exports__);
         _this.instance = Fliplet.Notifications.init();
         return _this.loadNotifications();
       });
+    },
+    userCount: function userCount(notification) {
+      if (!notification) {
+        return;
+      }
+
+      var audience = _.get(notification, 'data.audience', defaultAudience);
+
+      var scope = _.get(notification, 'scope', defaultScope);
+
+      if (!audience && _.isEmpty(scope)) {
+        return 'All users';
+      }
+
+      return "".concat(notification.userCount, " user").concat(notification.userCount !== 1 ? 's' : '');
     },
     getNotificationTimezone: function getNotificationTimezone(notification) {
       var timezone = _.get(notification, 'data._metadata.scheduledAtTimezone');
@@ -3378,7 +3387,10 @@ var render = function() {
                                                     "a",
                                                     {
                                                       staticClass: "add-path",
-                                                      attrs: { href: "#" },
+                                                      attrs: {
+                                                        href: "#",
+                                                        tabindex: "-1"
+                                                      },
                                                       on: {
                                                         click: function(
                                                           $event
@@ -3664,44 +3676,47 @@ var render = function() {
                           _vm._v(" "),
                           _c("div", { staticClass: "col-xs-4 text-right" }, [
                             _c("p", [
-                              _c(
-                                "span",
-                                { staticClass: "recipient-count" },
-                                [
-                                  _vm.loadingMatches
-                                    ? [
-                                        _vm._v(
-                                          "\n                    Estimating...\n                  "
-                                        )
-                                      ]
-                                    : [
-                                        _vm._v(
-                                          "\n                  Estimated: " +
-                                            _vm._s(_vm.matches.count) +
-                                            " user"
-                                        ),
-                                        _vm.matches.count !== 1
-                                          ? [_vm._v("s")]
-                                          : _vm._e(),
-                                        _vm._v(" "),
-                                        _c(
-                                          "tooltip",
-                                          {
-                                            attrs: {
-                                              title:
-                                                "This is an approximation and will depend on the user preference at the time of publish. Users who have never used the app will be excluded."
-                                            }
-                                          },
-                                          [
-                                            _c("i", {
-                                              staticClass: "fa fa-info-circle"
-                                            })
+                              _vm.audience !== "" || _vm.filterScopes.length
+                                ? _c(
+                                    "span",
+                                    { staticClass: "recipient-count" },
+                                    [
+                                      _vm.loadingMatches
+                                        ? [
+                                            _vm._v(
+                                              "\n                    Estimating...\n                  "
+                                            )
                                           ]
-                                        )
-                                      ]
-                                ],
-                                2
-                              )
+                                        : [
+                                            _vm._v(
+                                              "\n                  Estimated: " +
+                                                _vm._s(_vm.matches.count) +
+                                                " user"
+                                            ),
+                                            _vm.matches.count !== 1
+                                              ? [_vm._v("s")]
+                                              : _vm._e(),
+                                            _vm._v(" "),
+                                            _c(
+                                              "tooltip",
+                                              {
+                                                attrs: {
+                                                  title:
+                                                    "This is an approximation and will depend on the user preference at the time of publish. Users who have never used the app will be excluded."
+                                                }
+                                              },
+                                              [
+                                                _c("i", {
+                                                  staticClass:
+                                                    "fa fa-info-circle"
+                                                })
+                                              ]
+                                            )
+                                          ]
+                                    ],
+                                    2
+                                  )
+                                : _vm._e()
                             ])
                           ])
                         ]),
@@ -4235,19 +4250,29 @@ var render = function() {
                       _c(
                         "h4",
                         [
-                          _vm._v("Sending to "),
-                          _c("strong", [_vm._v(_vm._s(_vm.matches.count))]),
-                          _vm._v(" " + _vm._s(_vm.audienceVerbose) + " user"),
-                          _vm.matches.count !== 1 ? [_vm._v("s")] : _vm._e(),
+                          _vm._v("Sending to\n            "),
+                          _vm.audience === "" && !_vm.filterScopes.length
+                            ? [_vm._v("all users")]
+                            : [
+                                _c("strong", [
+                                  _vm._v(_vm._s(_vm.matches.count))
+                                ]),
+                                _vm._v(
+                                  " " + _vm._s(_vm.audienceVerbose) + " user"
+                                ),
+                                _vm.matches.count !== 1
+                                  ? [_vm._v("s")]
+                                  : _vm._e()
+                              ],
                           _vm._v(" "),
-                          _vm.filters.length
+                          _vm.filterScopes.length
                             ? [_vm._v("matching all of the following")]
                             : _vm._e()
                         ],
                         2
                       ),
                       _vm._v(" "),
-                      _vm.filters.length
+                      _vm.filterScopes.length
                         ? [
                             _c(
                               "ul",
@@ -4399,6 +4424,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Timepicker__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(55);
 /* harmony import */ var _TokenField__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(50);
 /* harmony import */ var vuejs_datepicker__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(60);
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -5028,6 +5059,11 @@ var defaultSendLabel = 'Send notification';
       var _this2 = this;
 
       if (!this.instance) {
+        return Promise.resolve();
+      }
+
+      if (!this.audience && !this.filterScopes.length) {
+        // Don't calculate matches if it's for all users
         return Promise.resolve();
       }
 
