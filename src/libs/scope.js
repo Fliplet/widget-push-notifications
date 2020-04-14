@@ -90,7 +90,7 @@ export function getFilterScope(filter) {
 
   switch (filter.condition) {
     case 'equals': // Equals
-      _.setWith(scope, path, value, Object);
+      _.setWith(scope, path, { $iLike: value }, Object);
       break;
     case 'notequal': // Not equal
       _.setWith(scope, path, { $or: [
