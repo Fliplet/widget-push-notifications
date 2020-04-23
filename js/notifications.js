@@ -43,7 +43,9 @@ Fliplet.Widget.register('PushNotifications', function () {
     return Fliplet.Storage.set(key, val + '-' + Date.now());
   }
 
-  function initPushNotifications(subscriptionId) {
+  function initPushNotifications(subscriptionDetails) {
+    var subscriptionId = subscriptionDetails.id;
+
     /**
      * if we have subscribed successfully, get the push notification instance
      * and add the event handlers on it
@@ -67,6 +69,19 @@ Fliplet.Widget.register('PushNotifications', function () {
       }, 1);
 
       if (subscriptionId) {
+        if (subscriptionDetails.token) {
+          push.on('registration', function(data) {
+            if (data.registrationId === subscriptionDetails.token) {
+              return; // token hasn't changed
+            }
+
+            // update subscription with new token
+            Fliplet.User.updateSubscription({
+              token: data.registrationId
+            });
+          });
+        }
+
         push.on('notification', function (data) {
           /**
            * This hook fires when a push notification is received while the app is open.
@@ -233,13 +248,13 @@ Fliplet.Widget.register('PushNotifications', function () {
    */
   if (isConfigured) {
     Fliplet().then(function () {
-      return Fliplet.User.getSubscriptionId();
-    }).then(function (subscriptionId) {
+      return Fliplet.User.getSubscriptionDetails();
+    }).then(function (subscriptionDetails) {
       /**
        * if the user isn't subscribed already and the push widget is set to show automatically - show it
        */
-      if (subscriptionId) {
-        initPushNotifications(subscriptionId);
+      if (subscriptionDetails) {
+        initPushNotifications(subscriptionDetails);
       } else if (data.showAutomatically) {
         ask();
       }
