@@ -281,7 +281,7 @@ export default {
       saveMessage: 'Saving',
       showTimezone: getShowTimezone(),
       appName: Fliplet.Env.get('appName'),
-      appIcon: this.getAsset('img/app-icon.png'),
+      appIcon: '',
       notification: getNotification(),
       titleCharacterLimit: 50,
       messageCharacterLimit: 250,
@@ -331,6 +331,7 @@ export default {
     TokenField
   },
   mounted() {
+    this.appIcon = this.getAsset('img/app-icon.png');
     this.notification = _.defaultsDeep(this.notification, getDefaultNotification());
 
     if (this.pushIsConfigured) {
