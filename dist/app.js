@@ -5352,7 +5352,7 @@ var defaultSendLabel = 'Send notification';
             }
           });
 
-          _this4.notification.scope = _this4.scope;
+          _this4.notification.scope = _this4.scope; // Array properties are separated to ensure the arrays are overwritten with new values
 
           _.assign(_this4.notification._metadata, {
             scope: _this4.scope,

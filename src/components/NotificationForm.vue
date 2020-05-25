@@ -912,6 +912,7 @@ export default {
 
           this.notification.scope = this.scope;
 
+          // Array properties are separated to ensure the arrays are overwritten with new values
           _.assign(this.notification._metadata, {
             scope: this.scope,
             filters: this.audience !== 'sessions' ? this.filters : [],
