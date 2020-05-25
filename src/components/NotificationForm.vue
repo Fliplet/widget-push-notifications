@@ -895,7 +895,7 @@ export default {
             return !filter.column || (!filter.value && ['empty', 'notempty'].indexOf(filter.condition) < 0);
           });
 
-          _.merge(this.notification, {
+          _.assign(this.notification, {
             status: status,
             scope: this.scope,
             type: this.type,

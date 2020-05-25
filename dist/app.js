@@ -5337,7 +5337,7 @@ var defaultSendLabel = 'Send notification';
             return !filter.column || !filter.value && ['empty', 'notempty'].indexOf(filter.condition) < 0;
           });
 
-          _.merge(_this4.notification, {
+          _.assign(_this4.notification, {
             status: status,
             scope: _this4.scope,
             type: _this4.type,
