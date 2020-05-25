@@ -5337,23 +5337,27 @@ var defaultSendLabel = 'Send notification';
             return !filter.column || !filter.value && ['empty', 'notempty'].indexOf(filter.condition) < 0;
           });
 
-          _.assign(_this4.notification, {
+          _.merge(_this4.notification, {
             status: status,
-            scope: _this4.scope,
             type: _this4.type,
             orderAt: _this4.orderAt,
             data: {
               audience: _this4.audience,
               _metadata: {
-                filters: _this4.audience !== 'sessions' ? _this4.filters : [],
-                scope: _this4.scope,
-                sessions: _this4.audience === 'sessions' ? _this4.validateSessions(_this4.sessions) : undefined,
                 scheduledAtTimezone: _this4.scheduledAtTimezone,
                 scheduledAt: _this4.scheduledAt,
                 schedule: _this4.schedule,
                 notes: _this4.notes
               }
             }
+          });
+
+          _this4.notification.scope = _this4.scope;
+
+          _.assign(_this4.notification._metadata, {
+            scope: _this4.scope,
+            filters: _this4.audience !== 'sessions' ? _this4.filters : [],
+            sessions: _this4.audience === 'sessions' ? _this4.validateSessions(_this4.sessions) : undefined
           });
 
           if (_.get(_this4.notification, 'data.navigate') && _.isEmpty(_this4.notification.data.navigate)) {
