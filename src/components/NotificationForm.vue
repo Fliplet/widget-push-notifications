@@ -897,21 +897,26 @@ export default {
 
           _.merge(this.notification, {
             status: status,
-            scope: this.scope,
             type: this.type,
             orderAt: this.orderAt,
             data: {
               audience: this.audience,
               _metadata: {
-                filters: this.audience !== 'sessions' ? this.filters : [],
-                scope: this.scope,
-                sessions: this.audience === 'sessions' ? this.validateSessions(this.sessions) : undefined,
                 scheduledAtTimezone: this.scheduledAtTimezone,
                 scheduledAt: this.scheduledAt,
                 schedule: this.schedule,
                 notes: this.notes
               }
             }
+          });
+
+          this.notification.scope = this.scope;
+
+          // Array properties are separated to ensure the arrays are overwritten with new values
+          _.assign(this.notification._metadata, {
+            scope: this.scope,
+            filters: this.audience !== 'sessions' ? this.filters : [],
+            sessions: this.audience === 'sessions' ? this.validateSessions(this.sessions) : undefined
           });
 
           if (_.get(this.notification, 'data.navigate') && _.isEmpty(this.notification.data.navigate)) {
