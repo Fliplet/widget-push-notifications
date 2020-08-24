@@ -579,7 +579,7 @@ export default {
 
       return _.isEmpty(this.errors);
     },
-    continue() {
+    nextstep() {
       if (!this.stepIsValid()) {
         return;
       }
