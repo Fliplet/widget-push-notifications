@@ -5015,7 +5015,7 @@ var defaultSendLabel = 'Send notification';
       this.getErrors();
       return _.isEmpty(this.errors);
     },
-    nextstep: function nextstep() {
+    nextStep: function nextStep() {
       if (!this.stepIsValid()) {
         return;
       }
