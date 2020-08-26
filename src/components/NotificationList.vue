@@ -274,8 +274,8 @@ export default {
         return summary;
       }, {});
 
-      const acceptedCount = data.ios.success + data.android.success + data.web.success
-      const totalCount = data.ios.count + data.android.count + data.web.count
+      const acceptedCount = data.ios.success + data.android.success + data.web.success;
+      const totalCount = data.ios.count + data.android.count + data.web.count;
 
       data.accepted = {
         count: acceptedCount,

@@ -1162,9 +1162,11 @@ var defaultScope = [];
         return summary;
       }, {});
 
+      var acceptedCount = data.ios.success + data.android.success + data.web.success;
+      var totalCount = data.ios.count + data.android.count + data.web.count;
       data.accepted = {
-        count: data.ios.success + data.android.success,
-        percent: data.ios.count + data.android.count === 0 ? 0 : Math.round((data.ios.success + data.android.success) / (data.ios.count + data.android.count) * 100)
+        count: acceptedCount,
+        percent: totalCount === 0 ? 0 : Math.round(acceptedCount / totalCount * 100)
       };
       var errorTypes = {
         NoSubscriptions: 'One or more devices are not subscribed to receive this push notification.',
