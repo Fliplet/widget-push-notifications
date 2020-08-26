@@ -1140,6 +1140,12 @@ var defaultScope = [];
           success: 0,
           failed: 0,
           errors: {}
+        },
+        web: {
+          count: 0,
+          success: 0,
+          failed: 0,
+          errors: {}
         }
       }, notification.pushResult);
 
