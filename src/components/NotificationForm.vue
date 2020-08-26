@@ -164,9 +164,10 @@
             <div class="col-md-8 col-md-offset-2">
               <div class="tab-selection">
                 <span class="tab tab-checked" :class="{ 'active': notificationHasChannel('in-app') }" @click="toggleNotificationChannel('in-app')">In-app notification</span>
-                <span class="tab tab-checked" :class="{ 'active': notificationHasChannel('push') && pushIsConfigured, 'not-allowed': !pushIsConfigured }" @click="toggleNotificationChannel('push')">Push notification</span>
+                <span class="tab tab-checked" :class="{ 'active': notificationHasChannel('push') }" @click="toggleNotificationChannel('push')">Push notification</span>
               </div>
-              <div class="alert alert-warning" v-if="!pushIsConfigured">To send push notifications, you must configure push notifications for your native app on <a href="https://help.fliplet.com/article/23-configure-push-notifications-for-ios" target="_blank">iOS</a> and <a href="https://help.fliplet.com/article/40-configure-push-notifications-for-android" target="_blank">Android</a>.</div>
+              <div class="alert alert-info"><strong>New!</strong> Web apps can now receive push notifications. <a href="#" target="_blank">Learn more</a></div>
+              <div class="alert alert-warning" v-if="!pushIsConfigured">To send push notifications to your native app, you must configure push notifications on <a href="https://help.fliplet.com/article/23-configure-push-notifications-for-ios" target="_blank">iOS</a> and <a href="https://help.fliplet.com/article/40-configure-push-notifications-for-android" target="_blank">Android</a>.</div>
               <p class="text-center text-danger" v-if="errors.channels">{{ errors.channels }}</p>
             </div>
           </div>
@@ -307,7 +308,7 @@ export default {
       showScreenPreview: false,
       screenLinkProvider: null,
       urlLinkProvider: null,
-      channels: ['in-app'],
+      channels: ['in-app', 'push'],
       matches: {
         count: 0,
         subscriptions: 0,
@@ -333,10 +334,6 @@ export default {
   mounted() {
     this.appIcon = this.getAsset('img/app-icon.png');
     this.notification = _.defaultsDeep(this.notification, getDefaultNotification());
-
-    if (this.pushIsConfigured) {
-      this.addNotificationChannel('push');
-    }
 
     const sessions = _.get(this.notification, 'data._metadata.sessions');
 
@@ -616,10 +613,6 @@ export default {
       return _.includes(this.channels, channel);
     },
     addNotificationChannel(channel) {
-      if (channel === 'push' && !this.pushIsConfigured) {
-        return;
-      }
-
       if (this.channels.indexOf(channel) === -1) {
         this.channels.push(channel);
       }
@@ -927,7 +920,7 @@ export default {
             delete this.notification.orderAt;
           }
 
-          if (this.notificationHasChannel('push') && this.pushIsConfigured && status !== 'draft') {
+          if (this.notificationHasChannel('push') && status !== 'draft') {
             // Do not assign push notification payload when saving a draft.
             // The backend will send a push notifcation to users.
             let pushNotification = {

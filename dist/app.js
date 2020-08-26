@@ -3926,10 +3926,7 @@ var render = function() {
                             {
                               staticClass: "tab tab-checked",
                               class: {
-                                active:
-                                  _vm.notificationHasChannel("push") &&
-                                  _vm.pushIsConfigured,
-                                "not-allowed": !_vm.pushIsConfigured
+                                active: _vm.notificationHasChannel("push")
                               },
                               on: {
                                 click: function($event) {
@@ -3941,10 +3938,12 @@ var render = function() {
                           )
                         ]),
                         _vm._v(" "),
+                        _vm._m(2),
+                        _vm._v(" "),
                         !_vm.pushIsConfigured
                           ? _c("div", { staticClass: "alert alert-warning" }, [
                               _vm._v(
-                                "To send push notifications, you must configure push notifications for your native app on "
+                                "To send push notifications to your native app, you must configure push notifications on "
                               ),
                               _c(
                                 "a",
@@ -4085,7 +4084,7 @@ var render = function() {
                                   ])
                                 : _vm._e(),
                               _vm._v(" "),
-                              _vm._m(2),
+                              _vm._m(3),
                               _vm._v(" "),
                               _c(
                                 "div",
@@ -4386,6 +4385,18 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "alert alert-info" }, [
+      _c("strong", [_vm._v("New!")]),
+      _vm._v(" Web apps can now receive push notifications. "),
+      _c("a", { attrs: { href: "#", target: "_blank" } }, [
+        _vm._v("Learn more")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
     return _c("p", [
       _c("small", { staticClass: "text-info" }, [
         _vm._v(
@@ -4424,6 +4435,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Timepicker__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(55);
 /* harmony import */ var _TokenField__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(50);
 /* harmony import */ var vuejs_datepicker__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(60);
+//
 //
 //
 //
@@ -4729,7 +4741,7 @@ var defaultSendLabel = 'Send notification';
       showScreenPreview: false,
       screenLinkProvider: null,
       urlLinkProvider: null,
-      channels: ['in-app'],
+      channels: ['in-app', 'push'],
       matches: {
         count: 0,
         subscriptions: 0,
@@ -4757,10 +4769,6 @@ var defaultSendLabel = 'Send notification';
 
     this.appIcon = this.getAsset('img/app-icon.png');
     this.notification = _.defaultsDeep(this.notification, Object(_store__WEBPACK_IMPORTED_MODULE_0__["getDefaultNotification"])());
-
-    if (this.pushIsConfigured) {
-      this.addNotificationChannel('push');
-    }
 
     var sessions = _.get(this.notification, 'data._metadata.sessions');
 
@@ -5043,10 +5051,6 @@ var defaultSendLabel = 'Send notification';
       return _.includes(this.channels, channel);
     },
     addNotificationChannel: function addNotificationChannel(channel) {
-      if (channel === 'push' && !this.pushIsConfigured) {
-        return;
-      }
-
       if (this.channels.indexOf(channel) === -1) {
         this.channels.push(channel);
       }
@@ -5368,7 +5372,7 @@ var defaultSendLabel = 'Send notification';
             delete _this4.notification.orderAt;
           }
 
-          if (_this4.notificationHasChannel('push') && _this4.pushIsConfigured && status !== 'draft') {
+          if (_this4.notificationHasChannel('push') && status !== 'draft') {
             // Do not assign push notification payload when saving a draft.
             // The backend will send a push notifcation to users.
             var pushNotification = {
