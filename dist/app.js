@@ -1162,8 +1162,14 @@ var defaultScope = [];
         return summary;
       }, {});
 
-      var acceptedCount = data.ios.success + data.android.success + data.web.success;
-      var totalCount = data.ios.count + data.android.count + data.web.count;
+      var acceptedCount = _.sumBy(_.keys(data), function (platform) {
+        return data[platform].success;
+      });
+
+      var totalCount = _.sumBy(_.keys(data), function (platform) {
+        return data[platform].count;
+      });
+
       data.accepted = {
         count: acceptedCount,
         percent: totalCount === 0 ? 0 : Math.round(acceptedCount / totalCount * 100)
