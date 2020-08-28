@@ -1140,6 +1140,12 @@ var defaultScope = [];
           success: 0,
           failed: 0,
           errors: {}
+        },
+        web: {
+          count: 0,
+          success: 0,
+          failed: 0,
+          errors: {}
         }
       }, notification.pushResult);
 
@@ -1156,9 +1162,17 @@ var defaultScope = [];
         return summary;
       }, {});
 
+      var acceptedCount = _.sumBy(_.keys(data), function (platform) {
+        return data[platform].success;
+      });
+
+      var totalCount = _.sumBy(_.keys(data), function (platform) {
+        return data[platform].count;
+      });
+
       data.accepted = {
-        count: data.ios.success + data.android.success,
-        percent: data.ios.count + data.android.count === 0 ? 0 : Math.round((data.ios.success + data.android.success) / (data.ios.count + data.android.count) * 100)
+        count: acceptedCount,
+        percent: totalCount === 0 ? 0 : Math.round(acceptedCount / totalCount * 100)
       };
       var errorTypes = {
         NoSubscriptions: 'One or more devices are not subscribed to receive this push notification.',

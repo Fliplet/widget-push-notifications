@@ -78,10 +78,12 @@ this["Fliplet"]["Widget"]["Templates"]["templates.notificationLog"] = Handlebars
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1, alias1=container.lambda, alias2=container.escapeExpression;
 
-  return "<p><strong>N<sup>o</sup> devices (iOS/Android)</strong><br>\n("
+  return "<p><strong>N<sup>o</sup> devices (iOS/Android/Web)</strong><br>\n("
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.ios : depth0)) != null ? stack1.count : stack1), depth0))
     + "/"
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.android : depth0)) != null ? stack1.count : stack1), depth0))
+    + "/"
+    + alias2(alias1(((stack1 = (depth0 != null ? depth0.web : depth0)) != null ? stack1.count : stack1), depth0))
     + ")</p>\n<p><strong>Accepted for delivery</strong><br>\n"
     + alias2(alias1(((stack1 = (depth0 != null ? depth0.accepted : depth0)) != null ? stack1.count : stack1), depth0))
     + " ("

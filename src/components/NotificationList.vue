@@ -253,6 +253,12 @@ export default {
           success: 0,
           failed: 0,
           errors: {}
+        },
+        web: {
+          count: 0,
+          success: 0,
+          failed: 0,
+          errors: {}
         }
       }, notification.pushResult);
 
@@ -268,11 +274,18 @@ export default {
         return summary;
       }, {});
 
+      const acceptedCount = _.sumBy(_.keys(data), (platform) => {
+        return data[platform].success;
+      });
+      const totalCount = _.sumBy(_.keys(data), (platform) => {
+        return data[platform].count;
+      });
+
       data.accepted = {
-        count: data.ios.success + data.android.success,
-        percent: (data.ios.count + data.android.count === 0)
+        count: acceptedCount,
+        percent: (totalCount === 0)
           ? 0
-          : Math.round((data.ios.success + data.android.success) / (data.ios.count + data.android.count) * 100)
+          : Math.round((acceptedCount) / (totalCount) * 100)
       };
 
       const errorTypes = {
