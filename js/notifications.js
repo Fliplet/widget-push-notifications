@@ -122,11 +122,11 @@ Fliplet.Widget.register('PushNotifications', function () {
       title: data.title,
       message: data.message,
       onClick: function () {
-        if (!data.additionalData) {
+        if (!data.additionalData || !data.additionalData.customData) {
           return;
         }
 
-        Fliplet.Native.Notifications.handle(data.additionalData.customData)
+        Fliplet.Native.Notifications.handle(data.additionalData.customData);
       }
     });
   }
