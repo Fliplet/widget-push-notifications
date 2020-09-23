@@ -4401,10 +4401,7 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "alert alert-info" }, [
       _c("strong", [_vm._v("New!")]),
-      _vm._v(" Web apps can now receive push notifications. "),
-      _c("a", { attrs: { href: "#", target: "_blank" } }, [
-        _vm._v("Learn more")
-      ])
+      _vm._v(" Web apps can now receive push notifications.")
     ])
   },
   function() {
