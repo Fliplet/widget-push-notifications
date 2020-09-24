@@ -117,18 +117,14 @@ Fliplet.Widget.register('PushNotifications', function () {
   }
 
   function handleForegroundNotification(data) {
-    Fliplet.UI.Toast({
-      type: 'regular',
+    Fliplet.Navigator.Notifications.schedule({
       title: data.title,
-      message: data.message,
-      onClick: function () {
-        if (!data.additionalData || !data.additionalData.customData) {
-          return;
-        }
-
-        Fliplet.Native.Notifications.handle(data.additionalData.customData);
-      }
-    });
+      text: data.message,
+      foreground: true,
+      data: data.additionalData
+    }, function () {
+      // notification has been scheduled
+    }, this, { skipPermission: true });
   }
 
   function ask(options) {
