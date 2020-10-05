@@ -24,7 +24,8 @@ Fliplet.Widget.register('PushNotifications', function () {
   }
 
   function isConfigured() {
-    return data && (data.apn || data.gcm || data.wns);
+    return (Fliplet.Env.is('web') && 'serviceWorker' in navigator && 'PushManager' in window)
+      || (Fliplet.Env.is('native') && (data && (data.apn || data.gcm || data.wns)));
   }
 
   if (!data || !isConfigured()) {
@@ -130,7 +131,7 @@ Fliplet.Widget.register('PushNotifications', function () {
   function ask(options) {
     options = options || {};
 
-    if (!data || !isConfigured) {
+    if (!data || !isConfigured()) {
       return Promise.reject({
         code: 0,
         message: 'Please configure your push notification settings first.'
@@ -239,7 +240,7 @@ Fliplet.Widget.register('PushNotifications', function () {
    * initialise the component. If it's marked for showing the popup automatically
    * then also ask for push permission straight away .
    */
-  if (isConfigured) {
+  if (isConfigured()) {
     Fliplet().then(function () {
       return Fliplet.User.getSubscriptionDetails();
     }).then(function (subscriptionDetails) {
