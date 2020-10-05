@@ -24,7 +24,8 @@ Fliplet.Widget.register('PushNotifications', function () {
   }
 
   function isConfigured() {
-    return data && (data.apn || data.gcm || data.wns);
+    return (Fliplet.Env.is('web') && 'serviceWorker' in navigator && 'PushManager' in window)
+      || (Fliplet.Env.is('native') && (data && (data.apn || data.gcm || data.wns)));
   }
 
   if (!data || !isConfigured()) {
