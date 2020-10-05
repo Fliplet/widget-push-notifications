@@ -131,7 +131,7 @@ Fliplet.Widget.register('PushNotifications', function () {
   function ask(options) {
     options = options || {};
 
-    if (!data || !isConfigured) {
+    if (!data || !isConfigured()) {
       return Promise.reject({
         code: 0,
         message: 'Please configure your push notification settings first.'
@@ -240,7 +240,7 @@ Fliplet.Widget.register('PushNotifications', function () {
    * initialise the component. If it's marked for showing the popup automatically
    * then also ask for push permission straight away .
    */
-  if (isConfigured) {
+  if (isConfigured()) {
     Fliplet().then(function () {
       return Fliplet.User.getSubscriptionDetails();
     }).then(function (subscriptionDetails) {
