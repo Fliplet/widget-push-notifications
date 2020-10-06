@@ -24,7 +24,7 @@ Fliplet.Widget.register('PushNotifications', function () {
   }
 
   function isConfigured() {
-    return (Fliplet.Env.is('web') && 'serviceWorker' in navigator && 'PushManager' in window)
+    return (Fliplet.Env.is('web') && Modernizr.pushnotification)
       || (Fliplet.Env.is('native') && (data && (data.apn || data.gcm || data.wns)));
   }
 
