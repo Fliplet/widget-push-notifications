@@ -44,8 +44,12 @@ Fliplet.Widget.register('PushNotifications', function () {
     return Fliplet.Storage.set(key, val + '-' + Date.now());
   }
 
+  /**
+   * Inits the push subscription service so incoming notifications are handled.
+   * @param {*} subscriptionDetails - Object with { id, token } or just the ID string depending on the caller
+   */
   function initPushNotifications(subscriptionDetails) {
-    var subscriptionId = subscriptionDetails.id;
+    var subscriptionId = subscriptionDetails.id || subscriptionDetails;
 
     /**
      * if we have subscribed successfully, get the push notification instance
