@@ -82,8 +82,7 @@ Fliplet.Widget.register('PushNotifications', function () {
 
             // update subscription with new token
             Fliplet.User.updateSubscription({
-              token: data.registrationId,
-              bundleIdentifier: data.bundleIdentifier
+              token: data.registrationId
             });
           });
         }
