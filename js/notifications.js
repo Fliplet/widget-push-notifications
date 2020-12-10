@@ -89,6 +89,19 @@ Fliplet.Widget.register('PushNotifications', function () {
 
         push.on('notification', function (data) {
           /**
+           * Support for the new version of the native push component (requires framework 4.3.0+)
+           */
+          if (data && data.additionalData && data.additionalData.version === 2) {
+            if (data.additionalData.opened) {
+              Fliplet.Native.Notifications.handle(data.additionalData.customData);
+            } else if (data.additionalData.foreground) {
+              Fliplet.Hooks.run('pushNotification', data);
+            }
+
+            return;
+          }
+
+          /**
            * This hook fires when a push notification is received while the app is open.
            * Reject the hook to avoid displaying a local notification.
            */
