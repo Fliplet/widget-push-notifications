@@ -497,7 +497,10 @@ var render = function() {
                                             _vm._s(notification.data.title)
                                           )
                                         ]),
-                                        _c("br"),
+                                        notification.data.title &&
+                                        notification.data.message
+                                          ? _c("br")
+                                          : _vm._e(),
                                         _vm._v(
                                           _vm._s(notification.data.message)
                                         )

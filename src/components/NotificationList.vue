@@ -49,7 +49,7 @@
                         </template>
                       </tooltip>
                     </p>
-                    <p><strong>{{ notification.data.title }}</strong><br>{{ notification.data.message }}</p>
+                    <p><strong>{{ notification.data.title }}</strong><br v-if="notification.data.title && notification.data.message">{{ notification.data.message }}</p>
                     <Notification-Link :notification="notification"></Notification-Link>
                   </td>
                   <td class="list-col-notes"><Notification-Notes :notification.sync="notification"></Notification-Notes></td>
