@@ -25,7 +25,7 @@ Fliplet.Widget.register('PushNotifications', function () {
 
   function isConfigured() {
     return (Fliplet.Env.is('web') && Modernizr.pushnotification)
-      || (Fliplet.Env.is('native') && (data && (data.apn || data.gcm || data.wns)));
+      || (Fliplet.Env.is('native'));
   }
 
   if (!data || !isConfigured()) {
