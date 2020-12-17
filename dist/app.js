@@ -492,14 +492,22 @@ var render = function() {
                                       ),
                                       _vm._v(" "),
                                       _c("p", [
-                                        _c("strong", [
-                                          _vm._v(
-                                            _vm._s(notification.data.title)
-                                          )
-                                        ]),
-                                        _c("br"),
+                                        notification.data.title
+                                          ? _c("strong", [
+                                              _vm._v(
+                                                _vm._s(notification.data.title)
+                                              )
+                                            ])
+                                          : _vm._e(),
+                                        _vm._v(" "),
+                                        notification.data.title &&
+                                        notification.data.message
+                                          ? _c("br")
+                                          : _vm._e(),
                                         _vm._v(
-                                          _vm._s(notification.data.message)
+                                          "\n                    " +
+                                            _vm._s(notification.data.message) +
+                                            "\n                  "
                                         )
                                       ]),
                                       _vm._v(" "),
@@ -892,6 +900,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _libs_bus__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(25);
 /* harmony import */ var _libs_date__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(37);
 /* harmony import */ var _libs_timezones__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(38);
+//
+//
+//
+//
 //
 //
 //
