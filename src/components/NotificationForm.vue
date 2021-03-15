@@ -928,7 +928,6 @@ export default {
                 title: this.notification.data.title,
                 body: this.notification.data.message,
                 icon: 'icon_notification',
-                badge: 1,
                 priority: 'high'
               }
             };
