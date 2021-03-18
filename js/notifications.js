@@ -57,22 +57,6 @@ Fliplet.Widget.register('PushNotifications', function () {
      */
     var push = Fliplet.User.getPushNotificationInstance(data);
     if (push) {
-      function clearNotifications() {
-        push.clearAllNotifications(function () {
-          // cleared
-        }, function (err) {
-          console.error('Cannot clear notifications', err);
-        });
-      }
-
-      //Clear any notification after setting the badge to 1 (it's a hack)
-      push.setApplicationIconBadgeNumber(function () {
-        clearNotifications();
-      }, function (err) {
-        console.error('Cannot set badge number', err);
-        clearNotifications();
-      }, 1);
-
       if (subscriptionId) {
         if (subscriptionDetails.token) {
           push.on('registration', function(data) {
